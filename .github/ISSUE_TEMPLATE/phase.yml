@@ -1,0 +1,69 @@
+name: Phase (parent issue)
+description: Parent issue for one phase; sub-issues are linked from it
+title: "[PHASE-XX] "
+labels: ["status:ready"]
+body:
+  - type: input
+    id: requirements
+    attributes:
+      label: Assignment requirement IDs
+      description: Families or ranges from docs/ASSIGNMENT_TRACEABILITY.md, e.g. ASG-FR-020…037
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Phase prompt (docs/phases/), documents read, current repository state.
+    validations:
+      required: true
+  - type: textarea
+    id: in_scope
+    attributes:
+      label: In scope
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Use a checklist.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Test / evidence criteria
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      description: A real repository collaborator only.
+    validations:
+      required: true
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+    validations:
+      required: true
