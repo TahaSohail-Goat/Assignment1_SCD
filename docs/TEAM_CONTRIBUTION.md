@@ -13,10 +13,10 @@ Maintain genuine, balanced ownership between the two students.
 ## Allocation Table
 | Contributor | GitHub handle | Area | Issues | Target contribution |
 |---|---|---|---|---|
-| Member A | `TahaSohail-Goat` (repository owner/admin) | Phase 00 governance and documentation baseline; remaining areas allocated in Phase 01 | #1 – #8 (Phase 00) | ≥35% |
-| Member B | **not yet a collaborator — handle unknown** (B-010) | TBD in Phase 01 | none | ≥35% |
+| Member A | `TahaSohail-Goat` (repository owner/admin) | Phase 00 governance and documentation baseline; remaining areas allocated in Phase 01 | #1 – #8, #10 (Phase 00) | ≥35% |
+| Member B | **not yet a collaborator — handle unknown; owner says they join on 2026-09-26** (B-010) | TBD in Phase 01 | none | ≥35% |
 
-Only Member A exists on GitHub today. No work is assigned to Member B, and no Member B commits, reviews or approvals may be recorded until that person is a real collaborator using their own login (`AGENTS.md` §7).
+Only Member A exists on GitHub today. Phase 00 was authored and merged without a partner review; from Phase 01 every PR needs one. No work is assigned to Member B, and no Member B commits, reviews or approvals may be recorded until that person is a real collaborator using their own login (`AGENTS.md` §7).
 
 ## Contribution balance (assignment §4 A4)
 `git shortlog -sn` must show neither partner below 35%, ≥ 35 commits in total, conventional prefixes. Phase 01 allocates future phases by **estimated effort**, not by commit count. Both members must be able to explain every part of the submission at the individual viva (`docs/SUBMISSION.md` §4).
