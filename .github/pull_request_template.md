@@ -28,4 +28,7 @@
 - [ ] Tests are meaningful
 - [ ] Documentation matches implementation
 
-Closes #<issue-number>
+Related issue: #<issue-number>
+<!-- Feature PRs (base: dev) use "Related issue". Only the dev → main PR uses "Closes #…": GitHub closes issues when a PR merges into the default branch. -->
+<!-- Base branch must be `dev` for feature branches. -->
+
