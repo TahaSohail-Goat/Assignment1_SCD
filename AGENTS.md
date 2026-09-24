@@ -66,8 +66,8 @@ do not implement it as a mandatory assignment requirement.
 Write the uncertainty into `docs/BLOCKERS.md` or `docs/adr/`.
 
 ## 6. Git Safety
-- No direct commits to `main`.
-- No force push to shared branches.
+- No direct commits to `main`. No direct commits to `dev` either: work happens on `feature/<issue-number>-<slug>` branches cut from `dev` and reaches `dev` by pull request; `dev` reaches `main` by a merge-commit pull request (`docs/GITHUB_WORKFLOW.md`).
+- No force push to shared branches (`main`, `dev`).
 - No `--no-verify` to hide failures.
 - Use `--force-with-lease` only after an intentional rebase on your own issue branch.
 - Never rewrite another contributor's work.

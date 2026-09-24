@@ -7,7 +7,8 @@ Required workflows:
 
 CI:
 - PR to main
-- push to dev/work branches as required
+- push to `dev` (assignment §3.4)
+- PR to `dev`: optional superset so feature PRs are gated before they reach `dev`; decided in Phase 10 (`docs/GITHUB_WORKFLOW.md`, "Pull-Request Flow")
 - lint
 - type check
 - backend tests + coverage
