@@ -4,7 +4,7 @@ Updated at the end of every phase. A phase is **Complete** only when its gate in
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
-| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8) | `dev/1-phase-00-baseline` | Phase 00 PR (open, **not merged**) | Work complete; awaiting review and merge decision (B-009, B-010, B-011) |
+| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8) | `dev/1-phase-00-baseline` | #9 (open, **not merged**) | Work complete; awaiting review and merge decision (B-009, B-010, B-011) |
 | 01 | Requirements Engineering | — | — | — | Not started |
 | 02 | Architecture & Repository Structure | — | — | — | Not started |
 | 03 | Frontend | — | — | — | Not started |
