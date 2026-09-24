@@ -1,0 +1,63 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# SECRETS — a .env, key, token or password anywhere in Git history is -20
+# (assignment §5.3). These rules exist to stop that happening by accident.
+# Only *.example / placeholder files may be committed. See docs/SECURITY.md.
+# ─────────────────────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+kubeconfig
+kubeconfig.*
+*.kubeconfig
+.kube/
+credentials.json
+service-account*.json
+*.secret.yaml
+*.secret.yml
+*.local.yaml
+*.local.yml
+
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+build/
+dist/
+
+# ── Node / frontend ──────────────────────────────────────────────────────────
+node_modules/
+frontend/dist/
+frontend/coverage/
+.vite/
+*.log
+npm-debug.log*
+
+# ── Local tooling / editors / OS ─────────────────────────────────────────────
+.claude/settings.local.json
+CLAUDE.local.md
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ── Scratch (never commit) ───────────────────────────────────────────────────
+tmp/
+.tmp/
+scratch/
