@@ -94,7 +94,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-FR-033 | §2.2 p6 | `GET /metrics` exposes Prometheus text format: request count, request latency histogram, triage latency, fallback counter | Mandatory | TBD | TBD | `backend/app/routes/` | IT | — | Not started |
 | ASG-FR-034 | §2.2 p6 | Status state machine: open→in_progress→resolved; open→rejected; in_progress→rejected; resolved and rejected are terminal; everything else is 409 | Mandatory | TBD | TBD | `backend/app/services/` | UT | — | Not started |
 | ASG-FR-035 | §2.2 p6 | The state machine is an explicit transition table, not a chain of ifs | Mandatory | TBD | TBD | `backend/app/services/` | INS, UT | — | Not started |
-| ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TBD | TBD | `backend/app/routes/` | IT | — | Blocked (B-004) |
+| ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TBD | TBD | `backend/app/routes/` | IT | — | Not started (nine endpoints, B-004 resolved by owner) |
 | ASG-FR-037 | §1.2 p2 | End-to-end intake flow: citizen submits → system validates → triages (category, priority, one-line summary) → persists durably → shown on live operations dashboard with aggregate statistics | Mandatory | TBD | TBD | whole system | IT, DEMO | demo video | Not started |
 
 ## ASG-NFR — Non-functional requirements
@@ -268,7 +268,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-CICD-001 | §3.4 p17 | Three workflows: `ci.yml`, `cd.yml`, `release.yml` | Mandatory | TBD | TBD | `.github/workflows/` | INS | — | Skeleton |
-| ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TBD | TBD | repo settings | DEMO | screenshot | Blocked (B-009, B-011) |
+| ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TBD | TBD | repo settings | DEMO | screenshot | Blocked (B-011) |
 | ASG-CICD-003 | §3.4 p17 | `ci.yml` runs on pull request to main and on push to dev | Mandatory | TBD | TBD | `ci.yml` | CI | — | Not started |
 | ASG-CICD-004 | §3.4 p17 | `lint-and-type`: ruff + mypy (backend); eslint + `tsc --noEmit` (frontend) | Mandatory | TBD | TBD | `ci.yml` | CI | — | Not started |
 | ASG-CICD-005 | §3.4 p17 | `test-backend`: pytest with coverage ≥ 65% on `app/`, `TRIAGE_PROVIDER=simulated` | Mandatory | TBD | TBD | `ci.yml` | CI | — | Not started |
@@ -304,7 +304,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-GH-001 | §4 A p19 | `main` protected: no direct push, PR required, CI required, ≥ 1 approval | Mandatory | TBD | TBD | repo settings | DEMO | `docs/evidence/` screenshot | Blocked (B-011) |
-| ASG-GH-002 | §4 A p19 | Two-branch model: `dev` plus feature branches; no work committed directly to main | Mandatory | TBD | TBD | branches | INS | branch list | Blocked (B-009) |
+| ASG-GH-002 | §4 A p19 | Two-branch model: `dev` plus feature branches; no work committed directly to main | Mandatory | TBD | TBD | branches | INS | branch list | Skeleton (`dev` exists; `feature/<n>-<slug>` flow, B-009 resolved) |
 | ASG-GH-003 | §4 A p19 | ≥ 5 merged PRs | Mandatory | TBD | TBD | GitHub | INS | PR list | Blocked (B-010) |
 | ASG-GH-004 | §4 A p19 | Each merged PR is linked to an Issue | Mandatory | TBD | TBD | GitHub | INS | PR list | Not started |
 | ASG-GH-005 | §4 A p19 | Each merged PR has a substantive review comment from the partner | Mandatory | TBD | TBD | GitHub | INS | PR reviews | Blocked (B-010) |
