@@ -1,0 +1,70 @@
+name: Bug
+description: A defect in delivered behaviour, traced to the requirement it violates
+title: "[BUG] "
+labels: ["type:bug", "status:ready"]
+body:
+  - type: input
+    id: requirements
+    attributes:
+      label: Violated requirement IDs
+      description: Example ASG-FR-028, ASG-DED-008
+    validations:
+      required: true
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What correct behaviour must be restored?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context and reproduction
+      description: Observed vs expected behaviour, exact commands, logs. Never paste secrets.
+    validations:
+      required: true
+  - type: textarea
+    id: in_scope
+    attributes:
+      label: In scope
+    validations:
+      required: true
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of scope
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Validation / Evidence
+      description: The regression test that fails before and passes after.
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+      description: A real repository collaborator only.
+    validations:
+      required: true
+  - type: input
+    id: dependencies
+    attributes:
+      label: Dependencies
+    validations:
+      required: true
+  - type: textarea
+    id: dod
+    attributes:
+      label: Definition of done
+    validations:
+      required: true
