@@ -122,7 +122,28 @@ PR body:
 
 ## Required Partner Review
 
-The assignment requires substantive partner review comments. A review must discuss code/documentation behavior or evidence. "LGTM" alone is not sufficient evidence of substantive review.
+The assignment requires substantive partner review comments (rubric A3, `ASG-GH-005`). A review must discuss code/documentation behavior or evidence. "LGTM" alone is not sufficient evidence of substantive review.
+
+A review counts when it:
+1. is posted by the **other contributor's own GitHub account** (never by the author, never on someone's behalf);
+2. shows the diff was actually read — it names files, lines or behaviours;
+3. checks the change against the linked requirement IDs and the issue's acceptance criteria;
+4. states what was verified (commands run, assignment sections cross-checked);
+5. ends in an approval or in specific requested changes, and approves only once blocking comments are resolved;
+6. includes at least one "why" question to the author whose answer stays in the thread (viva preparation, `ASG-SUB-009`).
+
+Reviewer routine (each person runs it under their own login):
+
+```
+gh auth status                         # confirm you are acting as yourself
+gh pr checkout <n>                     # get the actual branch
+gh pr diff <n>                         # read the change
+gh pr review <n> --comment -b "…"      # substantive comment (line comments in the Files tab are better)
+gh pr review <n> --request-changes -b "…"
+gh pr review <n> --approve -b "Verified: … Checked against: ASG-… Question answered: …"
+```
+
+AI assistance in a review is allowed only in the reviewer's **own** session and account, after the reviewer has read the change and can defend every comment; it is logged in `docs/AI-USAGE.md`. A review the reviewer has not read is not a review.
 
 ## Rebase / Merge
 
@@ -169,10 +190,26 @@ Documented set plus the phase labels. Two labels were **added** in Phase 00 beca
 ### Issue templates
 `.github/ISSUE_TEMPLATE/` provides `phase.yml` (parent), `feature.yml`, `docs.yml` and `bug.yml`. Every template carries the sections required above (objective, requirement IDs, context, in/out of scope, acceptance criteria, test/evidence criteria, owner, dependencies, definition of done). The pull-request template is `.github/pull_request_template.md`.
 
-### Branch protection and review
-`main` is not protected yet, and the second member becomes a collaborator on 2026-09-26 (`docs/BLOCKERS.md` B-010, B-011). Until then every change still goes through a PR. Once the partner is a collaborator: enable protection on `main` (require a PR, ≥ 1 approval, required status checks once `ci.yml` exists, no force-push, no deletion) and capture the settings screenshot for `docs/evidence/` (`ASG-GH-001`). Protecting `dev` is optional; the convention is still "PRs only, no direct commits".
+### Branch protection and review (as configured 2026-09-25)
+Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write; B-010). Protection is implemented as two repository **rulesets** (Settings → Rules → Rulesets); the exported JSON is in `docs/evidence/`.
 
-Merge only PRs that have a substantive partner review — an unreviewed merge cannot count toward the "≥ 5 merged PRs with partner review" rubric line.
+| Setting | `main` (ruleset 23990471) | `dev` (ruleset 23990939) |
+|---|---|---|
+| Deletion | blocked | blocked |
+| Force-push / non-fast-forward | blocked | blocked |
+| Pull request required | yes | yes |
+| Approvals required | **1** (the author cannot approve their own PR) | **1** |
+| Stale approvals dismissed on new push | yes | yes |
+| Review threads must be resolved | yes | yes |
+| Bypass actors | none (admin included) | none |
+| Allowed merge methods | **merge commit only** | rebase or merge commit |
+| Required status checks | *not yet* — added with `ci.yml` in Phase 10 (rubric I1); names must match the job names | *not yet* |
+
+Repository level: **squash merge is disabled** (it would erase the per-author commit counts rubric A4 measures); *delete branch on merge* stays **off** (it would try to delete `dev` after every `dev` → `main` merge); auto-merge is off.
+
+Still open for `ASG-GH-001`: a screenshot of the ruleset page in `docs/evidence/` (a CLI cannot take one; the JSON exports are supporting evidence only) and the required status checks.
+
+Merge only PRs that have a substantive partner review — an unreviewed merge cannot count toward the "≥ 5 merged PRs with partner review" rubric line, and the rulesets now enforce it.
 
 ### Requirement IDs in issues
 Every issue and PR cites `ASG-*` IDs from `docs/ASSIGNMENT_TRACEABILITY.md`. When a PR completes an ID, update that row's Owner/Issue/Artifact/Evidence/Status in the same PR.
