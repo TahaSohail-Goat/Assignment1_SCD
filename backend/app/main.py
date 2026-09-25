@@ -27,8 +27,8 @@ from app.repositories.health import DatabaseHealthRepository
 from app.repositories.uow import SqlUnitOfWork, UnitOfWork
 from app.routes import complaints, health, meta, metrics, stats
 from app.services.complaints import ComplaintService, Triager
-from app.services.rate_limit import RateLimitService
 from app.services.meta import MetaService
+from app.services.rate_limit import RateLimitService
 from app.services.readiness import DependencyProbe, ReadinessService
 from app.services.stats import StatsService
 from app.services.triage import TriageService
