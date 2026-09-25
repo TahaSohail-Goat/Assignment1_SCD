@@ -133,6 +133,8 @@ it('ignores an older list response after the operator changes a filter', async (
   render(<Dashboard />)
   fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'water' } })
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+  const initialSignal = (fetchMock.mock.calls[0][1] as RequestInit).signal
+  expect(initialSignal?.aborted).toBe(true)
   await act(async () => {
     finishFiltered(reply(200, { items: [{ ...complaint, text: 'Filtered water complaint' }],
       total: 1, page: 1, page_size: 20 }))

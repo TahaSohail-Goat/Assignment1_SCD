@@ -20,8 +20,12 @@ export default function Dashboard() {
   const [rowError, setRowError] = useState<Record<string, string>>({})
   const [updating, setUpdating] = useState<string | null>(null)
   const requestVersion = useRef(0)
+  const requestController = useRef<AbortController | null>(null)
 
   const load = useCallback(async () => {
+    requestController.current?.abort()
+    const controller = new AbortController()
+    requestController.current = controller
     const version = ++requestVersion.current
     setLoading(true)
     setFailure('')
@@ -32,10 +36,10 @@ export default function Dashboard() {
         category: category || undefined,
         priority: priority || undefined,
         status: status || undefined,
-      })
+      }, controller.signal)
       if (version === requestVersion.current) setResult(nextResult)
     } catch (error) {
-      if (version === requestVersion.current)
+      if (!controller.signal.aborted && version === requestVersion.current)
         setFailure(error instanceof Error ? error.message : 'Could not load complaints.')
     } finally {
       if (version === requestVersion.current) setLoading(false)
@@ -44,7 +48,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     void load()
-    return () => { requestVersion.current += 1 }
+    return () => {
+      requestController.current?.abort()
+      requestVersion.current += 1
+    }
   }, [load])
 
   async function changeStatus(id: string, next: Status) {

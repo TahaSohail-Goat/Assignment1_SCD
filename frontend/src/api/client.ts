@@ -62,13 +62,13 @@ export async function getComplaint(id: string): Promise<Complaint> {
   return (await request<Complaint>(`/api/complaints/${encodeURIComponent(id)}`)).data
 }
 
-export async function listComplaints(filters: ComplaintFilters = {}): Promise<ComplaintPage> {
+export async function listComplaints(filters: ComplaintFilters = {}, signal?: AbortSignal): Promise<ComplaintPage> {
   const params = new URLSearchParams()
   for (const [key, value] of Object.entries(filters)) {
     if (value !== undefined) params.set(key, String(value))
   }
   const query = params.size ? `?${params}` : ''
-  return (await request<ComplaintPage>(`/api/complaints${query}`)).data
+  return (await request<ComplaintPage>(`/api/complaints${query}`, { signal })).data
 }
 
 export async function updateStatus(id: string, status: Status): Promise<Complaint> {
