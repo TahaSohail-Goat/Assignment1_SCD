@@ -9,7 +9,7 @@ from typing import Any
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
-from app.errors import error_response
+from app.http_errors import error_response
 from app.services.readiness import ReadinessService
 
 router = APIRouter()

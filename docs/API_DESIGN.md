@@ -57,7 +57,7 @@ The frontend shows `error.message` verbatim for a 409 (`ASG-FR-010`). Validation
 
 | Schema | Fields |
 |---|---|
-| `ComplaintCreate` | `text` (string, 10–2000), `location` (string, 3–200), `reporter_contact` (string or null, optional) |
+| `ComplaintCreate` | `text` (string, 10–2000), `location` (string, 3–200), `reporter_contact` (string or null, optional, at most 200 characters: a **decision**, the assignment gives no limit); surrounding whitespace is stripped and unknown fields are ignored |
 | `Complaint` | `id` (UUID), `text`, `location`, `reporter_contact` (string or null), `category` (`water`, `electricity`, `sanitation`, `roads`, `streetlights`, `other`), `priority` (`high`, `normal`, `low`), `status` (`open`, `in_progress`, `resolved`, `rejected`), `ai_summary` (string or null, ≤ 140), `triaged_by` (§4), `triage_latency_ms` (integer), `created_at`, `updated_at` (ISO 8601, UTC) |
 | `StatusUpdate` | `status` (the four statuses) |
 | `ComplaintPage` | `items` (`Complaint[]`), `total`, `page`, `page_size` |

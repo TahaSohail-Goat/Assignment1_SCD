@@ -8,44 +8,77 @@ in-flight requests finish; the lifespan below then closes the connection pools b
 """
 
 import logging
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from sqlalchemy import Engine
 
 from app.config import Settings, get_settings
-from app.database import create_db_engine
+from app.database import create_db_engine, create_session_factory
+from app.http_errors import install_error_handlers
 from app.logging import configure_logging
 from app.middleware import RequestContextMiddleware
 from app.providers.cache import RedisCache
 from app.repositories.health import DatabaseHealthRepository
-from app.routes import health, metrics
+from app.repositories.uow import SqlUnitOfWork, UnitOfWork
+from app.routes import complaints, health, metrics
+from app.services.complaints import ComplaintService, Triager, UnconfiguredTriager
 from app.services.readiness import DependencyProbe, ReadinessService
 
 logger = logging.getLogger("app.main")
 
 
 def create_app(
-    settings: Settings | None = None, probes: list[DependencyProbe] | None = None
+    settings: Settings | None = None,
+    probes: list[DependencyProbe] | None = None,
+    triager: Triager | None = None,
+    unit_of_work: Callable[[], UnitOfWork] | None = None,
 ) -> FastAPI:
-    """Build the app. ``probes`` lets tests replace the real PostgreSQL and Redis probes."""
+    """Build the app.
+
+    ``probes``, ``triager`` and ``unit_of_work`` let tests replace PostgreSQL, Redis and the
+    triage providers; in production they are built from the settings.
+    """
     settings = settings or get_settings()
     configure_logging(settings.log_level)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-        closers = []
-        if probes is None:
+        closers: list[Callable[[], None]] = []
+        engine: Engine | None = None
+        if probes is None or unit_of_work is None:
             engine = create_db_engine(
                 settings.database_url, settings.dependency_check_timeout_seconds
             )
+            closers.append(engine.dispose)
+
+        active_probes: list[DependencyProbe]
+        if probes is None and engine is not None:
             cache = RedisCache(settings.redis_url, settings.dependency_check_timeout_seconds)
-            active_probes: list[DependencyProbe] = [DatabaseHealthRepository(engine), cache]
-            closers = [cache.close, engine.dispose]
+            closers.append(cache.close)
+            active_probes = [DatabaseHealthRepository(engine), cache]
         else:
-            active_probes = probes
+            active_probes = probes or []
+
+        active_unit_of_work: Callable[[], UnitOfWork]
+        if unit_of_work is not None:
+            active_unit_of_work = unit_of_work
+        elif engine is not None:
+            session_factory = create_session_factory(engine)
+
+            def open_unit_of_work() -> UnitOfWork:
+                return SqlUnitOfWork(session_factory)
+
+            active_unit_of_work = open_unit_of_work
+        else:  # unreachable: the engine exists whenever no unit of work was given
+            raise RuntimeError("no unit of work and no engine")
+
         readiness = ReadinessService(active_probes, settings.dependency_check_timeout_seconds)
         app.state.readiness = readiness
+        app.state.complaints = ComplaintService(
+            active_unit_of_work, triager or UnconfiguredTriager()
+        )
         logger.info("startup complete")
         try:
             yield
@@ -57,6 +90,8 @@ def create_app(
 
     app = FastAPI(title="CivicPulse API", version="0.1.0", lifespan=lifespan)
     app.add_middleware(RequestContextMiddleware)
+    install_error_handlers(app)
     app.include_router(health.router)
     app.include_router(metrics.router)
+    app.include_router(complaints.router)
     return app
