@@ -1,18 +1,15 @@
 # ADR 0004 — Complaint PII and External AI Providers
 
 ## Status
-Proposed
+Decision for #46; hosted-provider implementation and deployment settings are verified in #45 and the Compose/Kubernetes packages.
 
-## Question
-What complaint data leaves the machine when using hosted AI, to whom, and why is the chosen exposure acceptable?
+## Context and observed provider terms
+Citizen complaints may contain names, phone numbers, precise addresses and contact information. The assignment §2.5 asks what leaves the machine, to whom, and why. We checked Groq's [current data controls](https://console.groq.com/docs/your-data) and [services agreement](https://console.groq.com/docs/legal/services-agreement) on 2026-09-25. Groq says inference input and output are not retained by default, but they may be logged for reliability or abuse investigations for up to 30 days unless Zero Data Retention (ZDR) is enabled. Usage metadata is retained. Its agreement says input and output are not used to train models without permission. These are provider statements, not a guarantee that a complaint contains no personal data. The assignment's older Gemini free-tier warning is another reason not to send live citizen data by default.
 
-## Required Work
-Verify current official provider terms/privacy limits before finalizing.
+## Decision
+The default for real complaints is the offline Ollama or rules provider. In that path, complaint text and location stay in the project's deployment network and PostgreSQL; no complaint content goes to a hosted model. A hosted Groq mode is available for controlled demonstration with synthetic complaints only. In that mode, the backend sends the complaint text and location to Groq's inference endpoint so the model can classify the issue and produce a short summary; it does not send `reporter_contact`, database IDs, or credentials. The operator must explicitly choose hosted mode and enable ZDR in Groq's console before a demonstration. If ZDR cannot be enabled, use Ollama or rules.
 
-Evaluate:
-- redacting PII
-- sending only complaint body/location as appropriate
-- selecting an offline provider
-- retention and logging implications
+This choice favors a usable offline route over an unproven claim that regex redaction removes every name or address. Phone and email redaction may reduce exposure in future, but it is not treated as sufficient consent or a privacy guarantee. Even with ZDR, request processing and retained usage metadata remain at Groq, and the traffic leaves the machine. Hosted inference is acceptable only for synthetic demonstration data for this university project. Production use with real citizens would need a separate consent, retention and jurisdiction review.
 
-Record the actual chosen behavior and its rationale.
+## Handling and verification
+API keys come from environment or orchestrator secrets, never the repository, response bodies, metrics or logs. The frontend receives triage results, not provider credentials. The cache stores a SHA-256 key and a 24-hour result in Redis; the complaint itself is stored in PostgreSQL under the data policy of ADR 0004. Tests and demo evidence must use synthetic examples; do not put a real name, phone or address into logs or screenshots. #45 must confirm the selected hosted API's current terms and limits when implementing it; deployment review must verify that the default provider is offline and that hosted mode cannot be enabled accidentally.

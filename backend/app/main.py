@@ -25,12 +25,13 @@ from app.providers.triage.factory import build_provider
 from app.rate_limit_middleware import RateLimitMiddleware
 from app.repositories.health import DatabaseHealthRepository
 from app.repositories.uow import SqlUnitOfWork, UnitOfWork
-from app.routes import complaints, health, metrics, stats
+from app.routes import complaints, health, meta, metrics, stats
 from app.services.complaints import ComplaintService, Triager
 from app.services.rate_limit import RateLimitService
 from app.services.readiness import DependencyProbe, ReadinessService
 from app.services.stats import StatsService
 from app.services.triage import TriageService
+from app.services.triage_cache import TriageCache
 
 logger = logging.getLogger("app.main")
 
@@ -94,7 +95,9 @@ def create_app(
         if triager is not None:
             active_triager = triager
         else:
-            triage_service = TriageService(build_provider(settings.triage_provider, settings))
+            triage_service = TriageService(
+                build_provider(settings.triage_provider, settings), cache=TriageCache(active_cache)
+            )
             closers.append(triage_service.close)
             active_triager = triage_service
 
@@ -111,6 +114,8 @@ def create_app(
             if isinstance(active_cache, RedisCache)
             else None
         )
+        app.state.unit_of_work = active_unit_of_work
+        app.state.active_provider = settings.triage_provider
         app.state.complaints = ComplaintService(
             active_unit_of_work, active_triager, after_create=stats_service.invalidate
         )
@@ -132,4 +137,5 @@ def create_app(
     app.include_router(metrics.router)
     app.include_router(complaints.router)
     app.include_router(stats.router)
+    app.include_router(meta.router)
     return app
