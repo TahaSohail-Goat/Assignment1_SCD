@@ -14,6 +14,8 @@ This file exists because assignment §5.7 names `docs/TRIAGE.md` without definin
 - Run the prompt-injection test with an untrusted instruction embedded in complaint text and record the validated category returned, not merely the prompt sent.
 - For hosted versus Ollama comparisons, use the same synthetic inputs and record latency and classification outcome. The assignment asks for a measured trade-off, not a claim that one provider is always faster or better.
 
-## Pending evidence
+## Cache measurement, 2026-09-25
 
-No cache hit rate, provider comparison, or production privacy check has been measured yet. Add exact commands, date, input set and outputs here when the implementation and services are available. Do not infer these values from passing unit tests.
+`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 224 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; a real Redis 7 workload hit rate remains to be measured in Compose.
+
+The hosted-versus-offline comparison and a deployment privacy check are pending live services. Record exact commands, dates, input sets and outputs here when available.

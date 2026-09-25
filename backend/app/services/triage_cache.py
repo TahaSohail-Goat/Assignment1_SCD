@@ -12,6 +12,7 @@ from collections.abc import Callable, Mapping
 from typing import TypeVar
 
 from app.providers.cache import KeyValueCache
+from app.providers.triage.base import MalformedOutputError
 
 logger = logging.getLogger("app.triage_cache")
 
@@ -46,8 +47,10 @@ class TriageCache:
             if not isinstance(entry, dict) or not isinstance(entry.get("provider"), str):
                 raise ValueError("invalid cache envelope")
             return validate(entry["result"]), entry["provider"]
-        except (ValueError, KeyError, TypeError) as error:
-            logger.warning("invalid triage cache entry", extra={"error_class": type(error).__name__})
+        except (ValueError, KeyError, TypeError, MalformedOutputError) as error:
+            logger.warning(
+                "invalid triage cache entry", extra={"error_class": type(error).__name__}
+            )
             try:
                 self._store.delete(key)
             except Exception as delete_error:
