@@ -268,7 +268,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-CICD-001 | §3.4 p17 | Three workflows: `ci.yml`, `cd.yml`, `release.yml` | Mandatory | TBD | TBD | `.github/workflows/` | INS | — | Skeleton |
-| ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TBD | TBD | repo settings | DEMO | screenshot | Blocked (B-011) |
+| ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TBD | TBD | repo settings | DEMO | screenshot | Skeleton (rulesets active; required checks arrive with `ci.yml`, Phase 10) |
 | ASG-CICD-003 | §3.4 p17 | `ci.yml` runs on pull request to main and on push to dev | Mandatory | TBD | TBD | `ci.yml` | CI | — | Not started |
 | ASG-CICD-004 | §3.4 p17 | `lint-and-type`: ruff + mypy (backend); eslint + `tsc --noEmit` (frontend) | Mandatory | TBD | TBD | `ci.yml` | CI | — | Not started |
 | ASG-CICD-005 | §3.4 p17 | `test-backend`: pytest with coverage ≥ 65% on `app/`, `TRIAGE_PROVIDER=simulated` | Mandatory | TBD | TBD | `ci.yml` | CI | — | Not started |
@@ -303,15 +303,15 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| ASG-GH-001 | §4 A p19 | `main` protected: no direct push, PR required, CI required, ≥ 1 approval | Mandatory | TBD | TBD | repo settings | DEMO | `docs/evidence/` screenshot | Blocked (B-011) |
+| ASG-GH-001 | §4 A p19 | `main` protected: no direct push, PR required, CI required, ≥ 1 approval | Mandatory | TBD | TBD | repo settings | DEMO | `docs/evidence/` screenshot | Skeleton (ruleset active 2026-09-25; screenshot pending) |
 | ASG-GH-002 | §4 A p19 | Two-branch model: `dev` plus feature branches; no work committed directly to main | Mandatory | TBD | TBD | branches | INS | branch list | Skeleton (`dev` exists; `feature/<n>-<slug>` flow, B-009 resolved) |
-| ASG-GH-003 | §4 A p19 | ≥ 5 merged PRs | Mandatory | TBD | TBD | GitHub | INS | PR list | Blocked (B-010) |
+| ASG-GH-003 | §4 A p19 | ≥ 5 merged PRs | Mandatory | TBD | TBD | GitHub | INS | PR list | Not started (PR #9 has no partner review) |
 | ASG-GH-004 | §4 A p19 | Each merged PR is linked to an Issue | Mandatory | TBD | TBD | GitHub | INS | PR list | Not started |
-| ASG-GH-005 | §4 A p19 | Each merged PR has a substantive review comment from the partner | Mandatory | TBD | TBD | GitHub | INS | PR reviews | Blocked (B-010) |
+| ASG-GH-005 | §4 A p19 | Each merged PR has a substantive review comment from the partner | Mandatory | TBD | TBD | GitHub | INS | PR reviews | Not started (enforced by rulesets) |
 | ASG-GH-006 | §4 A p19 | ≥ 35 commits | Mandatory | TBD | TBD | git history | MEAS | `git shortlog -sn` | Not started |
 | ASG-GH-007 | §4 A p19 | Commits use conventional prefixes (`feat:`, `fix:`, `docs:` …) | Mandatory | TBD | TBD | git history | INS | `git log` | Not started |
-| ASG-GH-008 | §4 A p19 | Neither partner below 35% by `git shortlog -sn` | Mandatory | TBD | TBD | git history | MEAS | `git shortlog -sn` | Blocked (B-010) |
-| ASG-GH-009 | §4 A p19 | One deliberate merge conflict on real code, resolved | Mandatory | TBD | TBD | git history | INS | merge commit | Blocked (B-010) |
+| ASG-GH-008 | §4 A p19 | Neither partner below 35% by `git shortlog -sn` | Mandatory | TBD | TBD | git history | MEAS | `git shortlog -sn` | Not started |
+| ASG-GH-009 | §4 A p19 | One deliberate merge conflict on real code, resolved | Mandatory | TBD | TBD | git history | INS | merge commit | Not started (planned in P01-S06) |
 | ASG-GH-010 | §4 A p19 | Conflict evidence: markers, resolution and merge shown | Evidence | TBD | TBD | `docs/evidence/` | DOC | screenshots | Not started |
 | ASG-GH-011 | §4 A p19 | 2–4 sentences on why the winning version won | Evidence | TBD | TBD | `docs/evidence/` / notes | DOC | — | Not started |
 
@@ -376,7 +376,7 @@ Each deduction is a **guard**: the repository must never enter that state. See [
 | ASG-DED-007 | §5.3 p24 | Publishing or deploying job not gated by `needs:` | −8 | ASG-CICD-022 | INS | Not started |
 | ASG-DED-008 | §5.3 p24 | Deploying `:latest` anywhere | −8 | ASG-CICD-023 | INS, CI | Not started |
 | ASG-DED-009 | §5.3 p24 | PostgreSQL as a Deployment with no PVC | −8 | ASG-K8S-006 | CI | Not started |
-| ASG-DED-010 | §5.3 p24 | Commits pushed directly to main | −5 | ASG-GH-001/002; `AGENTS.md` §6 | INS | Blocked (B-011, B-012) |
+| ASG-DED-010 | §5.3 p24 | Commits pushed directly to main | −5 | ASG-GH-001/002; `AGENTS.md` §6 | INS | Guard active (rulesets); B-012 info |
 | ASG-DED-011 | §5.3 p24 | README quickstart that does not work from a clean clone | −5 | ASG-DOC-004, ASG-GEN-007 | DEMO | Not started |
 
 ## ASG-SUB — Submission, viva and policy
