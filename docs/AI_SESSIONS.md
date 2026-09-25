@@ -24,6 +24,8 @@ A phase N is **complete** only when **all** of these hold:
 4. the phase's `dev` → `main` integration PR (merge commit, one approval) is merged;
 5. `docs/PHASE_STATUS.md` says **Complete**.
 
+**Historical exception (Phase 00 only, PR #9).** The baseline PR #9 was merged into `main` on 2026-09-24, before the `dev` branch existed and before the second contributor was a repository collaborator (B-010). It has no `dev` step and no partner review, so condition 2 cannot hold for it; `docs/PHASE_STATUS.md` records it as "merged to `main`, no partner review", and it is neither redone nor rewritten. For Phase 00, condition 2 therefore covers every other Phase 00 pull request (#11, #60, #61). No other phase has an exception.
+
 **Nothing for phase N+1 starts before that**: no branch, no commit, no PR, no edits to its issues. Allowed while phase N is open: work *inside* phase N; answering reviews; reading; and planning that phase N's own prompt requires (Phase 01, for example, is the phase that creates the issue tree for the later phases).
 
 If a plan mistake for a later phase is found, correcting it is allowed, is done in the current phase's PR, and is recorded there.
@@ -98,7 +100,7 @@ Then read `docs/PHASE_STATUS.md` ("Next permitted phase").
 
 **Phase close** (before saying "complete"):
 - [ ] all sub-issues and the parent are ready to close; every acceptance box is ticked
-- [ ] every PR merged into `dev` with a substantive review; no open PR of the phase
+- [ ] every PR merged into `dev` with a substantive review (Phase 00: PR #9 is the recorded exception, section 2); no open PR of the phase
 - [ ] the phase gate is checked and its evidence committed
 - [ ] the traceability rows of the phase are updated (`Status`, `Evidence`)
 - [ ] `docs/AI-USAGE.md` has a row for each PR
