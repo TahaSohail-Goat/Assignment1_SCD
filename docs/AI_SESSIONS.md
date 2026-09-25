@@ -88,9 +88,14 @@ gh auth status
 gh pr list --search "review-requested:@me" --state open
 gh pr list --author "@me" --state open
 gh issue list --assignee "@me" --state open
-git fetch origin --prune && git log --oneline -5 origin/dev
+git fetch origin --prune
+git log --oneline -5 origin/dev
+git show origin/dev:docs/PHASE_STATUS.md
+git show origin/main:docs/PHASE_STATUS.md
 ```
-Then read `docs/PHASE_STATUS.md` ("Next permitted phase").
+One command per line: Windows PowerShell 5.1 does not accept `&&` (bash and PowerShell 7 do), so this repository's documents never chain commands with it.
+
+Then read the two status files. `dev` says which phase is being worked on and what is left; a phase counts as **Complete** only when its row says so on `main` (section 2). If the row for the previous phase does not say Complete on `main`, do not start the next phase.
 
 ## 6. Checklists
 
@@ -150,7 +155,7 @@ Post the review for PR #<N> as <ME>. First run gh auth status and stop if the ac
 ```text
 Step: implement issue #<N> (phase <PHASE>) as <ME>.
 1. Check the Phase-start checklist (docs/AI_SESSIONS.md section 6). If phase <PHASE> is not the current phase, or a dependency has not merged, STOP and tell me.
-2. git switch dev && git pull --ff-only; git switch -c feature/<N>-<slug>. gh issue edit <N> --add-label status:in-progress --remove-label status:ready.
+2. git fetch origin --prune, then git switch dev, then git pull --ff-only, then git switch -c feature/<N>-<slug> (one command at a time). gh issue edit <N> --add-label status:in-progress --remove-label status:ready.
 3. Read the issue (gh issue view <N>), its requirement rows in docs/ASSIGNMENT_TRACEABILITY.md and the cited assignment sections. Edit only the files the issue lists under "File ownership".
 4. Nothing the assignment does not state may be invented: unknowns go to the catalog's design-questions table or docs/BLOCKERS.md.
 5. Before committing: every ASG-* id you cite exists, tables and links render, no secrets, no other file touched, the issue's acceptance boxes are true.

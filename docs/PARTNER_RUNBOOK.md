@@ -73,7 +73,7 @@ Your work packages are the GitHub issues assigned to `Artfever` and the allocati
 
 Repeat for each issue. Codex does all of it under your login; you read the diff before step 9.
 
-1. **Sync:** `git fetch origin && git switch dev && git pull --ff-only`
+1. **Sync:** `git fetch origin`, then `git switch dev`, then `git pull --ff-only` (one command at a time; Windows PowerShell 5.1 has no `&&`)
 2. **Branch:** `git switch -c feature/<issue-number>-<slug>` (lowercase, from `dev`)
 3. **Mark it started:** `gh issue edit <n> --add-label status:in-progress --remove-label status:ready`
 4. **Read** the issue, the assignment sections it cites, and its `ASG-*` rows in `docs/ASSIGNMENT_TRACEABILITY.md`.
@@ -95,10 +95,7 @@ Repeat for each issue. Codex does all of it under your login; you read the diff 
 9. **Pull request into `dev`.** Copy `.github/pull_request_template.md` into `pr.md`, fill every section, then:
 
    ```
-   gh pr create --base dev --head feature/<issue-number>-<slug> \
-     --title "<type>(<scope>): <summary>" --body-file pr.md \
-     --label type:docs --label phase:01-requirements --label area:docs --label status:review \
-     --assignee "@me" --reviewer TahaSohail-Goat
+   gh pr create --base dev --head feature/<issue-number>-<slug> --title "<type>(<scope>): <summary>" --body-file pr.md --label type:docs --label phase:01-requirements --label area:docs --label status:review --assignee "@me" --reviewer TahaSohail-Goat
    ```
    The body says `Related issue: #<n>` (not `Closes`; issues close through the `dev` → `main` PR). Add your AI-USAGE row in this same PR.
 10. **Handle the review.** Answer every comment, push fixes, resolve threads. A new push dismisses earlier approvals (the ruleset does that on purpose).
@@ -107,7 +104,7 @@ Repeat for each issue. Codex does all of it under your login; you read the diff 
 
 ## 8. Keeping in sync and conflicts
 
-- Rebase your own branch on `origin/dev` when told or when GitHub says it is out of date: `git fetch origin && git rebase origin/dev`; push with `--force-with-lease` **only** on your own feature branch.
+- Rebase your own branch on `origin/dev` when told or when GitHub says it is out of date: `git fetch origin`, then `git rebase origin/dev`; push with `--force-with-lease` **only** on your own feature branch.
 - Never rebase, force-push or delete `dev` or `main`.
 - File ownership is disjoint by design. If you need a change in a file owned by the other person, comment on their issue or PR instead of editing it.
 - One **deliberate** merge conflict on real code is required by the rubric (A5). It is planned in issue #18 between two genuine branches; do not create one by accident or on purpose outside that plan. Never resolve a conflict by discarding the other side.
