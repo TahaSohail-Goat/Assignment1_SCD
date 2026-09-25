@@ -32,7 +32,7 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 │   ├── ENGINEERING-NOTES.md · RUNBOOK.md · AI-USAGE.md          ✅ stubs (final content Phase 11–12)
 │   ├── TRIAGE.md                              ⏳ purpose unspecified (B-016)
 │   ├── adr/0001…0004-*.md                     ✅ stubs (the four ADRs the rubric requires)
-│   ├── evidence/                              📁  Phase 11   screenshots, captures, charts
+│   ├── evidence/                              ✅  ruleset JSON exports (Phase 00); screenshots, captures, charts (Phase 11)
 │   └── …governance documents (see DOCUMENT_INDEX.md)           ✅
 ├── docx/                                      ✅ authoritative assignment source + transcription
 │   ├── ASSIGNMENT_SOURCE.pdf                  ✅ unchanged, SHA-256 in EXTRACTION_NOTES.md
