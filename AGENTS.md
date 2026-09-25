@@ -78,7 +78,7 @@ Write the uncertainty into `docs/BLOCKERS.md` or `docs/adr/`.
 Two AI-assisted sessions — one per contributor, each with that person's own tool (for example Claude Code for one, Codex for the other) — may run in parallel only when:
 - each session has a separate issue,
 - each session has its own branch/worktree,
-- file ownership is disjoint,
+- file ownership is disjoint (the single recorded exception, the planned merge conflict of Phase 07 for rubric A5, is in `docs/AI_SESSIONS.md` section 3),
 - both GitHub identities are real authenticated accounts,
 - neither session edits the same migration/workflow/manifest concurrently.
 

@@ -36,9 +36,11 @@ If a plan mistake for a later phase is found, correcting it is allowed, is done 
 
 | Mode | Meaning | When it applies |
 |---|---|---|
-| **PARALLEL** | Both sessions **write at the same time**, each on its own package | Only **inside one phase**, on packages with different owners, **no dependency** between them and **disjoint files** |
+| **PARALLEL** | Both sessions **write at the same time**, each on its own package | Only **inside one phase**, on packages with different owners, **no dependency** between them (neither issue lists the other as "merged first") and **disjoint files** — one recorded exception below |
 | **HANDOFF** | One session works, the other **waits** (and then acts) | A review or approval; a package that depends on the other's merged package; a shared file that is serialized (`compose.yaml`, `k8s/base/kustomization.yaml`, `docs/CACHE.md`); a merge-conflict resolution; the phase integration PR; any human decision |
 | **SOLO** | One session writes, the other **only reviews** | A phase whose packages all belong to one contributor |
+
+**The one recorded exception — Phase 07, the planned merge conflict.** Packages #44 (Claude Code: provider interface and fallback orchestration) and #46 (Codex: triage cache and latency hooks) both change `backend/app/services/triage.py`, and #46 is coded against the `TriageProvider` interface of assignment §2.5 without waiting for #44 to merge. That is deliberate: rubric A5 (3 marks; `ASG-GH-009`, `-010`, `-011`) asks for one merge conflict on real code, resolved, with the markers, the resolution and 2–4 sentences on why that version won, and the two packages genuinely need the same function. Conditions: each package touches `triage.py` only for its own real work (`docs/TEAM_CONTRIBUTION.md` rule 7: no staged conflicts); each keeps to the file list of its issue; the author of the PR that merges second rebases on `dev`, resolves the conflict on their own branch and keeps the evidence. Everywhere else a shared file or a dependency makes the pair a HANDOFF, so this is the only place where two open packages may share a file.
 
 Waiting is not idle time: the waiting session reviews, answers questions or stands by. It **never** starts the next phase. Parallel work needs both humans to be present, because a session only acts when its human starts it.
 
@@ -54,13 +56,13 @@ Waiting is not idle time: the waiting session reviews, answers questions or stan
 | **03** | SOLO (Codex) | reviews | #34 → #35, #36 | one review per PR |
 | **04** | SOLO (Claude) | #37 → #38 → #39 | reviews | one review per PR |
 | **05** | HANDOFF | #40 migrations and repositories | #41 seed → (after #40) | #41 starts only after #40 merged |
-| **06** | PARALLEL | #42 stats cache | #43 rate limiter | `docs/CACHE.md`: #42 merges first, #43 rebases |
-| **07** | PARALLEL (planned real conflict) | #44 provider interface and fallback | #46 triage cache and latency (starts immediately, coded against the `TriageProvider` interface of assignment §2.5); #45 LLM/Ollama → (after #44) | #44 and #46 both change `backend/app/services/triage.py`: the second to merge resolves a genuine conflict (rubric A5) |
+| **06** | HANDOFF | #42 stats cache | #43 rate limiter → (after #42) | both write `docs/CACHE.md` (different sections) and #43's issue lists P06-S01 as merged first: #43 starts only after #42 has merged |
+| **07** | PARALLEL, recorded exception (section 3); #45 is a handoff | #44 provider interface and fallback | #46 triage cache and latency (starts immediately, coded against the `TriageProvider` interface of assignment §2.5); #45 LLM/Ollama → (after #44) | #44 and #46 both change `backend/app/services/triage.py` (the exception in section 3): the second to merge resolves a genuine conflict (rubric A5); #45 starts only after #44 has merged |
 | **08** | HANDOFF | #47 backend image and `compose.yaml` | #48 frontend image, Ollama, `compose.prod.yaml` → (after #47) | `compose.yaml` is serialized |
 | **09** | HANDOFF | #49 Kubernetes base and overlays | #50 HPA, VPA, load test → (after #49) | `k8s/base/kustomization.yaml` is serialized |
-| **10** | PARALLEL | #51 `ci.yml`, required checks | #52 `cd.yml`, `release.yml`, rollback | disjoint files, shared conventions |
+| **10** | HANDOFF | #51 `ci.yml`, required checks | #52 `cd.yml`, `release.yml`, rollback → (after #51) | the files are disjoint, but #52's issue lists P10-S01 as merged first (same conventions) |
 | **11** | PARALLEL | #53 Compose evidence, RUNBOOK | #54 Kubernetes evidence, ENGINEERING-NOTES | distinct `docs/evidence/` prefixes |
-| **12** | PARALLEL, then handoff | #56 audit, `check_submission.py`, package → (last) | #55 README and demo video | the audit runs after the README and video have merged |
+| **12** | HANDOFF | #56 audit, `check_submission.py`, package → (last, after everything else) | #55 README and demo video | #56's issue lists "everything else merged" as its dependency: the audit runs after the README and video have merged |
 
 ## 5. Handoff protocol
 
