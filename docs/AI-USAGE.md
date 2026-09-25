@@ -35,4 +35,4 @@ Each contributor keeps a **separate table** below (so the two never edit the sam
 
 | Date | Phase | Tool / model | What it generated or shaped | What the student changed, and why |
 |---|---|---|---|---|
-| — | — | — | *No entries yet. Contributor B adds a row per PR, in that PR.* | — |
+| 2026-09-25 | 02 (#32) | OpenAI Codex (GPT-6), in Artfever's session and GitHub account | Drafted `docs/ARCHITECTURE.md` from assignment §2–§3 with component/network, layer, submit and probe diagrams; documented the hosted-LLM egress decision and failure paths; audited §5.7 paths against the tracked `dev` tree in `docs/REPOSITORY_STRUCTURE.md`. Used the Mermaid parser to check all five diagrams and `git ls-files` for the layout inventory. | Artfever directed the scope and file ownership; no manual edits by the student are recorded. The architecture labels source rules separately from design decisions so unassigned details are not presented as assignment requirements. |
