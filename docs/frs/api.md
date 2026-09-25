@@ -40,7 +40,7 @@ Cross-cutting: FR-036 (all nine to contract) and FR-037 (end-to-end flow). Where
   - The same text was triaged before → the cached result is used and the provider is not called (`ASG-AI-016`); the complaint is still stored as its own row.
 - **Postcondition:** Exactly one new row exists with `status = open`; the next `GET /api/stats` includes it; the response fields equal the stored values.
 - **Acceptance criteria:**
-  - AC-1: A valid body → 201 and a body containing the complaint's `id`, category, priority, AI summary and `triaged_by`.
+  - AC-1: A valid body → 201, and the body carries the category, priority, AI summary and the producing provider (what §2.1 p4 says the Submit view shows). The other fields of the body, including how the client learns the new complaint's id, are DQ-API-05.
   - AC-2: The stored row has `status = open` and `created_at`/`updated_at` in UTC.
   - AC-3: With a provider that **always raises**, the request → 201 and `triaged_by == "rules:fallback"` (the test the assignment says to write "if you write no other", `ASG-AI-022`).
   - AC-4: After a successful POST, the next stats read is a cache MISS and counts the new complaint (`ASG-CACHE-005`).
@@ -165,14 +165,14 @@ Cross-cutting: FR-036 (all nine to contract) and FR-037 (end-to-end flow). Where
 - **Trigger:** `PATCH /api/complaints/{id}/status` with the requested new status (body shape: DQ-API-05).
 - **Main flow:**
   1. The current and requested status are looked up in the transition table (FR-034/035).
-  2. Allowed → the status is updated, `updated_at` is set, the response returns the updated complaint (200).
+  2. Allowed → the status is updated and `updated_at` is set (the `created_at / updated_at` columns, §2.3 p8); the request succeeds. The assignment states **no success status code and no response body** for this operation (DQ-API-17).
   3. Not allowed → FR-028.
-- **Alternate / failure flows:** Unknown id → 404 (as FR-023). A requested status that is not one of the four → not specified (DQ-API-16).
+- **Alternate / failure flows:** Unknown id → **not specified for this operation**: §2.2 p5 states 404 only for `GET /api/complaints/{id}` (DQ-API-18). A requested status that is not one of the four → not specified (DQ-API-16).
 - **Postcondition:** On success the stored status equals the requested one.
 - **Acceptance criteria:**
-  - AC-1: `open → in_progress` → 200 and the new status is stored.
-  - AC-2: `in_progress → resolved` → 200.
-  - AC-3: `open → rejected` and `in_progress → rejected` → 200.
+  - AC-1: `open → in_progress` succeeds, and a following `GET /api/complaints/{id}` shows `in_progress` (the exact success code and body: DQ-API-17).
+  - AC-2: `in_progress → resolved` succeeds and a following GET shows `resolved`.
+  - AC-3: `open → rejected` and `in_progress → rejected` succeed and a following GET shows `rejected`.
   - AC-4: Every other pair → 409 (FR-028) and the stored status is unchanged.
   - AC-5: `updated_at` changes on success and does not on a rejected transition.
 - **Test mapping:** `IT` each allowed transition; `UT` parametrised over all 16 pairs (FR-034).
@@ -235,14 +235,14 @@ Cross-cutting: FR-036 (all nine to contract) and FR-037 (end-to-end flow). Where
 - **Actor:** Platform probe (Kubernetes startup and liveness probes, Compose healthcheck).
 - **Precondition:** The process is running.
 - **Trigger:** `GET /health`.
-- **Main flow:** Answers 200 while the process is alive. It **must not touch the database**.
-- **Alternate / failure flows:** PostgreSQL down → `/health` still 200. Process hung → the probe times out and Kubernetes restarts the pod. Whether `/health` may check Redis is not specified (DQ-API-11).
+- **Main flow:** Answers successfully while the process is alive (§2.2 p6: "Liveness. Process is alive."; the exact success code is not stated for this endpoint, DQ-API-11 — a Kubernetes `httpGet` probe treats 200–399 as success). It **must not touch the database**.
+- **Alternate / failure flows:** PostgreSQL down → `/health` still answers successfully. Process hung → the probe times out and Kubernetes restarts the pod. Whether `/health` may check Redis is not specified (DQ-API-11).
 - **Postcondition:** No state changes.
 - **Acceptance criteria:**
-  - AC-1: With PostgreSQL stopped, `GET /health` → 200.
+  - AC-1: With PostgreSQL stopped, `GET /health` still answers with a success status.
   - AC-2: A test proves `/health` opens no database session (for example, the handler runs with a session factory that raises if called).
   - AC-3: The liveness and startup probes call `/health` (`ASG-K8S-016/017`).
-- **Test mapping:** `UT` handler without a DB dependency; `IT` DB down → 200; `CI` manifest check for the probe paths.
+- **Test mapping:** `UT` handler without a DB dependency; `IT` DB down → success status; `CI` manifest check for the probe paths.
 - **Evidence mapping:** pytest report; matrix rows `ASG-FR-031`, `ASG-K8S-017`.
 
 ### ASG-FR-032 — Readiness (`/ready`)
@@ -333,7 +333,7 @@ The diagonal (same status) is ❌ because the assignment allows nothing that is 
 - **Postcondition:** The OpenAPI schema lists exactly these operations; the typed frontend client (`ASG-FR-013`) is generated from or checked against it.
 - **Acceptance criteria:**
   - AC-1: A test enumerates the nine `(method, path)` pairs and asserts each is registered.
-  - AC-2: For each pair, the happy-path status and each documented failure status (400, 404, 409, 429, 503) is asserted at least once.
+  - AC-2: For each operation, the status codes **the assignment states** are asserted at least once: `POST` 201 / 400 / 429; `GET` by id 200 / 404; `PATCH` 409; `/ready` 200 / 503. Codes the assignment does not state (`PATCH` success and unknown id, `/health` success) are asserted once DQ-API-17, DQ-API-18 and DQ-API-11 are settled.
   - AC-3: The generated OpenAPI document contains the nine operations.
 - **Test mapping:** `IT` contract test over the table; `CI` the OpenAPI/client check.
 - **Evidence mapping:** contract-test report; the OpenAPI JSON; matrix row `ASG-FR-036`.
@@ -376,9 +376,11 @@ The assignment leaves these details open. They are **not decided here**; Phase 0
 | DQ-API-08 | Source of "the last 20 triage outcomes" and its shape | "which provider is active, and the last 20 triage outcomes (provider, latency ms, fallback y/n)" | With ≥ 2 replicas an in-memory list per pod would be inconsistent; the data may instead be derived from stored complaints |
 | DQ-API-09 | Rate-limit threshold and window; whether any endpoint besides `POST /api/complaints` is limited; how the client IP is determined behind the Ingress; fixed window vs token bucket; behaviour if Redis is down | "keyed by client IP", 429 with `Retry-After` | Behind an Ingress every request may appear to come from one address unless forwarded headers are honoured |
 | DQ-API-10 | Order of the rate-limit check, validation and the triage-cache lookup | POST is "Validate → triage → persist" and is protected by the limiter | Determines which requests consume quota |
-| DQ-API-11 | Bodies of `/health` and `/ready`; whether `/health` may check Redis (only the database is excluded); which dependencies are named when both fail; timeouts of the dependency checks | `/health` "must not touch the database"; 503 "naming the failed dependency" | Probe timing and the readable failure message |
+| DQ-API-11 | Success status and body of `/health`, and the body of `/ready`; whether `/health` may check Redis (only the database is excluded); which dependencies are named when both fail; timeouts of the dependency checks | `/health` "must not touch the database"; 503 "naming the failed dependency" | Probe timing and the readable failure message |
 | DQ-API-12 | Metric names, labels and histogram buckets for `/metrics` | request count, latency histogram, triage latency, fallback counter | Needed for the optional Prometheus/Grafana bonus and for tests |
 | DQ-API-13 | `X-Request-ID`: echoed in the response? format of a generated id? validation of an incoming value? | "propagated from an X-Request-ID header (generate one if absent)" | Log correlation and tests |
 | DQ-API-14 | Value of `triage_latency_ms` on a cache hit and on a fallback; whether `confidence` is stored or returned | column `triage_latency_ms integer`; `TriageResult.confidence`; no `confidence` column in the minimum schema | The observability surface and the measured hit rate |
 | DQ-API-15 | Behaviour of the API when Redis is unavailable at request time (limiter and caches are Redis-backed) | `/ready` must fail when Redis is unreachable | Fail open or closed for POST and stats |
 | DQ-API-16 | A `PATCH` to the same status, and an unknown status value | "Everything else is 409" | 409 vs 400 for these two cases |
+| DQ-API-17 | Success status code and response body of `PATCH /api/complaints/{id}/status` | Only "Enforce the state machine. Invalid transition → 409 naming the attempted transition." (§2.2 p6) | The typed client, the Dashboard's refresh after an update and the contract test (FR-036); 200 with the updated complaint, or 200/204 without a body, are all consistent with the text |
+| DQ-API-18 | Unknown id on `PATCH /api/complaints/{id}/status` | 404 is stated only for `GET /api/complaints/{id}` ("200 / 404", §2.2 p5) | 404 is the natural reading but the PATCH row does not say it; related to DQ-API-06 (non-UUID id) |
