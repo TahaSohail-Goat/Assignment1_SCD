@@ -182,9 +182,17 @@ jobs:
           python3 -m venv backend/.venv
           backend/.venv/bin/pip install --quiet -r backend/requirements-dev.txt
           backend/.venv/bin/python -m compileall -q backend/app > /dev/null
-          with_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size backend 2>&1 | grep -o 'transferring context: [0-9.]*[kMG]*B' | tail -1)"
+          # BuildKit sends only the files a COPY asks for, which would hide the difference, so a
+          # throwaway Dockerfile that copies the whole context ("COPY . /ctx") makes it visible.
+          printf 'FROM scratch\nCOPY . /ctx\n' > /tmp/Dockerfile.size
+          measure() {
+            docker build --no-cache --progress=plain -f /tmp/Dockerfile.size "$1" 2>&1 \
+              | grep -o 'transferring context: [0-9.]*[kMG]*B' | tail -1
+          }
+          with_ignore="$(measure backend)"
           rm -rf /tmp/noignore && cp -r backend /tmp/noignore && rm /tmp/noignore/.dockerignore
-          without_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size-noignore /tmp/noignore 2>&1 | grep -o 'transferring context: [0-9.]*[kMG]*B' | tail -1)"
+          without_ignore="$(measure /tmp/noignore)"
+          docker build --no-cache -t civicpulse-backend:size backend > /dev/null
           {
             echo "### Backend"
             echo "- build context with .dockerignore: ${with_ignore#transferring context: }"
