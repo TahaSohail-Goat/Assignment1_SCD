@@ -1,0 +1,61 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "CivicPulse design contract", "version": "0.1.0" },
+  "paths": {
+    "/api/complaints": {
+      "post": {
+        "operationId": "createComplaint",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ComplaintCreate" } } } },
+        "responses": { "201": { "description": "Created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Complaint" } } } }, "400": { "$ref": "#/components/responses/Error" }, "429": { "$ref": "#/components/responses/Error" } }
+      },
+      "get": {
+        "operationId": "listComplaints",
+        "parameters": [
+          { "in": "query", "name": "page", "schema": { "type": "integer", "minimum": 1 } },
+          { "in": "query", "name": "page_size", "schema": { "type": "integer", "minimum": 1, "maximum": 100 } },
+          { "in": "query", "name": "category", "schema": { "$ref": "#/components/schemas/Category" } },
+          { "in": "query", "name": "priority", "schema": { "$ref": "#/components/schemas/Priority" } },
+          { "in": "query", "name": "status", "schema": { "$ref": "#/components/schemas/Status" } }
+        ],
+        "responses": { "200": { "description": "Page", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ComplaintPage" } } } }, "400": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/api/complaints/{id}": {
+      "get": {
+        "operationId": "getComplaint",
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "responses": { "200": { "description": "Complaint", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Complaint" } } } }, "404": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/api/complaints/{id}/status": {
+      "patch": {
+        "operationId": "updateStatus",
+        "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/StatusUpdate" } } } },
+        "responses": { "200": { "description": "Updated", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Complaint" } } } }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/api/stats": {
+      "get": { "operationId": "getStats", "responses": { "200": { "description": "Statistics", "headers": { "X-Cache": { "schema": { "type": "string", "enum": ["HIT", "MISS"] } } }, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Stats" } } } } } }
+    },
+    "/api/meta/providers": {
+      "get": { "operationId": "getProviders", "responses": { "200": { "description": "Providers", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProvidersMeta" } } } } } }
+    }
+  },
+  "components": {
+    "responses": { "Error": { "description": "API error", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApiError" } } } } },
+    "schemas": {
+      "Category": { "type": "string", "enum": ["water", "electricity", "sanitation", "roads", "streetlights", "other"] },
+      "Priority": { "type": "string", "enum": ["high", "normal", "low"] },
+      "Status": { "type": "string", "enum": ["open", "in_progress", "resolved", "rejected"] },
+      "ComplaintCreate": { "type": "object", "required": ["text", "location"], "properties": { "text": { "type": "string", "minLength": 10, "maxLength": 2000 }, "location": { "type": "string", "minLength": 3, "maxLength": 200 }, "reporter_contact": { "type": ["string", "null"] } } },
+      "Complaint": { "type": "object", "required": ["id", "text", "location", "reporter_contact", "category", "priority", "status", "ai_summary", "triaged_by", "triage_latency_ms", "created_at", "updated_at"], "properties": { "id": { "type": "string", "format": "uuid" }, "text": { "type": "string" }, "location": { "type": "string" }, "reporter_contact": { "type": ["string", "null"] }, "category": { "$ref": "#/components/schemas/Category" }, "priority": { "$ref": "#/components/schemas/Priority" }, "status": { "$ref": "#/components/schemas/Status" }, "ai_summary": { "type": ["string", "null"], "maxLength": 140 }, "triaged_by": { "type": "string" }, "triage_latency_ms": { "type": "integer" }, "created_at": { "type": "string", "format": "date-time" }, "updated_at": { "type": "string", "format": "date-time" } } },
+      "StatusUpdate": { "type": "object", "required": ["status"], "properties": { "status": { "$ref": "#/components/schemas/Status" } } },
+      "ComplaintPage": { "type": "object", "required": ["items", "total", "page", "page_size"], "properties": { "items": { "type": "array", "items": { "$ref": "#/components/schemas/Complaint" } }, "total": { "type": "integer" }, "page": { "type": "integer" }, "page_size": { "type": "integer" } } },
+      "Stats": { "type": "object", "required": ["total", "by_category", "by_priority"], "properties": { "total": { "type": "integer" }, "by_category": { "type": "object", "additionalProperties": { "type": "integer" } }, "by_priority": { "type": "object", "additionalProperties": { "type": "integer" } } } },
+      "TriageOutcome": { "type": "object", "required": ["complaint_id", "provider", "latency_ms", "fallback", "at"], "properties": { "complaint_id": { "type": "string", "format": "uuid" }, "provider": { "type": "string" }, "latency_ms": { "type": "integer" }, "fallback": { "type": "boolean" }, "at": { "type": "string", "format": "date-time" } } },
+      "ProvidersMeta": { "type": "object", "required": ["active_provider", "recent"], "properties": { "active_provider": { "type": "string" }, "recent": { "type": "array", "maxItems": 20, "items": { "$ref": "#/components/schemas/TriageOutcome" } } } },
+      "ApiError": { "type": "object", "required": ["error"], "properties": { "error": { "type": "object", "required": ["code", "message"], "properties": { "code": { "type": "string" }, "message": { "type": "string" }, "details": { "type": "array", "items": { "type": "object", "additionalProperties": true } } } } } }
+    }
+  }
+}
