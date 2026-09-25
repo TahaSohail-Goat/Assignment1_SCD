@@ -12,9 +12,9 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from sqlalchemy import create_engine
 
 from app.config import Settings, get_settings
+from app.database import create_db_engine
 from app.logging import configure_logging
 from app.middleware import RequestContextMiddleware
 from app.providers.cache import RedisCache
@@ -36,12 +36,8 @@ def create_app(
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         closers = []
         if probes is None:
-            engine = create_engine(
-                settings.database_url,
-                pool_pre_ping=True,
-                connect_args={
-                    "connect_timeout": max(1, round(settings.dependency_check_timeout_seconds))
-                },
+            engine = create_db_engine(
+                settings.database_url, settings.dependency_check_timeout_seconds
             )
             cache = RedisCache(settings.redis_url, settings.dependency_check_timeout_seconds)
             active_probes: list[DependencyProbe] = [DatabaseHealthRepository(engine), cache]
