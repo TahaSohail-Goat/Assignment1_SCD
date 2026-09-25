@@ -22,10 +22,12 @@ from app.middleware import RequestContextMiddleware
 from app.openapi import install_openapi
 from app.providers.cache import KeyValueCache, RedisCache
 from app.providers.triage.factory import build_provider
+from app.rate_limit_middleware import RateLimitMiddleware
 from app.repositories.health import DatabaseHealthRepository
 from app.repositories.uow import SqlUnitOfWork, UnitOfWork
 from app.routes import complaints, health, metrics, stats
 from app.services.complaints import ComplaintService, Triager
+from app.services.rate_limit import RateLimitService
 from app.services.readiness import DependencyProbe, ReadinessService
 from app.services.stats import StatsService
 from app.services.triage import TriageService
@@ -100,6 +102,15 @@ def create_app(
         readiness = ReadinessService(active_probes, timeout)
         app.state.readiness = readiness
         app.state.stats = stats_service
+        app.state.rate_limiter = (
+            RateLimitService(
+                active_cache,
+                limit=settings.rate_limit_requests,
+                window_seconds=settings.rate_limit_window_seconds,
+            )
+            if isinstance(active_cache, RedisCache)
+            else None
+        )
         app.state.complaints = ComplaintService(
             active_unit_of_work, active_triager, after_create=stats_service.invalidate
         )
@@ -113,6 +124,7 @@ def create_app(
                 close()
 
     app = FastAPI(title="CivicPulse API", version="0.1.0", lifespan=lifespan)
+    app.add_middleware(RateLimitMiddleware, trust_forwarded_for=settings.trust_forwarded_for)
     app.add_middleware(RequestContextMiddleware)
     install_error_handlers(app)
     install_openapi(app)

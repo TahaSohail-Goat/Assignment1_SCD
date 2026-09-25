@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     triage_provider: str = "rules"
     dependency_check_timeout_seconds: float = 1.0
+    rate_limit_requests: int = 10
+    rate_limit_window_seconds: int = 60
+    trust_forwarded_for: bool = False
 
 
 @lru_cache
