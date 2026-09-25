@@ -267,16 +267,16 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| ASG-CICD-001 | §3.4 p17 | Three workflows: `ci.yml`, `cd.yml`, `release.yml` | Mandatory | TahaSohail-Goat | #51 | `.github/workflows/` | INS | — | Skeleton |
+| ASG-CICD-001 | §3.4 p17 | Three workflows: `ci.yml`, `cd.yml`, `release.yml` | Mandatory | TahaSohail-Goat | #51 | `.github/workflows/` | INS | `backend/tests/test_ci_workflow.py` | Partial (P10-S01, #51: ci.yml; cd.yml and release.yml in #52) |
 | ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TahaSohail-Goat | #51 | repo settings | DEMO | screenshot | Skeleton (rulesets active; required checks arrive with `ci.yml`, Phase 10) |
-| ASG-CICD-003 | §3.4 p17 | `ci.yml` runs on pull request to main and on push to dev | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-004 | §3.4 p17 | `lint-and-type`: ruff + mypy (backend); eslint + `tsc --noEmit` (frontend) | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-005 | §3.4 p17 | `test-backend`: pytest with coverage ≥ 65% on `app/`, `TRIAGE_PROVIDER=simulated` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-006 | §3.4 p17 | `test-frontend`: Vitest component tests, ≥ 5 meaningful tests | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-007 | §3.4 p17 | `build`: build both images; do not push; a PR must not publish artifacts | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-008 | §3.4 p17 | `scan`: Trivy on both images, failing on HIGH/CRITICAL with a fixed version available | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-009 | §3.4 p17 | `manifests`: `kustomize build overlays/prod` piped to `kubeconform` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
-| ASG-CICD-010 | §3.4 p17 | `integration`: `docker compose up -d`, wait for `/ready`, POST a complaint, GET it back, assert the category, check `X-Cache` goes MISS → HIT, `docker compose down -v` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | — | Not started |
+| ASG-CICD-003 | §3.4 p17 | `ci.yml` runs on pull request to main and on push to dev | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-004 | §3.4 p17 | `lint-and-type`: ruff + mypy (backend); eslint + `tsc --noEmit` (frontend) | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-005 | §3.4 p17 | `test-backend`: pytest with coverage ≥ 65% on `app/`, `TRIAGE_PROVIDER=simulated` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-006 | §3.4 p17 | `test-frontend`: Vitest component tests, ≥ 5 meaningful tests | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-007 | §3.4 p17 | `build`: build both images; do not push; a PR must not publish artifacts | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-008 | §3.4 p17 | `scan`: Trivy on both images, failing on HIGH/CRITICAL with a fixed version available | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-009 | §3.4 p17 | `manifests`: `kustomize build overlays/prod` piped to `kubeconform` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
+| ASG-CICD-010 | §3.4 p17 | `integration`: `docker compose up -d`, wait for `/ready`, POST a complaint, GET it back, assert the category, check `X-Cache` goes MISS → HIT, `docker compose down -v` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); Actions run linked in the PR |
 | ASG-CICD-011 | §4 I p21 | `ci.yml` checks configured as required checks on main | Mandatory | TahaSohail-Goat | #51 | repo settings | DEMO | screenshot | Not started |
 | ASG-CICD-012 | §3.4 p18 | `cd.yml` runs on push to main | Mandatory | Artfever | #52 | `cd.yml` | CI | — | Not started |
 | ASG-CICD-013 | §3.4 p18 | `test`: the full suite again on the merged result | Mandatory | Artfever | #52 | `cd.yml` | CI | — | Not started |
@@ -290,9 +290,9 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-CICD-021 | §3.4 p18 | `release.yml` on tag `v*`: build, push semver tags, generate release notes | Mandatory | Artfever | #52 | `release.yml` | CI | — | Not started |
 | ASG-CICD-022 | §3.4 p18 | `needs:` on every publishing and deploying job | Mandatory | Artfever | #52 | all workflows | INS | — | Not started |
 | ASG-CICD-023 | §3.4 p18 | Deploy by immutable reference (commit SHA; digest for bonus); `:latest` may be pushed but never deployed; "what is production running?" has a one-word answer usable in `git show` | Mandatory | Artfever | #52 | `cd.yml`, `k8s/overlays/prod` | INS | — | Not started |
-| ASG-CICD-024 | §3.4 p18 | All credentials from GitHub Secrets; a scoped, revocable registry token (never an account password); `GITHUB_TOKEN` with `packages: write` for GHCR | Mandatory | TahaSohail-Goat | #51 | workflows | INS | — | Not started |
-| ASG-CICD-025 | §3.4 p18 | Least-privilege `permissions:` block on every workflow | Mandatory | TahaSohail-Goat | #51 | workflows | INS | — | Not started |
-| ASG-CICD-026 | §3.4 p18 | Actions pinned — `@v4` at minimum (commit SHA for the bonus) | Mandatory | TahaSohail-Goat | #51 | workflows | INS | — | Not started |
+| ASG-CICD-024 | §3.4 p18 | All credentials from GitHub Secrets; a scoped, revocable registry token (never an account password); `GITHUB_TOKEN` with `packages: write` for GHCR | Mandatory | TahaSohail-Goat | #51 | workflows | INS | `backend/tests/test_ci_workflow.py` | Partial (P10-S01, #51: ci.yml uses no secret; GHCR token in #52) |
+| ASG-CICD-025 | §3.4 p18 | Least-privilege `permissions:` block on every workflow | Mandatory | TahaSohail-Goat | #51 | workflows | INS | `backend/tests/test_ci_workflow.py` | Partial (P10-S01, #51: ci.yml; cd and release in #52) |
+| ASG-CICD-026 | §3.4 p18 | Actions pinned — `@v4` at minimum (commit SHA for the bonus) | Mandatory | TahaSohail-Goat | #51 | workflows | INS | `backend/tests/test_ci_workflow.py` | Partial (P10-S01, #51: ci.yml pinned to commit SHAs; cd and release in #52) |
 | ASG-CICD-027 | §3.4 p18 | Evidence the gate works: PR with a deliberately failing test — screenshot of the red check and blocked merge button; fixed in the same PR; screenshot of green | Evidence | TahaSohail-Goat | #51 | `docs/evidence/` | DEMO | screenshots | Not started |
 | ASG-CICD-028 | §3.4 p18 | Rollback mechanism 1: `kubectl rollout undo deployment/backend -n civicpulse` | Mandatory | Artfever | #52 | `docs/RUNBOOK.md` | DEMO | video | Not started |
 | ASG-CICD-029 | §3.4 p18–19 | Rollback mechanism 2: re-apply the previous overlay with the previous SHA | Mandatory | Artfever | #52 | `docs/RUNBOOK.md` | DEMO | video | Not started |
@@ -418,7 +418,7 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 | ASG-REPO-014 | §5.7 | `docs/adr/0001-provider-interface.md` … `0004-pii-and-data-governance.md` | Mandatory | TahaSohail-Goat | #56 | INS | Skeleton |
 | ASG-REPO-015 | §5.7 | `docs/evidence/` | Mandatory | TahaSohail-Goat | #53 | INS | Skeleton |
 | ASG-REPO-016 | §5.7 | `scripts/check_submission.py` | Mandatory | TahaSohail-Goat | #56 | INS | Not started (optional; we write it: `SUBMISSION.md`) |
-| ASG-REPO-017 | §5.7 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Mandatory | TahaSohail-Goat | #51 | INS | Skeleton (dir) |
+| ASG-REPO-017 | §5.7 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Mandatory | TahaSohail-Goat | #51 | INS | Partial (P10-S01, #51: ci.yml) |
 | ASG-REPO-018 | §5.7 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Mandatory | TahaSohail-Goat | #47 | INS, `backend/tests/test_container_files.py` | Partial (P08-S01, #47: compose.yaml, .env.example; compose.prod.yaml in #48) |
 | ASG-REPO-019 | §5.7 | `README.md`, `LICENSE` | Mandatory | Artfever | #55 | INS | `README.md` placeholder; `LICENSE` not decided |
 
