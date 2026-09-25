@@ -4,6 +4,7 @@ from collections.abc import Iterator
 import pytest
 
 from app.config import Settings
+from tests.db import db_url, engine, migrated, session  # noqa: F401  (database fixtures)
 
 
 class FakeProbe:

@@ -33,7 +33,7 @@ The pack's required families are used unchanged. Phase 00 adds four families for
 
 - **Type:** `Mandatory` · `Recommended` (source says recommended/permitted) · `Constraint` · `Evidence` (must be demonstrated/captured) · `Bonus` · `Policy` · `Advisory` (context, no test) · `Deduction`.
 - **Verification:** `UT` unit test · `IT` integration test · `CI` CI job · `INS` inspection/lint · `CFG` config check · `DEMO` live/video demo · `MEAS` measurement · `DOC` document review.
-- **Status:** `Not started` · `Skeleton` (directory placeholder only) · `Blocked` (waiting on a decision, see `SUBMISSION.md`) · `Info` (no implementation; tracked for awareness).
+- **Status:** `Not started` · `Skeleton` (directory placeholder only) · `Blocked` (waiting on a decision, see `SUBMISSION.md`) · `Info` (no implementation; tracked for awareness). `Implemented (P0x-Sxx, #issue)` (merged with tests or captures as evidence).
 
 Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status`.
 
@@ -124,23 +124,23 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-DATA-001 | §2.3 p7 | PostgreSQL 16 | Mandatory | TahaSohail-Goat | #40 | `compose.yaml`, `k8s/base/postgres.yaml` | CFG | — | Not started |
-| ASG-DATA-002 | §2.3 p7 | Schema managed by Alembic migrations | Mandatory | TahaSohail-Goat | #40 | `backend/alembic/versions/` | INS, IT | — | Skeleton |
-| ASG-DATA-003 | §2.3 p7; §4 D p20 | No `CREATE TABLE` / schema DDL in application startup code, ever | Mandatory | TahaSohail-Goat | #40 | `backend/app/` | INS, CI | grep check | Not started |
-| ASG-DATA-004 | §2.3 p7 | Migrations are versioned, reviewable and reversible (upgrade and downgrade) | Mandatory | TahaSohail-Goat | #40 | `backend/alembic/versions/` | IT | — | Not started |
-| ASG-DATA-005 | §2.3 p7 | `id`: UUID, server-generated | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-006 | §2.3 p7 | `text`: 10–2000 chars, enforced in the DB (constraint) as well as the app | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-007 | §2.3 p7 | `location`: 3–200 chars | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-008 | §2.3 p7 | `reporter_contact`: nullable | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-009 | §2.3 p7 | `category` enum: water, electricity, sanitation, roads, streetlights, other | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-010 | §2.3 p7 | `priority` enum: high, normal, low | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-011 | §2.3 p7 | `status` enum: open, in_progress, resolved, rejected; default open | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-012 | §2.3 p7 | `ai_summary`: nullable, one line, ≤ 140 chars | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-013 | §2.3 p7 | `triaged_by`: llm:groq, llm:ollama, rules, rules:fallback (values for simulated/other hosted providers unspecified) | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Open (values decided in Phase 02, #33: `SUBMISSION.md`) |
-| ASG-DATA-014 | §2.3 p8 | `triage_latency_ms`: integer | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-015 | §2.3 p8 | `created_at` / `updated_at`: timestamptz, UTC | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-016 | §2.3 p8 | Index on `(status, priority)` | Mandatory | TahaSohail-Goat | #40 | migration | INS | — | Not started |
-| ASG-DATA-017 | §2.3 p8 | Index on `created_at` | Mandatory | TahaSohail-Goat | #40 | migration | INS | — | Not started |
-| ASG-DATA-018 | §2.3 p8; §4 D p20 | Engineering notes state, per index, which query it serves | Evidence | TahaSohail-Goat | #40 | `docs/ENGINEERING-NOTES.md` | DOC | — | Not started |
+| ASG-DATA-002 | §2.3 p7 | Schema managed by Alembic migrations | Mandatory | TahaSohail-Goat | #40 | `backend/alembic/versions/` | INS, IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-003 | §2.3 p7; §4 D p20 | No `CREATE TABLE` / schema DDL in application startup code, ever | Mandatory | TahaSohail-Goat | #40 | `backend/app/` | INS, CI | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-004 | §2.3 p7 | Migrations are versioned, reviewable and reversible (upgrade and downgrade) | Mandatory | TahaSohail-Goat | #40 | `backend/alembic/versions/` | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-005 | §2.3 p7 | `id`: UUID, server-generated | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-006 | §2.3 p7 | `text`: 10–2000 chars, enforced in the DB (constraint) as well as the app | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-007 | §2.3 p7 | `location`: 3–200 chars | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-008 | §2.3 p7 | `reporter_contact`: nullable | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-009 | §2.3 p7 | `category` enum: water, electricity, sanitation, roads, streetlights, other | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-010 | §2.3 p7 | `priority` enum: high, normal, low | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-011 | §2.3 p7 | `status` enum: open, in_progress, resolved, rejected; default open | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-012 | §2.3 p7 | `ai_summary`: nullable, one line, ≤ 140 chars | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-013 | §2.3 p7 | `triaged_by`: llm:groq, llm:ollama, rules, rules:fallback (values for simulated/other hosted providers unspecified) | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-014 | §2.3 p8 | `triage_latency_ms`: integer | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-015 | §2.3 p8 | `created_at` / `updated_at`: timestamptz, UTC | Mandatory | TahaSohail-Goat | #40 | migration | IT | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-016 | §2.3 p8 | Index on `(status, priority)` | Mandatory | TahaSohail-Goat | #40 | migration | INS | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-017 | §2.3 p8 | Index on `created_at` | Mandatory | TahaSohail-Goat | #40 | migration | INS | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
+| ASG-DATA-018 | §2.3 p8; §4 D p20 | Engineering notes state, per index, which query it serves | Evidence | TahaSohail-Goat | #40 | `docs/ENGINEERING-NOTES.md` | DOC | `docs/DATA_MODEL.md` | Implemented (P05-S01, #40) |
 | ASG-DATA-019 | §2.3 p8 | Idempotent seed command loading ≥ 30 realistic complaints | Mandatory | Artfever | #41 | `backend/` seed | IT | — | Not started |
 | ASG-DATA-020 | §2.3 p8 | Seed complaints are in Urdu-influenced English, spread across categories | Mandatory | Artfever | #41 | seed data | INS | — | Not started |
 | ASG-DATA-021 | §2.3 p8 | Running the seed twice does not duplicate rows | Mandatory | Artfever | #41 | seed | IT | — | Not started |
@@ -404,7 +404,7 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 |---|---|---|---|---|---|---|---|
 | ASG-REPO-001 | §5.7 | `backend/app/{routes,services,repositories,providers}/` | Mandatory | TahaSohail-Goat | #37 | INS | Skeleton |
 | ASG-REPO-002 | §5.7 | `backend/app/providers/triage/{base,llm,ollama,rules,simulated,factory}.py` | Mandatory | TahaSohail-Goat | #44 | INS | Skeleton (dir) |
-| ASG-REPO-003 | §5.7 | `backend/alembic/versions/` | Mandatory | TahaSohail-Goat | #40 | INS | Skeleton |
+| ASG-REPO-003 | §5.7 | `backend/alembic/versions/` | Mandatory | TahaSohail-Goat | #40 | INS | Implemented (P05-S01, #40) |
 | ASG-REPO-004 | §5.7 | `backend/tests/` | Mandatory | TahaSohail-Goat | #39 | INS | Skeleton |
 | ASG-REPO-005 | §5.7 | `backend/Dockerfile`, `backend/.dockerignore`, `backend/pyproject.toml` | Mandatory | TahaSohail-Goat | #37 | INS | Not started |
 | ASG-REPO-006 | §5.7 | `frontend/src/{components,pages,api}/` | Mandatory | Artfever | #34 | INS | Skeleton |
