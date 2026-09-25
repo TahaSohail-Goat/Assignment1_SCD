@@ -50,12 +50,12 @@ If `push` is not `true`, accept the collaborator invitation at <https://github.c
 ```
 gh repo clone TahaSohail-Goat/Assignment1_SCD
 cd Assignment1_SCD
-git config user.name  "<your real name>"
+git config user.name  "<the name you want on your commits>"
 git config user.email "<an email verified on your GitHub account>"
 git config pull.ff only
 ```
 
-The email must be linked to the `Artfever` account (or use the private address `<id>+Artfever@users.noreply.github.com`; get the id with `gh api user --jq .id`). `git shortlog -sn` counts commits by name and email, and rubric A4 needs your share ≥ 35%, so use the **same name and email on every commit**.
+The email must be linked to the `Artfever` account (or use the private address `<id>+Artfever@users.noreply.github.com`; get the id with `gh api user --jq .id`). `git shortlog -sn` counts commits by name and email, and rubric A4 needs your share ≥ 35%, so use the **same name and email on every commit**. The name is your choice (it does not have to be your legal name); consistency is what counts.
 
 ## 4. Start Codex and load the rules
 

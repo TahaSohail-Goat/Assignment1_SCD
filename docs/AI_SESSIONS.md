@@ -124,7 +124,7 @@ You are the AI coding assistant of <ME> on a two-person university project (CS40
 Preflight (stop and tell me if anything fails):
 1. git --version and gh --version (install help: docs/PARTNER_RUNBOOK.md step 1).
 2. gh auth status must show <ME>. Never ask me to paste a token or password.
-3. git config user.name and user.email must be my real name and an e-mail verified on my GitHub account.
+3. Run git config user.name and git config user.email and show me both values. The name is whatever I chose for my commits (it need not be my legal name) and must be the same on every clone; the e-mail must be verified on my GitHub account or be its no-reply address, so that GitHub credits the commits to me (rubric A4 counts commits per author). Never change either value without asking me.
 
 Then read, in this order: AGENTS.md, docs/AI_SESSIONS.md, docs/GITHUB_WORKFLOW.md, docs/TEAM_CONTRIBUTION.md, docs/DOCUMENT_INDEX.md, docs/PHASE_STATUS.md, and the phase prompt named there. Run the status sweep from docs/AI_SESSIONS.md section 5. Report in at most 12 lines: current phase, whether I may start anything, my open issues and PRs, and what you are waiting for. Do NOT start any work, and do not touch any phase after the current one, until I send a step prompt.
 ```
