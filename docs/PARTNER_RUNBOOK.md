@@ -10,7 +10,8 @@ Related: [`AGENTS.md`](../AGENTS.md) (the contract, read by Codex natively) · [
 2. 👤 **Human-only actions:** signing in to GitHub in the browser (step 2), reading every diff before approving, and the decision to approve or merge. **Never paste a password, token or `gh auth token` output into an AI chat or a file.**
 3. **AI use is allowed and must be disclosed** (assignment §5.5): add a row to *your* table in [`AI-USAGE.md`](AI-USAGE.md) in the same PR as the work. At the viva you must be able to explain every line you committed and every review you approved (assignment §5.4).
 4. **Network access:** git and `gh` need the network. If Codex runs in a sandbox that blocks it, allow those commands through the tool's approval or network setting (check your Codex version's documentation for the exact option); allow only what is needed.
-5. Everything in [`AGENTS.md`](../AGENTS.md) applies: no direct commits to `main` or `dev`, no force-push to shared branches, no secrets, requirement IDs on everything, no invented requirements (unknowns go to [`BLOCKERS.md`](BLOCKERS.md)).
+5. **One phase at a time** ([`AGENTS.md`](../AGENTS.md) §11, [`AI_SESSIONS.md`](AI_SESSIONS.md)): never start a package of a later phase, or a package whose dependency has not merged. Your session takes its step from the human's step prompt and from the phase table in [`AI_SESSIONS.md`](AI_SESSIONS.md) — not from this file's history.
+6. Everything in [`AGENTS.md`](../AGENTS.md) applies: no direct commits to `main` or `dev`, no force-push to shared branches, no secrets, requirement IDs on everything, no invented requirements (unknowns go to [`BLOCKERS.md`](BLOCKERS.md)).
 
 ## 1. Install the tools (once)
 
@@ -58,36 +59,15 @@ The email must be linked to the `Artfever` account (or use the private address `
 
 ## 4. Start Codex and load the rules
 
-Start Codex in the repository root. Paste the kickoff prompt at the bottom of this file. Codex must read, in order: `CLAUDE.md` (generic mission and authority), `AGENTS.md`, `README.md`, `docx/ASSIGNMENT.md`, `docs/DOCUMENT_INDEX.md`, `docs/ASSIGNMENT_TRACEABILITY.md`, `docs/RUBRIC.md`, `docs/TEAM_CONTRIBUTION.md`, `docs/GITHUB_WORKFLOW.md`, then the current phase prompt in `docs/phases/`.
+Start Codex in the repository root and paste the **START** prompt from [`AI_SESSIONS.md`](AI_SESSIONS.md) section 7.1 (with `<ME>` = `Artfever`, `<OTHER>` = `TahaSohail-Goat`). It makes Codex verify the tools and the login, read the rules in a fixed order (`AGENTS.md`, `AI_SESSIONS.md`, `GITHUB_WORKFLOW.md`, `TEAM_CONTRIBUTION.md`, `DOCUMENT_INDEX.md`, `PHASE_STATUS.md`, the current phase prompt), run the status sweep, report, and **wait**. Every later step is one more prompt from section 7 of that file.
 
-## 5. 👤 First task: review PR #11
+## 5. 👤 Your current step
 
-PR #11 (branch model, protection settings, two-account agreement) is waiting for **your** review; the ruleset does not let its author merge it.
+Your current step is always the one **the human pastes** (prompts 7.2–7.8 in [`AI_SESSIONS.md`](AI_SESSIONS.md)). Where to look when unsure: the phase table in [`AI_SESSIONS.md`](AI_SESSIONS.md) section 4, "Next permitted phase" in [`PHASE_STATUS.md`](PHASE_STATUS.md), and `gh issue list --assignee @me --state open`.
 
-```
-gh pr checkout 11        # the actual branch
-gh pr view 11            # description and the reviewer checklist
-gh pr diff 11            # the change
-```
+## 6. Your issues
 
-Compare `docs/GITHUB_WORKFLOW.md` with GitHub → Settings → Rules → Rulesets (`main`, `dev`), and read `docs/TEAM_CONTRIBUTION.md`. Then post a review that meets the standard in step 9, ending with:
-
-```
-gh pr review 11 --approve --body "Verified: … Checked against: ASG-GH-001/002/005 … Question: …"
-# or: gh pr review 11 --request-changes --body "…"
-```
-
-Contributor A merges it after your approval. Do not start step 6 until #11 is merged into `dev`.
-
-## 6. Your issues (Phase 01, effort points)
-
-| Order | Issue | Work | You own (only these files) | Suggested branch |
-|---|---|---|---|---|
-| 1 | #16 | NFR catalog (6) | `docs/NFRs.md` | `feature/16-nfr-catalog` |
-| 2 | #17 | Use cases (5) | `docs/USE_CASES.md` | `feature/17-use-cases` |
-| 3 | #14 | FR catalog: frontend (4) | `docs/frs/frontend.md`, plus one link row in `docs/FRs.md` after Contributor A's #15 has merged | `feature/14-fr-catalog-frontend` |
-
-Read each issue's *Acceptance criteria* and *File ownership* before starting. Do not edit files owned by an open issue of Contributor A (#13 `docs/PRD.md`; #15 `docs/FRs.md`, `docs/frs/api.md`; #18 `docs/TEAM_CONTRIBUTION.md`, `docs/ASSIGNMENT_TRACEABILITY.md`, `docs/PHASE_STATUS.md`). Allocation of Phases 02–12 is decided in #18; after it merges, take your issues from there.
+Your work packages are the GitHub issues assigned to `Artfever` and the allocation table in [`TEAM_CONTRIBUTION.md`](TEAM_CONTRIBUTION.md); each issue lists the files you own, its acceptance criteria and its dependencies. A package starts only when its phase is the current phase and its dependencies have merged (`AI_SESSIONS.md` section 6, *Phase start*). Do not edit files owned by an open issue of Contributor A.
 
 ## 7. The loop for every issue
 
@@ -170,51 +150,3 @@ When every sub-issue of a phase is merged into `dev`: one contributor opens `gh 
 | Commit message split or a commit "did not match any file" | Quoting broke `-m`; use `git commit -F msg.txt`. |
 | CRLF warnings | The repo's `.gitattributes` forces LF; do not override it in your editor. |
 | `gh auth status` shows the wrong account | Stop. `gh auth switch` to `Artfever` or log in again **before** any write. |
-
-## Kickoff prompt (paste into Codex once steps 1–3 are done)
-
-Paste everything in the block below as the first message of the Codex session. It is written for a session that knows nothing yet: it verifies the tools and the login, loads the rules, reviews the three open PRs **read-only**, and only then starts the issues, asking for the human's explicit go-ahead before every push, review or merge. Keep it in sync with the current state of the repository (open PRs, issue numbers).
-
-```text
-ROLE
-You are the AI coding assistant of Contributor B on a two-person university project (CS4032 Software Construction and Design, Assignment 1, "CivicPulse"). The human you work for is the GitHub user Artfever. You run on THEIR machine under THEIR GitHub login. The other contributor is TahaSohail-Goat, who works in a separate Claude Code session on his own machine. Never act as, or with the credentials of, TahaSohail-Goat, and never write anything in his name.
-
-REPOSITORY
-https://github.com/TahaSohail-Goat/Assignment1_SCD (clone it into the current folder if it is not already there: gh repo clone TahaSohail-Goat/Assignment1_SCD). The source of truth is docx/ASSIGNMENT.md, a faithful transcription of docx/ASSIGNMENT_SOURCE.pdf. Never invent a requirement, number, endpoint or field. If the assignment does not say something, write it down as an open question instead.
-
-CURRENT STATE (2026-09-25; check it, it may have moved)
-- Branches: main (protected) <- dev (protected) <- feature/<issue-number>-<slug>. No direct commits or pushes to main or dev. Every change is a pull request with base dev. Squash merge is disabled (use rebase or merge commit). A PR needs one approval from the OTHER contributor; authors cannot approve their own PR.
-- Open PRs waiting for MY review: #11 (branch model, protection, docs/PARTNER_RUNBOOK.md), #19 (PRD), #20 (FR index + entry template + API catalog).
-- My Phase 01 issues, in this order: #16 NFR catalog, #17 use cases, #14 frontend FR catalog. I start them only after PR #11 is merged into dev. Read each issue's acceptance criteria with: gh issue view <n>
-
-STEP 0 - PREFLIGHT (stop and tell me if anything fails; do not work around it)
-1. Run git --version and gh --version. If one is missing, tell me the install command (Windows: winget install -e --id Git.Git and winget install -e --id GitHub.cli; macOS: brew install git gh) and wait. I may need to approve it and open a new terminal.
-2. Run gh auth status. It must show the account Artfever. If not, tell me to run this MYSELF in the browser: gh auth login --web --hostname github.com --git-protocol https . Never ask me to paste a token or password, and never print one.
-3. Run gh api repos/TahaSohail-Goat/Assignment1_SCD --jq .permissions . push must be true.
-4. Run git config user.name and git config user.email. They must be my real name and an email verified on my GitHub account, and the same on every commit. If unset, ask me.
-5. If your sandbox blocks the network, tell me which command needs it.
-
-STEP 1 - LOAD THE RULES
-The runbook and the updated contract are in PR #11 and are not on main yet. Run: gh pr checkout 11 (if #11 is already merged: git switch dev && git pull --ff-only). Then read, in this order: AGENTS.md, docs/PARTNER_RUNBOOK.md, docs/GITHUB_WORKFLOW.md, docs/TEAM_CONTRIBUTION.md, docs/DOCUMENT_INDEX.md, README.md, docx/ASSIGNMENT.md, docs/ASSIGNMENT_TRACEABILITY.md, docs/RUBRIC.md, docs/phases/PHASE-01-REQUIREMENTS.md. Then summarise for me in at most 15 lines: the branch model, the review standard, my issues and which files I own. From here on follow docs/PARTNER_RUNBOOK.md step by step.
-
-STEP 2 - REVIEW THE OPEN PRs (read-only until I say "post it")
-For each of PR #11, #19, #20: gh pr checkout <n>; read gh pr diff <n>; cross-check the claims against docx/ASSIGNMENT.md. For #11 also compare docs/GITHUB_WORKFLOW.md with the real settings: gh api repos/TahaSohail-Goat/Assignment1_SCD/rulesets (then /rulesets/<id>). Give me, per PR: (a) what you verified and how, (b) problems or unclear points, (c) one "why" question for the author, (d) a draft review body that names files and lines. Do NOT run gh pr review or post any comment until I have read your draft and told you to post it. Approving is my decision, not yours.
-
-STEP 3 - MY ISSUES (only after #11 is merged into dev)
-For each of #16, #17, #14, in that order, follow section 7 of docs/PARTNER_RUNBOOK.md:
-- git switch dev && git pull --ff-only, then git switch -c feature/<issue-number>-<slug>
-- I own only these files: #16 docs/NFRs.md; #17 docs/USE_CASES.md; #14 docs/frs/frontend.md and my link row in docs/FRs.md (after PR #20 is merged; use the entry template in docs/FRs.md). Never edit files owned by Taha's open issues: #13 docs/PRD.md; #15 docs/FRs.md and docs/frs/api.md; #18 docs/TEAM_CONTRIBUTION.md, docs/ASSIGNMENT_TRACEABILITY.md, docs/PHASE_STATUS.md.
-- Quality bar: every statement cites an assignment section and page or an ASG-* ID that exists in docs/ASSIGNMENT_TRACEABILITY.md. No invented numbers, endpoints, fields or SLOs. Unknowns go to the catalog's design-questions table or docs/BLOCKERS.md. Where the assignment gives numbers (10 s timeout, TTL 30 s, coverage 65 percent, and so on) use exactly those.
-- Before committing check: every ASG-* ID you cite exists, tables render, links resolve, no secrets, no other file touched.
-- Commit: conventional message (for example: docs(nfr): classify non-functional requirements). Write it to a file and use git commit -F <file>. The body lists "Requirements: ASG-..." and "Refs #<issue>", and ends with the trailer: Assisted-by: OpenAI Codex
-- Pull request: base dev; copy .github/pull_request_template.md and fill every section; "Related issue: #<n>" (not "Closes"); reviewer TahaSohail-Goat; labels type:docs, phase:01-requirements, area:docs, status:review; assignee @me. Add one row to MY table in docs/AI-USAGE.md inside the same PR.
-- After it is approved: merge with gh pr merge <n> --rebase (or --merge), never --squash, then delete the feature branch.
-
-GATES AND LIMITS
-- Before EVERY git push, gh pr create, gh pr review, gh pr merge or git push --force-with-lease, show me the diff or the exact text and wait for my explicit "go".
-- Force-push only my own feature branch, never main or dev. Never squash. Never commit .env, keys, tokens or credentials. Never fabricate a screenshot, log or measurement.
-- If gh auth status ever shows an account other than Artfever, stop immediately and tell me.
-
-REPORTING
-After each step tell me: what you did, the commands you ran, the results, and what you need from me next.
-```

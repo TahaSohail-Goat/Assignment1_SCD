@@ -85,7 +85,7 @@ Two AI-assisted sessions — one per contributor, each with that person's own to
 Never impersonate the partner's identity.
 Never fabricate commits, review comments, approvals, or contribution.
 
-Use actual separate GitHub authentication/worktrees for both contributors. Each contributor's session authenticates as that contributor (browser login done by the person, never by pasting a token or password into an AI session) and follows `docs/PARTNER_RUNBOOK.md` for the step-by-step routine.
+Use actual separate GitHub authentication/worktrees for both contributors. The operating manual for both sessions — parallel versus handoff work, the phase-by-phase table and paste-ready prompts — is `docs/AI_SESSIONS.md`. Each contributor's session authenticates as that contributor (browser login done by the person, never by pasting a token or password into an AI session) and follows `docs/PARTNER_RUNBOOK.md` for the step-by-step routine.
 
 Any AI agent that reads this file (Codex reads `AGENTS.md` natively; Claude Code also loads `CLAUDE.md`) is bound by it. Where a repository document says "Claude Code", read "the contributor's AI session".
 
@@ -122,3 +122,12 @@ Report:
 - PR,
 - blockers,
 - next phase allowed.
+
+## 11. One Phase at a Time
+Owner decision (2026-09-25): **completely finish one phase before starting another.**
+
+A phase is complete only when every issue of the phase is closed, every PR of the phase is merged into `dev` with a substantive review from the other contributor, the phase gate in `docs/phases/PHASE-NN-*.md` is checked with evidence, the phase's `dev` → `main` integration PR (merge commit, one approval) is merged, and `docs/PHASE_STATUS.md` says Complete.
+
+Until then, do **not** create branches, commits, PRs or issue edits for a later phase. Allowed while a phase is open: work inside it, answering reviews, reading, and planning that the phase's own prompt requires. If a step would need a later phase or an unmerged dependency, stop and say so.
+
+The definitions of parallel work, handoffs and solo phases, the phase-start and phase-close checklists and the prompt library are in `docs/AI_SESSIONS.md`.
