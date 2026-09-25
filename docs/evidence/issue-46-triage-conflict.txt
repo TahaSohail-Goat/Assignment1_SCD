@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """Triage orchestration: the engineering around the model (assignment section 2.5).
 
 What this module guarantees, whatever the provider does:
@@ -28,7 +29,6 @@ from app.providers.triage.base import (
 )
 from app.providers.triage.rules import RuleBasedTriage
 from app.services.complaints import TriageDecision
-from app.services.triage_cache import TriageCache
 
 logger = logging.getLogger("app.triage")
 
@@ -46,7 +46,6 @@ class TriageService:
         sleep: Callable[[float], None] = time.sleep,
         jitter: Callable[[], float] = lambda: random.uniform(*RETRY_JITTER_SECONDS),  # noqa: S311
         clock: Callable[[], float] = time.perf_counter,
-        cache: TriageCache | None = None,
     ) -> None:
         self._provider = provider
         self._fallback = fallback or RuleBasedTriage()
@@ -54,7 +53,6 @@ class TriageService:
         self._sleep = sleep
         self._jitter = jitter
         self._clock = clock
-        self._cache = cache
         self._executor = ThreadPoolExecutor(max_workers=8, thread_name_prefix="triage")
 
     def close(self) -> None:
@@ -62,21 +60,13 @@ class TriageService:
 
     def triage(self, text: str, location: str, complaint_id: uuid.UUID) -> TriageDecision:
         started = self._clock()
-        cached = self._cache.get(text, location, self._validated) if self._cache else None
-        if self._cache:
-            metrics.TRIAGE_CACHE.labels("hit" if cached else "miss").inc()
-        if cached is not None:
-            result, triaged_by = cached
-        else:
-            try:
-                result = self._call_with_one_retry(text, location)
-                triaged_by = self._provider.name
-            except Exception as error:  # any provider failure must not become a citizen-facing 500
-                result = self._validated(self._fallback.triage(text, location))
-                triaged_by = FALLBACK_NAME
-                self._record_fallback(complaint_id, error)
-            if self._cache and triaged_by != FALLBACK_NAME:
-                self._cache.put(text, location, result, triaged_by, lambda value: value.model_dump())
+        try:
+            result = self._call_with_one_retry(text, location)
+            triaged_by = self._provider.name
+        except Exception as error:  # any provider failure, expected or not, must not become a 500
+            result = self._validated(self._fallback.triage(text, location))
+            triaged_by = FALLBACK_NAME
+            self._record_fallback(complaint_id, error)
         elapsed = self._clock() - started
         metrics.TRIAGE_DURATION.labels(self._provider.name).observe(elapsed)
         return TriageDecision(
@@ -124,3 +114,55 @@ class TriageService:
                 "error_class": error_class,
             },
         )
+=======
+"""Cache and latency hook for the provider orchestration in issue #44.
+
+The primary/fallback decision remains in #44. This function wraps whichever
+validated provider result that orchestration returns; a cache hit avoids that
+call and a miss measures the entire lookup and inference path.
+"""
+
+import time
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from typing import Generic, TypeVar
+
+from app.services.triage_cache import TriageCache
+
+T = TypeVar("T")
+
+
+@dataclass(frozen=True)
+class CachedTriageOutcome(Generic[T]):
+    result: T
+    provider: str
+    latency_ms: int
+    cache_hit: bool
+
+
+def run_with_cache(
+    *,
+    cache: TriageCache,
+    text: str,
+    location: str,
+    infer: Callable[[], tuple[T, str]],
+    validate: Callable[[object], T],
+    serialize: Callable[[T], Mapping[str, object]],
+    on_lookup: Callable[[bool], None] | None = None,
+) -> CachedTriageOutcome[T]:
+    """Call the provider at most once for a sequential duplicate input."""
+    started = time.perf_counter()
+    cached = cache.get(text, location, validate)
+    hit = cached is not None
+    if on_lookup is not None:
+        on_lookup(hit)
+    if cached is not None:
+        result, provider = cached
+    else:
+        result, provider = infer()
+        cache.put(text, location, result, provider, serialize)
+    latency_ms = max(0, round((time.perf_counter() - started) * 1000))
+    return CachedTriageOutcome(result, provider, latency_ms, hit)
+>>>>>>> 78230a2 (feat(ai): prepare triage cache hooks and data governance)
+
+Resolution (2026-09-25): Kept the HEAD version of `TriageService.triage(text, location, complaint_id)` because #44 owns the retry, timeout, validation, fallback warning, and `TriageDecision` contract already used by complaint creation. Added the #46 cache lookup before that decision and a cache write after a successful primary-provider result, so a hit skips inference while the existing decision and latency fields still flow to persistence. The draft generic `run_with_cache` wrapper was removed because it duplicated the service entry point and could not preserve the existing fallback behavior without a second orchestration path. Fallback results are not cached so a temporary provider outage does not force rules for the full 24-hour TTL.
