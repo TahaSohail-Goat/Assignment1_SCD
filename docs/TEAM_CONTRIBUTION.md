@@ -7,11 +7,11 @@ Maintain genuine, balanced ownership between the two students. Both must be able
 | Member | GitHub | Repository permission | Sessions |
 |---|---|---|---|
 | Member A | `TahaSohail-Goat` | admin (owner) | own login, own clone/worktree |
-| Member B | `Artfever` | write (collaborator since 2026-09-25) | own login, own clone/worktree |
+| Member B | `Artfever` | write (collaborator since 2026-09-25) | own login, own clone/worktree; runbook: `docs/PARTNER_RUNBOOK.md` |
 
 ## Working agreement — two real accounts, two sessions
 1. **Each person acts only as themself.** Before any GitHub write, `gh auth status` must show the acting person's own account. Nobody — person or AI session — uses the other's login, token, password or SSH key, commits under the other's name, or posts a review, approval or comment for them.
-2. **Two sessions, in parallel** (`AGENTS.md` §7): each person runs their own Claude Code session on their own machine login, in their own clone or `git worktree`, on their own issues, on disjoint files. A session never edits a file owned by an open issue of the other person.
+2. **Two sessions, in parallel** (`AGENTS.md` §7): each person runs their own AI session (Contributor A: Claude Code; Contributor B: Codex) on their own machine login, in their own clone or `git worktree`, on their own issues, on disjoint files. A session never edits a file owned by an open issue of the other person.
 3. **Git identity per clone:** `git config user.name` / `user.email` are the person's own. AI-assisted commits keep the `Co-Authored-By` trailer.
 4. **Cross-review:** every PR by Member A is reviewed by Member B and vice versa. The rulesets enforce this mechanically (1 approval, the author cannot approve, stale approvals dismissed, threads resolved — `docs/GITHUB_WORKFLOW.md`).
 5. **What counts as a review:** the six-point standard in `docs/GITHUB_WORKFLOW.md` ("Required Partner Review"), including one "why" question per PR whose answer stays in the thread.

@@ -27,6 +27,7 @@
 | `docs/GITHUB_WORKFLOW.md` | Issues, branches, PRs, labels, review, merge | Every GitHub action |
 | `docs/EVIDENCE_PLAN.md` | Evidence required for rubric | QA/release |
 | `docs/TEAM_CONTRIBUTION.md` | Ownership and collaboration | Parallel work |
+| `docs/PARTNER_RUNBOOK.md` | Step-by-step routine for Contributor B's own AI session (tool install → login → PR → review → merge) | Contributor B, every session |
 | `docs/ENVIRONMENT_PREREQUISITES.md` | Detected tools, install steps for missing ones | Phase 00, onboarding, before Phases 08–09 |
 | `docs/RUNBOOK.md` | Operational procedures | Deployment/demo |
 | `docs/ENGINEERING-NOTES.md` | Answers to the assignment's eight reflection questions | Final phase (log failures as they happen) |
