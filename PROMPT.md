@@ -120,7 +120,7 @@ Do not invent the partner as an assignee until the partner is actually a reposit
 
 # PARALLEL SESSIONS PROMPT
 
-The team may use two Claude Code sessions.
+The team may use two AI sessions, one per contributor, each with that person's own tool (for example Claude Code and Codex) and their own GitHub login. See `docs/PARTNER_RUNBOOK.md`.
 
 Session A:
 - contributor account A,
