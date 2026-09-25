@@ -5,7 +5,7 @@ HTTP only: parse, validate, serialise, status codes. No business rule and no dat
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query, Request, Response
+from fastapi import APIRouter, Depends, Path, Query, Request, Response
 
 from app.domain import Category, Priority, Status
 from app.repositories.complaints import ComplaintFilters
@@ -75,15 +75,17 @@ def list_complaints(
     )
 
 
-@router.get("/{complaint_id}", response_model=Complaint, responses={404: _ERRORS[404]})
-def get_complaint(complaint_id: str, service: ServiceDep) -> Complaint:
+@router.get("/{id}", response_model=Complaint, responses={404: _ERRORS[404]})
+def get_complaint(complaint_id: Annotated[str, Path(alias="id")], service: ServiceDep) -> Complaint:
     return Complaint.from_record(service.get(complaint_id))
 
 
 @router.patch(
-    "/{complaint_id}/status",
+    "/{id}/status",
     response_model=Complaint,
     responses={code: _ERRORS[code] for code in (400, 404, 409)},
 )
-def change_status(complaint_id: str, body: StatusUpdate, service: ServiceDep) -> Complaint:
+def change_status(
+    complaint_id: Annotated[str, Path(alias="id")], body: StatusUpdate, service: ServiceDep
+) -> Complaint:
     return Complaint.from_record(service.change_status(complaint_id, body.status))

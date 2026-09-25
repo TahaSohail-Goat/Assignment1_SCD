@@ -22,4 +22,12 @@ DATABASE_URL=postgresql+psycopg://user:password@postgres:5432/civicpulse alembic
 alembic downgrade base
 ```
 
+## OpenAPI
+
+```
+python -m app.openapi > openapi.json
+```
+
+Prints the schema the API really serves (no 422, the one error model). `tests/test_contract.py` compares it with the frontend's typed-client snapshot `frontend/src/api/design.openapi.json`; `npm run check:api-contract` can be pointed at the printed file with `OPENAPI_SCHEMA`.
+
 The schema is described in [`docs/DATA_MODEL.md`](../docs/DATA_MODEL.md); the design of the API in [`docs/API_DESIGN.md`](../docs/API_DESIGN.md).
