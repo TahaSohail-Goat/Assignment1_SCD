@@ -34,6 +34,18 @@ These are the numbers and limits the assignment states inside the data, cache, A
 
 | ID | Category | Requirement (from the matrix) | Measure | Verification | Source |
 |---|---|---|---|---|---|
+| ASG-DATA-001 | Portability | PostgreSQL 16 | PostgreSQL 16 | config check | §2.3 p7 |
+| ASG-DATA-006 | Data | `text`: 10–2000 chars, enforced in the DB (constraint) as well as the app | `text` 10–2000 characters, enforced in the database (constraint) as well as in the application | integration test | §2.3 p7 |
+| ASG-DATA-007 | Data | `location`: 3–200 chars | `location` 3–200 characters | integration test | §2.3 p7 |
+| ASG-CACHE-001 | Portability | Redis 7 | Redis 7 | config check | §2.4 p8 |
+| ASG-AI-006 | Portability, Performance | `OllamaTriage`: fully offline path; Ollama runs as a container in the Compose stack (1B-parameter model); same interface | Ollama runs a 1B-parameter model as a container in the Compose stack | unit test, demo | §2.5 p9–10 |
+| ASG-DEVOPS-002 | Deployability, Security | Backend base is `python:3.12-slim` | backend base image `python:3.12-slim` (pinned tag) | inspection / lint | §3.1 p12 |
+| ASG-DEVOPS-008 | Deployability, Security | Frontend builds with `node:22-alpine` and serves with `nginx:1.27-alpine` | frontend builds with `node:22-alpine` and serves with `nginx:1.27-alpine` (pinned tags) | inspection / lint | §3.1 p12 |
+| ASG-K8S-014 | Performance, Availability | HPA behavior: scaleDown `stabilizationWindowSeconds: 300`; scaleUp `stabilizationWindowSeconds: 0` | HPA behavior: scaleDown `stabilizationWindowSeconds: 300`, scaleUp `stabilizationWindowSeconds: 0` | inspection / lint | §3.3 p15 |
+| ASG-K8S-015 | Availability | PodDisruptionBudget `minAvailable: 1` on the backend | PodDisruptionBudget `minAvailable: 1` on the backend | inspection / lint | §3.3 p14 |
+| ASG-K8S-016 | Reliability, Availability | `startupProbe`: httpGet `/health` port 8000, `failureThreshold: 30`, `periodSeconds: 2` | `startupProbe` on `/health`, port 8000, `failureThreshold: 30`, `periodSeconds: 2` | inspection / lint | §3.3 p15 |
+| ASG-K8S-019 | Availability, Deployability | Rolling update `maxSurge: 1`, `maxUnavailable: 0` | rolling update `maxSurge: 1`, `maxUnavailable: 0` | inspection / lint | §3.3 p15 |
+| ASG-K8S-021 | Availability, Deployability | Demonstrate a zero-downtime rollout: load generator during `kubectl set image`, zero failed requests (scored as bonus — see ASG-BONUS-001) | 0 failed requests while a load generator runs during `kubectl set image` (a demonstration; scored as bonus) | demo | §3.3 p15 |
 | ASG-DATA-012 | Data | `ai_summary`: nullable, one line, ≤ 140 chars | `ai_summary` is one line, ≤ 140 characters, nullable | integration test | §2.3 p7 |
 | ASG-DATA-019 | Data, Deployability | Idempotent seed command loading ≥ 30 realistic complaints | idempotent seed command loading ≥ 30 realistic complaints | integration test | §2.3 p8 |
 | ASG-CACHE-003 | Performance | Stats cache TTL is 30 s | stats cache TTL = 30 s | integration test | §2.4 p8 |
@@ -84,7 +96,7 @@ The assignment states **no numeric target** for these, so this catalog sets none
 | Group | Rows | IDs |
 |---|---|---|
 | Non-functional requirements | 17 | `ASG-NFR-001…017` |
-| Measurable constraints | 16 | see section 2 |
+| Measurable constraints | 28 | see section 2 |
 | Deductions cross-referenced | 11 | `ASG-DED-001…011` |
 
-`ASG-CACHE-006` (explain at the viva why TTL and explicit invalidation are both used) and `ASG-CICD-017` (the kind/k3d deploy job) are requirements without a number and stay in their own catalogs.
+`ASG-CACHE-006` (explain at the viva why TTL and explicit invalidation are both used) and `ASG-CICD-017` (the kind/k3d deploy job) are requirements without a number, and length rules for documents (for example `ASG-K8S-027`: 3–5 sentences) belong to the documentation requirements; all of them stay in their own catalogs.
