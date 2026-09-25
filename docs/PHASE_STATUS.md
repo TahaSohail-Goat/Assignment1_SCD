@@ -1,18 +1,18 @@
 # Phase Status
 
-Updated at the end of every phase. A phase is **Complete** only when its gate in `docs/phases/PHASE-NN-*.md` is satisfied and its PR is merged under the branch-protection rules. The next permitted phase is the first one that is not Complete.
+Snapshot of 2026-09-25. Team target: everything done by Sunday 27 Sep 2026 (the Google Classroom deadline is "next Tuesday"; see [`SUBMISSION.md`](SUBMISSION.md)).
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
-| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8 closed; open: #10, #58, #59) | `dev/1-phase-00-baseline` (retired) · `feature/10-…` (merged, deleted) · `feature/58-ai-session-protocol` | #9 merged to `main` · #11 merged into `dev` · #60 open into `dev` | **Close-out in progress** (owner rule: finish one phase before the next): #60 (session protocol), #59 (instructor and team questions), then the Phase 00 `dev` → `main` integration PR, which closes #1, #10, #58, #59 |
-| 01 | Requirements Engineering | #12 (sub-issues #13–#18, all open) | `feature/13-prd` · `feature/15-fr-catalog-api-domain` · `feature/18-traceability-and-allocation` · #14, #16, #17 not started | #19, #20, #57 open into `dev` | **Waiting for Phase 00 to be complete on `main`.** Then: `Artfever`'s Codex writes #16 and #17 while Claude Code runs the merge chain #19 → #20 → #57; #14 after #20 merges (`docs/AI_SESSIONS.md` section 4) |
+| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8 closed; open: #10, #58, #59) | `feature/58-…` · `feature/59-…` | #9 and #11 merged; #61 open into `dev` | Nearly done: #61 merges, then Phases 00–01 go to `main` together |
+| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/<n>-<slug>` per issue | #19 and #20 merged; #57 open; #14, #16, #17 in progress | In progress: `TahaSohail-Goat` finishes Phases 00–01 (owner decision), `Artfever` reviews |
 | 02 | Architecture & Repository Structure | #21 (packages #32, #33) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 | 03 | Frontend | #22 (packages #34, #35, #36) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever |
 | 04 | Backend & Domain Layer | #23 (packages #37, #38, #39) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: TahaSohail-Goat |
 | 05 | Data Layer | #24 (packages #40, #41) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 | 06 | Cache, Rate Limiting & Reliability | #25 (packages #42, #43) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 | 07 | AI Layer | #26 (packages #44, #45, #46) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
-| 08 | Docker & Compose | #27 (packages #47, #48) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat (needs Docker, B-017) |
+| 08 | Docker & Compose | #27 (packages #47, #48) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat (needs Docker) |
 | 09 | Kubernetes | #28 (packages #49, #50) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat (needs Docker + kubectl + kind/k3d) |
 | 10 | CI/CD | #29 (packages #51, #52) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 | 11 | QA, Evidence & Reflection | #30 (packages #53, #54) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
@@ -20,12 +20,13 @@ Updated at the end of every phase. A phase is **Complete** only when its gate in
 
 ## Next permitted phase
 
-**Phase 00 — close-out** comes first (owner decision 2026-09-25: complete one phase entirely before starting another; `AGENTS.md` §11). It is complete when: PR #60 (session protocol, issue #58) is merged into `dev`; the open instructor and team questions (#59) each have an answer or an "asked <date>; interim decision" note, merged into `dev`; and the Phase 00 `dev` → `main` integration PR is merged with a merge commit, closing #1, #10, #58 and #59.
+## How we work now
 
-**Phase 01 — Requirements Engineering** (issue #12) continues only after that. Its state today: PRD (#13, PR #19) and API/domain FR catalog (#15, PR #20) await `Artfever`'s re-review, the allocation (#18, PR #57) is open, and #14, #16, #17 (Codex) have not started. It is complete when #13–#18 are merged into `dev` and the Phase 01 integration PR is merged into `main`; that is the gate for **Phase 02** (issue #21): every mandatory assignment obligation is represented by a requirement ID or documented as non-requirement / bonus / future.
+- **Phases 00 and 01 are finished first, by `TahaSohail-Goat` (Claude Code)**, including #14, #16 and #17, which were first allocated to `Artfever`. `Artfever` reviews them.
+- **From Phase 02 both work in parallel** on their own issues as allocated in `docs/TEAM_CONTRIBUTION.md`. A package waits only for a package it depends on (listed in its issue).
+- **Flow:** issue → `feature/<n>-<slug>` from `dev` → PR into `dev` → the other contributor reviews → merge. The reviewer approves unless there is a real defect (broken build, missing requirement, secret, invented requirement); wording nits are comments, not change requests.
+- **`dev` → `main`:** one integration PR when a coherent block is done. `main` is protected (PR, one approval, CI once it exists): that is what the assignment requires.
 
-Preconditions met: ✅ partner is a collaborator (B-010) · ✅ `main` and `dev` are protected by rulesets (B-011) · ✅ PR #11 merged into `dev`.
-
-Open items that do **not** block Phase 01: B-002/B-003 (deferred by the owner), B-006 (`triaged_by` values — decided in P02-S02, #33), B-021 (design questions, answered in P02-S02); B-001, B-007, B-008, B-012–B-016 are tracked in #59. Resolved: B-004, B-009, B-010, B-011.
+Instructor answers, open decisions and the deadline are in the decisions table of [`SUBMISSION.md`](SUBMISSION.md).
 
 Remaining for full protection evidence: the ruleset screenshot (`docs/evidence/protection-*`, P12-S02, #56) and required status checks with `ci.yml` (P10-S01, #51).
