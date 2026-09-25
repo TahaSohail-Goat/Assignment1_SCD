@@ -29,11 +29,20 @@ The `.dockerignore` removes the virtual environment, bytecode caches, tests and 
 
 ## Frontend (ASG-DEVOPS-009, -010, -012)
 
-The CI `context-and-image-size` job now builds the Node builder and nginx runtime stages and
-measures the frontend context with and without `.dockerignore`. Numerical measurements and the
-runtime content check are pending a CI run on the #48 branch. Docker is not installed on Artfever's
-machine, so no local image size or runtime result is claimed.
+The first CI measurement on commit `947141e` is from
+<https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36194376193>.
+The job completed successfully and checked that the runtime lacks Node, `node_modules` and source.
+The security scan on that run failed due to fixable packages in the nginx base image; a rebuild
+with Alpine security updates is pending, so the final runtime size must be checked again.
+
+| Measurement | First CI run |
+|---|---:|
+| Build context without `frontend/.dockerignore` | 105.95 MB |
+| Build context with `frontend/.dockerignore` | 160.01 kB |
+| Node builder stage image | 288 MB |
+| nginx runtime image | 48.4 MB |
 
 The `integration` job also captures the actual output of
 `docker compose exec -T frontend ping -c 1 -W 2 database`; a failed name lookup is required.
-Its output and the video demonstration are pending.
+That job was skipped because the backend test job failed its timeout assertion in the first run.
+Its output and the video demonstration remain pending.

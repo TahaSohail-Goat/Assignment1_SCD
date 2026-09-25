@@ -10,6 +10,9 @@ RUN npm run build
 
 FROM nginx:1.27.5-alpine3.21 AS runtime
 
+# The pinned upstream layer ages; take Alpine's security fixes while retaining nginx 1.27.5.
+RUN apk upgrade --no-cache && nginx -v 2>&1 | grep -F 'nginx/1.27.5'
+
 COPY nginx.conf /etc/nginx/nginx.conf
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=builder --chown=nginx:nginx /app/dist/ /usr/share/nginx/html/
