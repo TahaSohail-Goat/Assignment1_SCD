@@ -54,9 +54,15 @@ def parse_complaint_id(raw: str) -> uuid.UUID:
 
 
 class ComplaintService:
-    def __init__(self, unit_of_work: Callable[[], UnitOfWork], triager: Triager) -> None:
+    def __init__(
+        self,
+        unit_of_work: Callable[[], UnitOfWork],
+        triager: Triager,
+        after_create: Callable[[], None] | None = None,
+    ) -> None:
         self._unit_of_work = unit_of_work
         self._triager = triager
+        self._after_create = after_create  # runs once the new complaint is committed
 
     def create(self, data: NewComplaintInput) -> ComplaintRecord:
         """Triage the complaint, then persist it (validate -> triage -> persist, section 2.2)."""
@@ -74,7 +80,10 @@ class ComplaintService:
             triage_latency_ms=decision.latency_ms,
         )
         with self._unit_of_work() as repository:
-            return repository.add(new)
+            record = repository.add(new)
+        if self._after_create is not None:
+            self._after_create()  # for example: drop the cached statistics
+        return record
 
     def get(self, raw_id: str) -> ComplaintRecord:
         complaint_id = parse_complaint_id(raw_id)

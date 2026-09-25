@@ -11,7 +11,7 @@ from app.main import create_app
 from app.providers.triage.simulated import SimulatedTriage
 from app.services.triage import TriageService
 from tests.conftest import FakeProbe
-from tests.fakes import StubTriager
+from tests.fakes import FakeCache, StubTriager
 
 pytestmark = pytest.mark.integration
 
@@ -25,7 +25,9 @@ def client(migrated: Engine, db_url: str) -> Iterator[TestClient]:
         redis_url="redis://redis:6379/0",
         dependency_check_timeout_seconds=1,
     )
-    app = create_app(settings, probes=[FakeProbe("postgres")], triager=StubTriager())
+    app = create_app(
+        settings, probes=[FakeProbe("postgres")], triager=StubTriager(), cache=FakeCache()
+    )
     with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
     with migrated.begin() as connection:
@@ -88,7 +90,7 @@ def test_the_mandatory_case_on_a_real_table_an_always_raising_provider_stores_ru
         database_url=db_url, redis_url="redis://redis:6379/0", dependency_check_timeout_seconds=1
     )
     triage = TriageService(SimulatedTriage.always_failing())
-    app = create_app(settings, probes=[FakeProbe("postgres")], triager=triage)
+    app = create_app(settings, probes=[FakeProbe("postgres")], triager=triage, cache=FakeCache())
 
     with TestClient(app, raise_server_exceptions=False) as client:
         response = client.post(

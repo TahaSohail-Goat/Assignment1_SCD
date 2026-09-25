@@ -10,6 +10,7 @@ from datetime import UTC, datetime, timedelta
 from types import TracebackType
 
 from app.domain import Category, Priority, Status
+from app.providers.cache import CacheUnavailableError
 from app.repositories.complaints import (
     ComplaintFilters,
     ComplaintRecord,
@@ -83,10 +84,19 @@ class InMemoryComplaints:
         return updated
 
     def counts(self) -> StatsCounts:
-        raise NotImplementedError
+        by_category: dict[Category, int] = {}
+        by_priority: dict[Priority, int] = {}
+        for record in self.rows.values():
+            by_category[record.category] = by_category.get(record.category, 0) + 1
+            by_priority[record.priority] = by_priority.get(record.priority, 0) + 1
+        return StatsCounts(len(self.rows), by_category, by_priority)
 
     def recent_outcomes(self, limit: int = 20) -> list[TriageOutcome]:
-        raise NotImplementedError
+        newest = sorted(self.rows.values(), key=lambda r: (r.created_at, str(r.id)), reverse=True)
+        return [
+            TriageOutcome(r.id, r.triaged_by, r.triage_latency_ms, r.created_at)
+            for r in newest[:limit]
+        ]
 
 
 class RacingComplaints(InMemoryComplaints):
@@ -148,3 +158,42 @@ class StubTriager:
         self.calls.append((text, location))
         self.ids.append(complaint_id)
         return self.decision
+
+
+class FakeCache:
+    """A key-value cache with a TTL measured on a clock the test moves by hand (no sleeping)."""
+
+    def __init__(self) -> None:
+        self.now = 0.0
+        self.down = False
+        self.sets: list[tuple[str, int]] = []
+        self.deletes = 0
+        self._data: dict[str, tuple[str, float]] = {}
+
+    def _check(self) -> None:
+        if self.down:
+            raise CacheUnavailableError("ConnectionError")
+
+    def advance(self, seconds: float) -> None:
+        self.now += seconds
+
+    def get(self, key: str) -> str | None:
+        self._check()
+        item = self._data.get(key)
+        if item is None:
+            return None
+        value, expires_at = item
+        if self.now >= expires_at:
+            del self._data[key]
+            return None
+        return value
+
+    def set(self, key: str, value: str, ttl_seconds: int) -> None:
+        self._check()
+        self._data[key] = (value, self.now + ttl_seconds)
+        self.sets.append((key, ttl_seconds))
+
+    def delete(self, key: str) -> None:
+        self._check()
+        self.deletes += 1
+        self._data.pop(key, None)

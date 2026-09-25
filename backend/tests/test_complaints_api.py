@@ -17,7 +17,7 @@ from app.providers.triage.simulated import SimulatedTriage
 from app.services.complaints import TriageDecision
 from app.services.triage import TriageService
 from tests.conftest import FakeProbe
-from tests.fakes import FakeUnitOfWork, StubTriager
+from tests.fakes import FakeCache, FakeUnitOfWork, StubTriager
 
 VALID = {
     "text": "The street light on our lane has been out for a week.",
@@ -44,6 +44,7 @@ def client(
         probes=[FakeProbe("postgres"), FakeProbe("redis")],
         triager=triager,
         unit_of_work=unit_of_work,
+        cache=FakeCache(),
     )
     with TestClient(app, raise_server_exceptions=False) as test_client:
         yield test_client
@@ -161,7 +162,9 @@ def test_a_validation_error_never_reaches_triage_or_the_repository(
 def test_without_an_injected_triager_the_configured_provider_is_used(
     settings: Settings, unit_of_work: FakeUnitOfWork
 ) -> None:
-    app = create_app(settings, probes=[FakeProbe("postgres")], unit_of_work=unit_of_work)
+    app = create_app(
+        settings, probes=[FakeProbe("postgres")], unit_of_work=unit_of_work, cache=FakeCache()
+    )
     with TestClient(app, raise_server_exceptions=False) as client:
         body = _create(client)
 
@@ -174,7 +177,11 @@ def test_the_mandatory_test_a_provider_that_always_raises_still_gives_201_and_ru
     """Assignment section 2.5 p12: "Write this test if you write no other"."""
     triage = TriageService(SimulatedTriage.always_failing())
     app = create_app(
-        settings, probes=[FakeProbe("postgres")], triager=triage, unit_of_work=unit_of_work
+        settings,
+        probes=[FakeProbe("postgres")],
+        triager=triage,
+        unit_of_work=unit_of_work,
+        cache=FakeCache(),
     )
     with TestClient(app, raise_server_exceptions=False) as client:
         response = client.post("/api/complaints", json=VALID)
