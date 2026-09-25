@@ -15,7 +15,7 @@ from starlette.responses import Response
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from app import metrics
-from app.errors import error_response
+from app.http_errors import error_response
 from app.logging import request_id_var
 
 REQUEST_ID_HEADER = "X-Request-ID"

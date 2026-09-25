@@ -1,8 +1,12 @@
-"""The one error model of every non-2xx answer (docs/API_DESIGN.md, section 1)."""
+"""Domain errors and the shape of the error body (docs/API_DESIGN.md, section 1).
+
+This module has no HTTP framework in it: the services raise these errors, and
+``app/http_errors.py`` turns them into responses.
+"""
 
 from typing import Any
 
-from fastapi.responses import JSONResponse
+from app.domain import Status
 
 
 def error_body(
@@ -14,13 +18,22 @@ def error_body(
     return {"error": error}
 
 
-def error_response(
-    status_code: int,
-    code: str,
-    message: str,
-    details: list[dict[str, Any]] | None = None,
-    headers: dict[str, str] | None = None,
-) -> JSONResponse:
-    return JSONResponse(
-        status_code=status_code, content=error_body(code, message, details), headers=headers
-    )
+class DomainError(Exception):
+    """Base of the errors the services raise on purpose."""
+
+
+class NotFoundError(DomainError):
+    """The complaint does not exist (a malformed id counts as one that does not exist)."""
+
+    def __init__(self, what: str = "Complaint") -> None:
+        super().__init__(f"{what} not found")
+        self.what = what
+
+
+class InvalidTransitionError(DomainError):
+    """The requested status change is not in the transition table (ASG-FR-028)."""
+
+    def __init__(self, current: Status, target: Status) -> None:
+        super().__init__(f"Cannot change status from {current.value} to {target.value}")
+        self.current = current
+        self.target = target
