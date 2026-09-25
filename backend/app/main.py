@@ -20,11 +20,13 @@ from app.http_errors import install_error_handlers
 from app.logging import configure_logging
 from app.middleware import RequestContextMiddleware
 from app.providers.cache import RedisCache
+from app.providers.triage.factory import build_provider
 from app.repositories.health import DatabaseHealthRepository
 from app.repositories.uow import SqlUnitOfWork, UnitOfWork
 from app.routes import complaints, health, metrics
-from app.services.complaints import ComplaintService, Triager, UnconfiguredTriager
+from app.services.complaints import ComplaintService, Triager
 from app.services.readiness import DependencyProbe, ReadinessService
+from app.services.triage import TriageService
 
 logger = logging.getLogger("app.main")
 
@@ -74,11 +76,17 @@ def create_app(
         else:  # unreachable: the engine exists whenever no unit of work was given
             raise RuntimeError("no unit of work and no engine")
 
+        active_triager: Triager
+        if triager is not None:
+            active_triager = triager
+        else:
+            triage_service = TriageService(build_provider(settings.triage_provider, settings))
+            closers.append(triage_service.close)
+            active_triager = triage_service
+
         readiness = ReadinessService(active_probes, settings.dependency_check_timeout_seconds)
         app.state.readiness = readiness
-        app.state.complaints = ComplaintService(
-            active_unit_of_work, triager or UnconfiguredTriager()
-        )
+        app.state.complaints = ComplaintService(active_unit_of_work, active_triager)
         logger.info("startup complete")
         try:
             yield

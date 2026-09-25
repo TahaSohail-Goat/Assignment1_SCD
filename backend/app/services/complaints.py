@@ -35,15 +35,7 @@ class TriageDecision:
 
 
 class Triager(Protocol):
-    def triage(self, text: str, location: str) -> TriageDecision: ...
-
-
-class UnconfiguredTriager:
-    """Stands in until the triage providers are wired in (issue #44); creating a complaint
-    fails loudly instead of inventing a classification."""
-
-    def triage(self, text: str, location: str) -> TriageDecision:
-        raise RuntimeError("no triage provider is configured")
+    def triage(self, text: str, location: str, complaint_id: uuid.UUID) -> TriageDecision: ...
 
 
 @dataclass(frozen=True)
@@ -68,8 +60,10 @@ class ComplaintService:
 
     def create(self, data: NewComplaintInput) -> ComplaintRecord:
         """Triage the complaint, then persist it (validate -> triage -> persist, section 2.2)."""
-        decision = self._triager.triage(data.text, data.location)
+        complaint_id = uuid.uuid4()  # known before triage, so a fallback warning can name it
+        decision = self._triager.triage(data.text, data.location, complaint_id)
         new = NewComplaint(
+            id=complaint_id,
             text=data.text,
             location=data.location,
             reporter_contact=data.reporter_contact,

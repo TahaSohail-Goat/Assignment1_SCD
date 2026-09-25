@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     database_url: str
     redis_url: str
     log_level: str = "INFO"
+    triage_provider: str = "rules"
     dependency_check_timeout_seconds: float = 1.0
 
 
