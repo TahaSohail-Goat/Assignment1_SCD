@@ -13,9 +13,9 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Phase 12 |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | Phase 09 / 11 |
 
-Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment — see B-014.
+Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
 
-Policy: late submissions are not accepted; there is no retake ("Submit something imperfect on time"). The source gives **no calendar deadline** — see B-001. (ASG-SUB-008)
+Policy: late submissions are not accepted; there is no retake ("Submit something imperfect on time"). The source gives **no calendar deadline**; the instructor said it is the Google Classroom one ("next Tuesday", exact date to be confirmed). (ASG-SUB-008)
 
 ## 2. Engineering notes — the eight questions (§5.2 p23–24)
 
@@ -24,9 +24,9 @@ File: `docs/ENGINEERING-NOTES.md`. "With references to your own files and lines.
 | Q | ID | Question (verbatim in `docx/ASSIGNMENT.md` §5.2) | Needs, from earlier phases |
 |---|---|---|---|
 | 1 | ASG-DOC-017 | Three things that differ between your laptop and a CI runner, and the exact line in a Dockerfile or manifest that freezes each | Dockerfiles, compose, manifests with pinned lines |
-| 2 | ASG-DOC-018 | Position on the CI/CD maturity ladder (Lecture 03, slide 32); justify the rung; name the next rung and what it buys | Lecture material (B-013) |
+| 2 | ASG-DOC-018 | Position on the CI/CD maturity ladder (Lecture 03, slide 32); justify the rung; name the next rung and what it buys | Lecture material (not required by the instructor) |
 | 3 | ASG-DOC-019 | The exact line guaranteeing build-once-deploy-many, and what breaks without it | Frontend runtime-config line, `${IMAGE_TAG}` / SHA tag line |
-| 4 | ASG-DOC-020 | What "correct" means for a probabilistic LLM component, and how CI was kept deterministic (Lecture 01, slide 34) | `SimulatedTriage`, fallback/malformed-output tests (B-013) |
+| 4 | ASG-DOC-020 | What "correct" means for a probabilistic LLM component, and how CI was kept deterministic (Lecture 01, slide 34) | `SimulatedTriage`, fallback/malformed-output tests (lecture slides not required) |
 | 5 | ASG-DOC-021 | HPA lag: seconds between offered load rising and replicas rising; where the time went; what would reduce it | Real load-test capture |
 | 6 | ASG-DOC-022 | Why VPA is in Off mode; failure mode of running it in Auto alongside HPA | VPA manifest and recommendations |
 | 7 | ASG-DOC-023 | Where the hosted-LLM caller lives given `internal: true`, and how it was resolved | Compose network design |
@@ -77,9 +77,33 @@ This repository is developed with Claude Code. Every phase records that in `docs
 
 Do not call the assignment complete until each mandatory ID in the traceability matrix is `PASS` or has a documented exception, all eleven `ASG-DED-*` guards are verified, and:
 
-- [ ] `python scripts/check_submission.py` run and output recorded (B-014)
+- [ ] `python scripts/check_submission.py` run and output recorded
 - [ ] clean-clone quickstart executed on a fresh clone (ASG-DED-011)
 - [ ] secret scan of full Git history (ASG-DED-001)
 - [ ] `git shortlog -sn` shows neither partner below 35% (ASG-GH-008)
 - [ ] ≥ 5 merged PRs, each linked to an Issue with a substantive partner review (ASG-GH-003…005)
 - [ ] every rubric line in [`RUBRIC.md`](RUBRIC.md) has an evidence path in [`EVIDENCE_PLAN.md`](EVIDENCE_PLAN.md)
+
+## Decisions and instructor answers
+
+Answers relayed by the owner on 2026-09-25. They were **verbal**, not written: keep a screenshot of the chat in `docs/evidence/instructor-*` with personal data hidden.
+
+| Topic | Decision or answer | Effect |
+|---|---|---|
+| Deadline | The one on Google Classroom; "next Tuesday" (Tue 29 Sep or Tue 6 Oct 2026, to be confirmed). Team target: everything done by Sunday 27 Sep | Late work is not accepted (ASG-SUB-008) |
+| Scope | The whole assignment, parts A–J | No phase or rubric part is dropped |
+| Rubric totals | Left as it is; the teaching assistant manages it | Every line stays at its stated marks |
+| Endpoints | Nine; there is no tenth | `ASG-FR-038` is not added |
+| Image signing | Not required | Cosign stays an optional bonus (`ASG-BONUS-003`) |
+| `scripts/check_submission.py` | Write it if we want to | We will (it checks the deductions mechanically) |
+| Lecture slides | Not necessary | Engineering-notes questions 2 and 4 are answered from this project |
+| AI use | Allowed; each of us uses an assistant under their **own** account and discloses it in `docs/AI-USAGE.md` (assignment §5.5) | Only this two-account arrangement rests on the verbal answer |
+| Zero-downtime demo | Not asked | We do it anyway (§3.3, bonus +4) |
+| Initial commit on `main` | Not asked | History is not rewritten |
+| LICENSE | Not decided | Both members decide in Phase 12 |
+| `triaged_by` for `SimulatedTriage` and other hosted providers | Not specified by the assignment | Decided in Phase 02 (API design, #33) and recorded in the design document and an ADR; the four listed values must all be accepted |
+| Purpose of `docs/TRIAGE.md` | Not specified by the assignment | Triage design lives in `docs/AI.md`; decide by Phase 07 |
+| Frontend image tag | §2.1 says `nginx:alpine`, §3.1 says `nginx:1.27-alpine` | The pinned tag in §3.1 governs |
+| Ollama in the default stack | §1.2 says five containers | Keep Ollama in `compose.yaml` |
+| Branch model | `dev` plus `feature/<n>-<slug>`, PRs into `dev`, `dev` into `main` | `docs/GITHUB_WORKFLOW.md` |
+| Tool installs per machine | Python 3.12, Node 22, Docker, kubectl, kind or k3d, k6 | `docs/ENVIRONMENT_PREREQUISITES.md` §8 |

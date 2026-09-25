@@ -14,25 +14,16 @@ Read this after `AGENTS.md` at the start of every session. It is written for **b
 
 **The two sessions cannot talk to each other.** They communicate only through GitHub (issues, pull requests, comments, reviews) and through the two humans, who paste prompts. Each contributor's commits are made by their own session under their own account; nobody acts as the other (`docs/TEAM_CONTRIBUTION.md`).
 
-## 2. Rule 1 — one phase at a time
+## 2. Rule 1 — phase order (relaxed by the owner, 2026-09-26)
 
-A phase N is **Complete** when its row in `docs/PHASE_STATUS.md` says **Complete** on `main`. That happens when the phase's integration PR merges, and only once all of these hold:
+The original rule here was "finish one phase completely, on `main`, before starting the next". **The repository owner replaced it** (recorded in `docs/PHASE_STATUS.md`, "How we work now", and `docs/SUBMISSION.md`) because of the deadline of Sunday 27 Sep 2026:
 
-1. every issue of the phase (parent and sub-issues) has every acceptance box ticked, and none is left open by the integration merge: the issues still open when the integration PR is opened are named in its `Closes #…` line, while issues closed earlier (Phase 00's #2–#8, closed by PR #9) are only verified closed and not repeated. Every issue carries one `phase:NN-…` label, so the open ones are exactly what `gh issue list --label <phase-label> --state open --json number --jq '.[].number'` prints;
-2. every pull request of the phase is merged into `dev` with a substantive review from the other contributor;
-3. the phase gate in `docs/phases/PHASE-NN-*.md` is checked and its evidence exists;
-4. the phase row in `docs/PHASE_STATUS.md` says **Complete** on `dev`, set by a status PR into `dev` (approved by the other contributor) that is merged **before** the integration PR is opened, so the integration PR carries it to `main`;
-5. the phase's `dev` → `main` integration PR (merge commit, one approval, given on its final head) is merged.
+- Phases 00 and 01 are finished first.
+- From Phase 02 the two sessions work **in parallel** on their own issues (`docs/TEAM_CONTRIBUTION.md`). A package waits only for a package it really depends on, as listed in its issue.
+- The flow is: issue → `feature/<n>-<slug>` from `dev` → PR into `dev` → the other contributor reviews → the author merges. A reviewer approves unless there is a real defect (broken build, missing requirement, secret, invented requirement); wording nits are comments, not change requests.
+- `dev` → `main` is one integration PR per coherent block. `main` keeps its rule (PR, one approval, CI): the assignment requires it.
 
-Conditions 1–4 are checked before the integration PR is opened. Condition 5 is the merge itself, and it is what closes the issues and puts the Complete row on `main`. A row that says Complete on `dev` is **not** yet complete: it counts only once it is on `main`. The check is `git show origin/main:docs/PHASE_STATUS.md`, whose row for the phase must have a Status beginning with **Complete**. The order of the steps is the phase-close checklist in section 6.
-
-**Historical exception (Phase 00 only, PR #9).** The baseline PR #9 was merged into `main` on 2026-09-24, before the `dev` branch existed and before the second contributor was a repository collaborator (B-010). It has no `dev` step and no partner review, so condition 2 cannot hold for it; `docs/PHASE_STATUS.md` records it as merged to `main` with no `dev` step and no partner review, and it is neither redone nor rewritten. For Phase 00, condition 2 therefore covers every other Phase 00 pull request into `dev` (#11, #60, #61 and the status PR). No other phase has an exception.
-
-**Nothing for phase N+1 starts before phase N is Complete on `main`**: no branch, no commit, no PR, no edits to its issues. Allowed while phase N is open: work *inside* phase N; answering reviews; reading; and planning that phase N's own prompt requires (Phase 01, for example, is the phase that creates the issue tree for the later phases).
-
-If a plan mistake for a later phase is found, correcting it is allowed, is done in the current phase's PR, and is recorded there.
-
-*Cost of this rule:* Phase 03 (frontend, Codex) and Phase 04 (backend, Claude Code) are each single-owner, so the other session only reviews during that phase. The humans may relax this by grouping phases (for example 03 + 04 + 05 as one gate), but only by a written decision recorded here.
+Sections 4–7 below were written under the old rule; where they say a phase must be "Complete on `main`" before the next one starts, read this section instead.
 
 ## 3. Rule 2 — parallel, handoff, solo
 

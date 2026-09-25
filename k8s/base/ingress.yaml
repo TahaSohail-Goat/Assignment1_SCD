@@ -1,0 +1,29 @@
+# One host: `/` goes to the frontend and `/api` to the backend (ASG-K8S-009). The most specific
+# path wins, so /api/... never reaches the frontend. Needs an ingress controller (ingress-nginx).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: civicpulse
+  namespace: civicpulse
+  labels:
+    app.kubernetes.io/part-of: civicpulse
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: civicpulse.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  name: http
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  name: http

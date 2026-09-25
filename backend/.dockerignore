@@ -1,0 +1,25 @@
+# Keeps the build context small and keeps secrets and test material out of the image
+# (ASG-DEVOPS-011). The Dockerfile copies only requirements.txt, alembic.ini, alembic/ and app/.
+.git
+.gitignore
+.github
+.env
+.env.*
+!.env.example
+.venv
+venv
+node_modules
+__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+.coverage
+coverage.xml
+htmlcov
+tests
+requirements-dev.txt
+README.md
+Dockerfile
+.dockerignore

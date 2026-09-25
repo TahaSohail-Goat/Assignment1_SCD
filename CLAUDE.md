@@ -6,7 +6,7 @@ Complete the CS4032 Software Construction and Design Assignment 01 — CivicPuls
 ## Read Order — Mandatory
 Before doing anything:
 1. Read `AGENTS.md`.
-2. Read `docs/AI_SESSIONS.md` — one phase at a time, parallel versus handoff work, prompt library.
+2. Read `docs/AI_SESSIONS.md` — phase order, parallel versus handoff work, prompt library.
 3. Read `README.md`.
 4. Read `docx/ASSIGNMENT.md` — the complete Markdown transcription of the authoritative assignment source.
 5. Read `docs/DOCUMENT_INDEX.md` and `docs/PHASE_STATUS.md`.
@@ -27,7 +27,7 @@ Never invent:
 - a marking criterion,
 - or a deadline rule.
 
-If a source is unclear, record the ambiguity in `docs/BLOCKERS.md` and continue only with work that is not dependent on the ambiguity.
+If a source is unclear, note the ambiguity in the PR or issue (instructor answers and decisions are in `docs/SUBMISSION.md`) and continue only with work that does not depend on it.
 
 ## Important
 The assignment explicitly states that a clean repository is part of the handover bar: a stranger must be able to clone and run it, and the README must only claim things that can be demonstrated.

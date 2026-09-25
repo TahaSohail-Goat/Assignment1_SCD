@@ -63,7 +63,7 @@ If you cannot prove a requirement from:
 
 do not implement it as a mandatory assignment requirement.
 
-Write the uncertainty into `docs/BLOCKERS.md` or `docs/adr/`.
+Write the uncertainty into the PR or issue, or into `docs/adr/` when it is a design decision.
 
 ## 6. Git Safety
 - No direct commits to `main`. No direct commits to `dev` either: work happens on `feature/<issue-number>-<slug>` branches cut from `dev` and reaches `dev` by pull request; `dev` reaches `main` by a merge-commit pull request (`docs/GITHUB_WORKFLOW.md`).
@@ -123,11 +123,5 @@ Report:
 - blockers,
 - next phase allowed.
 
-## 11. One Phase at a Time
-Owner decision (2026-09-25): **completely finish one phase before starting another.**
-
-A phase is complete only when, in this order: every issue of the phase has its acceptance boxes ticked and, if still open, is named in the integration PR's `Closes` line (issues closed earlier are not repeated); every PR of the phase is merged into `dev` with a substantive review from the other contributor (one historical exception, PR #9 of Phase 00, is recorded in `docs/AI_SESSIONS.md` section 2); the phase gate in `docs/phases/PHASE-NN-*.md` is checked with evidence; the phase row in `docs/PHASE_STATUS.md` says Complete on `dev`, set by a status PR merged before the integration PR is opened; and the phase's `dev` → `main` integration PR (merge commit, one approval) is merged. A phase is complete **on `main`**: the row counts only once `git show origin/main:docs/PHASE_STATUS.md` shows it, and the next phase starts only then.
-
-Until phase N is complete on `main`, do **not** create branches, commits, PRs or issue edits for a later phase. Allowed while a phase is open: work inside it, answering reviews, reading, and planning that the phase's own prompt requires. If a step would need a later phase or an unmerged dependency, stop and say so.
-
-The definitions of parallel work, handoffs and solo phases, the phase-start and phase-close checklists and the prompt library are in `docs/AI_SESSIONS.md`.
+## 11. Phase Order
+Owner decision (2026-09-26, replacing "one phase at a time"): Phases 00 and 01 first; from Phase 02 both contributors work **in parallel** on their own issues, and a package waits only for a package it really depends on. Flow: issue -> feature branch from `dev` -> PR into `dev` -> review -> merge. `main` stays protected (PR + one approval). Details: `docs/AI_SESSIONS.md` section 2 and `docs/PHASE_STATUS.md`.
