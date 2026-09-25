@@ -114,7 +114,7 @@ Repeat for each issue. Codex does all of it under your login; you read the diff 
 
 ## 9. 👤 Reviewing Contributor A's PRs
 
-Your review queue: `gh pr list --search "review-requested:@me" --state open`. Contributor A's PRs: #13 (PRD), #15 (FR catalog: API and domain), #18 (allocation), and later ones.
+Your review queue: `gh pr list --search "review-requested:@me" --state open` lists the PRs waiting for you with their current numbers. Do not copy numbers from a document: they go stale, and an issue number is not a PR number (`gh pr view <n> --json body` shows which issue a PR relates to).
 
 A review counts (rubric A3) when it:
 1. is posted from **your own** account;
