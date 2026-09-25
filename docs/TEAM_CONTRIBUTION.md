@@ -27,12 +27,12 @@ Maintain genuine, balanced ownership between the two students. Both must be able
 | #13 P01-S01 | PRD | `TahaSohail-Goat` | `Artfever` | 3 |
 | #15 P01-S03 | FR catalog: API and domain | `TahaSohail-Goat` | `Artfever` | 6 |
 | #18 P01-S06 | Traceability and allocation of Phases 02–12 | `TahaSohail-Goat` | `Artfever` | 6 |
-| #14 P01-S02 | FR catalog: frontend | `Artfever` | `TahaSohail-Goat` | 4 |
-| #16 P01-S04 | NFR catalog | `Artfever` | `TahaSohail-Goat` | 6 |
-| #17 P01-S05 | Use cases | `Artfever` | `TahaSohail-Goat` | 5 |
-| | **Total** | 15 | 15 | 30 |
+| #14 P01-S02 | FR catalog: frontend | `TahaSohail-Goat` | `Artfever` | 4 |
+| #16 P01-S04 | NFR catalog | `TahaSohail-Goat` | `Artfever` | 6 |
+| #17 P01-S05 | Use cases | `TahaSohail-Goat` | `Artfever` | 5 |
+| | **Total** | 30 | 0 | 30 |
 
-Parent issue: #12. The allocation of Phases 02–12 follows below (decided in #18).
+Parent issue: #12. **Owner decision (2026-09-25):** to save time, `TahaSohail-Goat` writes all of Phase 01, including #14, #16 and #17 that were first allocated to `Artfever`; `Artfever` reviews them and takes his own issues from Phase 02 on. The effort balance is restored in Phases 02–12 (70 points each) and, more importantly for rubric A4, in commits: `Artfever` owns 13 of the 25 packages. The allocation of Phases 02–12 follows below (decided in #18).
 
 ## Allocation — Phases 02–12 (effort points)
 
@@ -82,28 +82,28 @@ Decided in issue #18; **both members must accept it in the PR thread**. The pare
 | 11 Quality Assurance, Evidence & Reflection | #30 | 5 | 5 | 10 |
 | 12 Final Assignment Audit & Submission | #31 | 5 | 5 | 10 |
 | **02–12 total** | | **70** | **70** | **140** |
-| **With Phase 01 (15 + 15)** | | **85** (50.0%) | **85** (50.0%) | **170** |
+| **With Phase 01 (30 + 0)** | | **100** (58.8%) | **70** (41.2%) | **170** |
 
 **How the split was made.** Points are **relative effort** (a 7-point package is about 1.75 times a 4-point one), not hours and not commit counts; the assignment's own estimate for the whole project is roughly 35–45 hours per student (§5.1), and the points are used only to balance the two halves. The halves were balanced to the point, then checked against three rules:
 
 1. **Vertical lanes keep the sessions conflict-free.** `TahaSohail-Goat` owns the backend contract path (API design, backend, migrations, cache invalidation, the provider interface and fallback, the backend image, the Kubernetes base, `ci.yml`, the compose-side evidence, the final audit). `Artfever` owns the frontend, the LLM and Ollama providers with the triage cache and guardrail, the rate limiter, the seed, the frontend image and production Compose, HPA/VPA and load testing, `cd.yml`/`release.yml`, the Kubernetes-side evidence and notes, and the README and video.
-2. **Both touch almost every phase.** The only phases where one person owns everything are Phase 03 (frontend, `Artfever`) and Phase 04 (backend, `TahaSohail-Goat`); because phases run one at a time, the other session only reviews during those. The two halves meet at the API design (P02-S02), which `Artfever` must confirm works for the frontend before it merges.
+2. **Both touch almost every phase.** The only phases where one person owns everything are Phase 03 (frontend, `Artfever`) and Phase 04 (backend, `TahaSohail-Goat`); they run at the same time, so nobody waits. The two halves meet at the API design (P02-S02), which `Artfever` must confirm works for the frontend before it merges.
 3. **The highest-value areas are split** (rubric priority F > C > I > H, assignment §5.1): the AI layer is 7 points for `TahaSohail-Goat` and 12 for `Artfever`; CI/CD, Kubernetes and Docker are split evenly.
 
 Because each person also **reviews every package of the other**, both read all of the code. The individual viva asks about the partner's code (assignment §5.4); see *Explain-back and viva readiness* below.
 
-### Sequencing (one phase at a time)
+### Sequencing
 
-Owner decision (2026-09-25, `AGENTS.md` §11): **a phase is finished completely — issues closed, PRs merged into `dev` with review, gate checked, `dev` → `main` integration PR merged — before the next phase starts.** Parallel work therefore happens only *inside* a phase, on packages with different owners, no dependency and disjoint files; everything else is a handoff (one session waits for the other). The phase-by-phase table saying who writes, who reviews and which steps are parallel, handoff or solo is in `docs/AI_SESSIONS.md` (section 4); the prompts for each step are in section 7 of that file.
+Owner decision (2026-09-25): keep the process light. `TahaSohail-Goat` finishes Phases 00 and 01 first; after that **both work in parallel on their own issues** and only a real dependency makes someone wait. Flow: issue → `feature/<n>-<slug>` from `dev` → PR into `dev` → the other contributor reviews → merge; one `dev` → `main` PR per coherent block (`main` needs one approval, as the assignment requires).
 
-In short: Phases 02, 06, 10, 11 and 12 have parallel windows; Phases 05, 08 and 09 are handoff chains (the second package needs the first one merged); Phase 03 is solo for `Artfever` and Phase 04 is solo for `TahaSohail-Goat` (the other session only reviews); Phase 07 runs #44 and #46 in parallel by design (see the planned merge conflict below), with #45 after #44. No deadline is stated in the assignment (B-001), so order is by dependency, not by date.
+Dependencies that do make one package wait for another (from the issues' Dependencies lines): #41 after #40 (Phase 05); #43 after #42 (Phase 06, both write `docs/CACHE.md`); #45 after #44 (Phase 07); #48 after #47 (Phase 08); #50 after #49 (Phase 09); #52 after #51 (Phase 10); #56 after everything else (Phase 12). Everything else can run at the same time, in particular Phase 03 (frontend, `Artfever`) next to Phase 04 (backend, `TahaSohail-Goat`). Phase 07 runs #44 and #46 in parallel by design (see the planned merge conflict below), with #45 after #44. The team target is to be done by Sunday 27 Sep 2026; the Google Classroom deadline is "next Tuesday" (`docs/SUBMISSION.md`).
 
 ### File ownership and serialization
 
 Each package lists the files it owns; a session never edits a file owned by an open package of the other person. The lists:
 
 - **#32 P02-S01** (`Artfever`): `docs/ARCHITECTURE.md`; `docs/REPOSITORY_STRUCTURE.md`
-- **#33 P02-S02** (`TahaSohail-Goat`): `docs/API_DESIGN.md`; `docs/frs/api.md (DQ answer column only)`; `docs/BLOCKERS.md (rows B-006 and B-021 only)`
+- **#33 P02-S02** (`TahaSohail-Goat`): `docs/API_DESIGN.md`; `docs/frs/api.md (DQ answer column only)`; `docs/SUBMISSION.md (the open decisions rows only)`
 - **#34 P03-S01** (`Artfever`): `frontend/package.json`; `frontend/package-lock.json`; `frontend/vite.config.ts`; `frontend/tsconfig*.json`; `frontend/eslint config`; `frontend/src/api/**`; `frontend/src/main.tsx`; `frontend/src/App.tsx`; `docs/adr/0002-frontend-runtime-config.md`
 - **#35 P03-S02** (`Artfever`): `frontend/src/pages/Submit*`; `frontend/src/pages/Dashboard*`; `frontend/src/components/** (except ErrorBoundary*)`
 - **#36 P03-S03** (`Artfever`): `frontend/src/pages/Stats*`; `frontend/src/components/ErrorBoundary*`; `frontend/tests/**`
@@ -136,7 +136,7 @@ Files that two packages both touch are **serialized** (one after the other) or *
 | `backend/app/services/triage.py` | #44 (fallback orchestration) and #46 (cache and latency hooks) are developed in parallel from the same `dev` commit; the second to merge resolves the real conflict (see below) |
 | `compose.yaml` | P08-S01 first; P08-S02 adds frontend and Ollama services after it merges |
 | `k8s/base/kustomization.yaml` | P09-S01 first; P09-S02 adds its entries after it merges |
-| `docs/BLOCKERS.md` | append-only rows and edits to the owner's own rows |
+| `docs/SUBMISSION.md` (decisions table) | edits to the owner's own rows |
 
 Other conflict-heavy files: migrations (only #40 adds them); `backend/pyproject.toml` and lockfiles (the owner of #37 adds dependencies, or the other person opens a one-line PR); `.github/workflows` (`ci.yml` is #51, `cd.yml` and `release.yml` are #52: disjoint files, same conventions); `docs/evidence/` (distinct filename prefixes per package: `compose-*`, `ci-*`, `k8s-hpa-*`, `k8s-vpa-*`, `k8s-load-*`, `k8s-pg-*`, `k8s-rollback-*`, `k8s-zero-downtime-*`, `protection-*`, `screenshots-*`, `conflict-*`); `docs/AI-USAGE.md` (one table per contributor).
 
