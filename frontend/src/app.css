@@ -1,0 +1,42 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  color: #172632;
+  background: #f4f7f6;
+  line-height: 1.5;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+.shell { max-width: 1000px; margin: auto; padding: 1.5rem; }
+header { display: flex; justify-content: space-between; gap: 1.5rem; align-items: end; margin-bottom: 2rem; }
+h1 { margin: .2rem 0 0; font-size: clamp(1.7rem, 4vw, 2.5rem); }
+.eyebrow { margin: 0; color: #176b68; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+nav { display: flex; gap: .5rem; }
+nav button { border: 1px solid #adc9c2; background: white; color: #174b49; padding: .55rem .9rem; border-radius: .55rem; }
+nav button[aria-current="page"] { background: #176b68; color: white; }
+main > section { background: white; border: 1px solid #dce7e3; border-radius: 1rem; padding: clamp(1rem, 3vw, 2rem); box-shadow: 0 8px 25px #15372e0c; }
+h2 { margin-top: 0; }
+form { display: grid; gap: .5rem; max-width: 640px; }
+form label { font-weight: 650; margin-top: .7rem; }
+input, select, textarea { width: 100%; border: 1px solid #98b0aa; border-radius: .5rem; padding: .65rem; background: white; color: inherit; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 3px solid #f2a93b; outline-offset: 2px; }
+button[type="submit"] { justify-self: start; background: #176b68; color: white; border: 0; border-radius: .5rem; padding: .7rem 1.2rem; margin-top: .8rem; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+[role="alert"] { color: #9b2929; }
+dl { display: grid; grid-template-columns: 8rem 1fr; gap: .4rem 1rem; }
+dt { font-weight: 700; }
+dd { margin: 0; }
+.filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.filters label { font-weight: 650; }
+.filters select { display: block; margin-top: .3rem; }
+.complaint-list { display: grid; gap: 1rem; }
+.complaint-list article { border: 1px solid #dce7e3; border-radius: .7rem; padding: 1rem; }
+.complaint-list h3 { margin-top: 0; text-transform: capitalize; }
+.complaint-list label { display: block; max-width: 360px; font-weight: 650; }
+.pagination { margin-top: 1rem; }
+@media (max-width: 700px) {
+  header { display: block; }
+  header nav { margin-top: 1rem; flex-wrap: wrap; }
+  .filters { grid-template-columns: 1fr; }
+}
