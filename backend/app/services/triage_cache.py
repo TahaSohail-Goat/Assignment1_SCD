@@ -21,9 +21,9 @@ _PREFIX = "triage:v1:"
 T = TypeVar("T")
 
 
-def content_key(text: str, location: str) -> str:
-    """Hash both provider inputs; separators prevent ambiguous concatenation."""
-    payload = json.dumps([text, location], ensure_ascii=False, separators=(",", ":"))
+def content_key(text: str, location: str, provider: str) -> str:
+    """Hash provider identity and its inputs; separators prevent ambiguous concatenation."""
+    payload = json.dumps([provider, text, location], ensure_ascii=False, separators=(",", ":"))
     return _PREFIX + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
@@ -32,9 +32,9 @@ class TriageCache:
         self._store = store
 
     def get(
-        self, text: str, location: str, validate: Callable[[object], T]
+        self, text: str, location: str, provider: str, validate: Callable[[object], T]
     ) -> tuple[T, str] | None:
-        key = content_key(text, location)
+        key = content_key(text, location, provider)
         try:
             raw = self._store.get(key)
         except Exception as error:
@@ -44,7 +44,7 @@ class TriageCache:
             return None
         try:
             entry = json.loads(raw)
-            if not isinstance(entry, dict) or not isinstance(entry.get("provider"), str):
+            if not isinstance(entry, dict) or entry.get("provider") != provider:
                 raise ValueError("invalid cache envelope")
             return validate(entry["result"]), entry["provider"]
         except (ValueError, KeyError, TypeError, MalformedOutputError) as error:
@@ -68,7 +68,7 @@ class TriageCache:
         provider: str,
         serialize: Callable[[T], Mapping[str, object]],
     ) -> None:
-        key = content_key(text, location)
+        key = content_key(text, location, provider)
         entry = json.dumps(
             {"provider": provider, "result": serialize(result)},
             ensure_ascii=False,

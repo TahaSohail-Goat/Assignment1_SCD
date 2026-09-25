@@ -1,4 +1,4 @@
-﻿# Triage operations and evidence
+# Triage operations and evidence
 
 This file exists because assignment §5.7 names `docs/TRIAGE.md` without defining its contents. The team uses it as the operational and measurement companion to the AI requirements in `docs/AI.md` and the decisions in ADRs 0001 and 0004. It does not add a new assignment requirement.
 
@@ -16,7 +16,7 @@ This file exists because assignment §5.7 names `docs/TRIAGE.md` without definin
 
 ## Cache measurement, 2026-09-25
 
-`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 250 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; a real Redis 7 workload hit rate remains to be measured in Compose.
+`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 289 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; a real Redis 7 workload hit rate remains to be measured in Compose.
 
 The hosted-versus-offline comparison and a deployment privacy check are pending live services. Record exact commands, dates, input sets and outputs here when available.
 
