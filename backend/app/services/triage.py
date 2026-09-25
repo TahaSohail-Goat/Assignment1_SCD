@@ -76,7 +76,9 @@ class TriageService:
                 triaged_by = FALLBACK_NAME
                 self._record_fallback(complaint_id, error)
             if self._cache and triaged_by != FALLBACK_NAME:
-                self._cache.put(text, location, result, triaged_by, lambda value: value.model_dump())
+                self._cache.put(
+                    text, location, result, triaged_by, lambda value: value.model_dump()
+                )
         elapsed = self._clock() - started
         metrics.TRIAGE_DURATION.labels(self._provider.name).observe(elapsed)
         return TriageDecision(

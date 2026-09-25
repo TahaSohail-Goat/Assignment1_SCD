@@ -28,6 +28,7 @@ from app.repositories.uow import SqlUnitOfWork, UnitOfWork
 from app.routes import complaints, health, meta, metrics, stats
 from app.services.complaints import ComplaintService, Triager
 from app.services.rate_limit import RateLimitService
+from app.services.meta import MetaService
 from app.services.readiness import DependencyProbe, ReadinessService
 from app.services.stats import StatsService
 from app.services.triage import TriageService
@@ -115,6 +116,7 @@ def create_app(
             else None
         )
         app.state.unit_of_work = active_unit_of_work
+        app.state.meta = MetaService(active_unit_of_work)
         app.state.active_provider = settings.triage_provider
         app.state.complaints = ComplaintService(
             active_unit_of_work, active_triager, after_create=stats_service.invalidate
