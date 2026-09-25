@@ -35,7 +35,7 @@ Accounts/credentials needed later (not installed software): a GitHub account ✅
 
 ## 2. Nothing to do now
 
-Git, `gh`, curl, winget and Git Bash are fine. **No install is required to finish Phases 00–07** except optionally the version-alignment options in §5. Docker and the Kubernetes tools are first needed at **Phase 08**.
+Git, `gh`, curl, winget and Git Bash are fine. **Phases 00–02 are documents only**, so no install is needed to finish them. **Python 3.12 and Node 22 are needed from Phase 03/04** (whoever writes or reviews that code runs it), Docker from **Phase 08**, and the Kubernetes tools from **Phase 09**. §8 says who installs what, and by when.
 
 ## 3. Verify identity before any GitHub write (AGENTS.md §6)
 
@@ -154,3 +154,24 @@ Paste the outputs into the PR of the phase that first needs them (Phase 08 for D
 - Line endings: `.gitattributes` forces LF; do not override it with editor settings that write CRLF into Dockerfiles or shell scripts.
 - Use Git Bash (or WSL) for the POSIX scripts in the assignment (`vpa-up.sh`, curl loops); PowerShell for `winget`/`gh`.
 - Keep the repository on `C:` (not on a network or synced drive) so bind mounts and file watchers behave.
+
+## 8. Install plan per machine (issue #59)
+
+Each contributor installs on **their own machine** (an AI session may propose the commands; the human approves any elevation prompt). Install only what is missing, use the commands in §4–§5, record the versions in the PR of the first package that needs the tool, and schedule Docker Desktop outside a working session (it needs administrator rights and usually a reboot).
+
+| Tool | Version | Needed by | Who, and by when | Commands | Verify |
+|---|---|---|---|---|---|
+| Python | 3.12 (side by side) | #37 (Phase 04, Taha); #41, #43, #45, #46 (Phases 05–07, Artfever) | the author before their first Python package; the reviewer before running the other's tests | §5 | `py -3.12 --version` |
+| Node.js | 22 (side by side) | #34, #35, #36 (Phase 03, Artfever) | Artfever before Phase 03; Taha before reviewing the frontend PRs (recommended) | §5 | `node --version` → v22.x in `frontend/` |
+| Docker Desktop + Compose | current | #47 (Taha), #48 (Artfever), the evidence packages | both, before Phase 08 | §4.1 | `docker version`, `docker compose version`, `docker run --rm hello-world` |
+| kubectl | current | #49, #50 | both, before Phase 09 | §4.2 | `kubectl version --client` |
+| kind **or** k3d | one of them, the **same** for both | #49, #50, #52 | both, before Phase 09; the choice is recorded in #49 | §4.3 | `kind version` (or `k3d version`) |
+| kustomize, kubeconform | current | #49, #51 (CI parity) | both, before Phase 09 (recommended) | §4.4 | `kustomize version`, `kubeconform -v` |
+| k6 | current | #50 | Artfever before Phase 09; Taha recommended | §4.5 | `k6 version` |
+| Trivy, Syft | optional | #51, #52 local copies | optional | §4.6 | — |
+
+**State per machine**
+- **Taha (`TahaSohail-Goat`)** — scanned 2026-09-25: git ✅, `gh` ✅, Python 3.13.2 (add 3.12 before #37), Node 24.13.0 (add 22 before reviewing frontend PRs), Docker ❌, kubectl ❌, kind/k3d ❌, k6 ❌. Windows 11, 15.8 GB RAM: use the `.wslconfig` suggestion in §4.1.
+- **Artfever (`Artfever`)** — not yet recorded. His session's preflight (`git --version`, `gh --version`, `python --version`, `node --version`, `docker --version`) fills this in; paste the result into the description of his first package PR (#34).
+
+**Phase-start rule:** a package is not started until the tools it needs are installed and verified on the machine of the person who owns it (`docs/AI_SESSIONS.md`, phase-start checklist).
