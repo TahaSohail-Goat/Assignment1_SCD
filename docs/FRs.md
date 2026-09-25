@@ -11,7 +11,7 @@ Functional requirements are extracted from [`docx/ASSIGNMENT.md`](../docx/ASSIGN
 
 `ASG-FR-018` and `ASG-FR-019` are intentionally unused (a gap left between the two groups). IDs are never reused or renumbered.
 
-Owner decision B-004: the API contract is the **nine** operations listed in the assignment's table (§2.2 p5–6).
+Owner decision (confirmed by the instructor: no tenth endpoint): the API contract is the **nine** operations listed in the assignment's table (§2.2 p5–6).
 
 ## Rules for every catalog
 

@@ -2,7 +2,7 @@
 
 Extracted from `docx/ASSIGNMENT.md` §4 (p19–22), §5.1 (p23), §5.3 (p24) and §5.4 (p24–25). Marks are copied exactly. Each rubric item maps to the requirement IDs in [`ASSIGNMENT_TRACEABILITY.md`](ASSIGNMENT_TRACEABILITY.md) so no line can be forgotten.
 
-> **Source inconsistency (do not silently correct).** The header and §4 state **150 marks**. The rubric lines below sum to **175**. See [`BLOCKERS.md`](BLOCKERS.md) B-002 and B-003. Until the instructor clarifies, every line is treated as worth its stated marks and all mandatory lines are pursued.
+> **Source inconsistency (do not silently correct).** The header and §4 state **150 marks**. The rubric lines below sum to **175**. The instructor said (verbally, 2026-09-25) that the rubric is left as it is and managed by the teaching assistant (decisions table in [`SUBMISSION.md`](SUBMISSION.md)), so every line is treated as worth its stated marks and all mandatory lines are pursued.
 
 ## 1. Arithmetic check
 
@@ -51,7 +51,7 @@ Item codes (`A1` … `J5`) are Phase 00 labels for easy reference; they are not 
 
 | Code | Marks | Rubric line | Requirement IDs |
 |---|---|---|---|
-| C1 | 7 | All ten endpoints to contract, correct status codes, field-level validation errors | ASG-FR-020 … -033, ASG-FR-036 (B-004: nine listed) |
+| C1 | 7 | All ten endpoints to contract, correct status codes, field-level validation errors | ASG-FR-020 … -033, ASG-FR-036 (nine listed; the instructor confirmed there is no tenth) |
 | C2 | 4 | Four-layer separation: no SQL outside repositories, no business rules in routes | ASG-NFR-002 … -007 |
 | C3 | 3 | Status state machine as an explicit transition table; invalid transitions 409 | ASG-FR-027, -028, -034, -035 |
 | C4 | 3 | /health and /ready correctly distinguished; /health does not touch the database | ASG-FR-031, -032, ASG-K8S-017, -018 |
@@ -137,7 +137,7 @@ Item codes (`A1` … `J5`) are Phase 00 labels for easy reference; they are not 
 
 | Code | Marks | Rubric line | Requirement IDs |
 |---|---|---|---|
-| BON1 | +4 | Zero-downtime rolling update demonstrated under live load with zero failed requests | ASG-BONUS-001, ASG-K8S-021 (B-008) |
+| BON1 | +4 | Zero-downtime rolling update demonstrated under live load with zero failed requests | ASG-BONUS-001, ASG-K8S-021 |
 | BON2 | +4 | GitOps: Argo CD or Flux reconciling the cluster from the repository | ASG-BONUS-002 |
 | BON3 | +3 | Deploy by image digest rather than tag, with Cosign signing and verification in CI | ASG-BONUS-003, -006, -007 |
 | BON4 | +2 | Prometheus scraping `/metrics` plus a Grafana dashboard, screenshot committed | ASG-BONUS-004 |

@@ -2,7 +2,7 @@
 
 Catalog for the nine backend operations and the domain rules behind them. Index, rules and entry template: [`../FRs.md`](../FRs.md). Source: [`docx/ASSIGNMENT.md`](../../docx/ASSIGNMENT.md) §2.2 (p5–7), §2.3–2.5 where they constrain the API, rubric part C. Product context: [`../PRD.md`](../PRD.md).
 
-**Contract (owner decision B-004): nine operations.**
+**Contract (owner decision, confirmed by the instructor: no tenth endpoint): nine operations.**
 
 | # | Operation | Entry |
 |---|---|---|
@@ -325,7 +325,7 @@ The diagonal (same status) is ❌ because the assignment allows nothing that is 
 
 ### ASG-FR-036 — All nine endpoints conform to the contract
 
-- **Source:** §2.2 p5–6; §4 C p19 ("All ten endpoints to contract, correct status codes, field-level validation errors" — the source lists nine; B-004, owner decision: nine).
+- **Source:** §2.2 p5–6; §4 C p19 ("All ten endpoints to contract, correct status codes, field-level validation errors" — the source lists nine; owner decision, confirmed by the instructor: nine).
 - **Actor:** Reviewer / evaluator.
 - **Precondition:** The backend is deployed.
 - **Trigger:** A contract check against the table in §2.2.
@@ -363,7 +363,7 @@ The diagonal (same status) is ❌ because the assignment allows nothing that is 
 
 ## Design questions for Phase 02
 
-The assignment leaves these details open. They are **not decided here**; Phase 02 (API design and ADRs) answers each one, and the answer is recorded in the design document or ADR before the endpoint is implemented. Tracked as **B-021** in [`BLOCKERS.md`](../BLOCKERS.md).
+The assignment leaves these details open. They are **not decided here**; Phase 02 (API design and ADRs) answers each one, and the answer is recorded in the design document or ADR before the endpoint is implemented.
 
 | ID | Question | What the assignment says | Why it matters | Answered in |
 |---|---|---|---|---|

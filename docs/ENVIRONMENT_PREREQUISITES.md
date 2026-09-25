@@ -16,9 +16,9 @@ Phase 00 inspects the host **before** telling anyone to install anything. Only m
 | curl | smoke tests | — | curl.exe 8.21.0 | ✅ OK |
 | winget | installs below | — | 1.29.380 | ✅ OK |
 | openssl / bash | VPA install script (Phase 09) | — | OpenSSL and Git Bash from Git for Windows | ✅ OK |
-| Python | backend dev, tests | image base `python:3.12-slim` (§3.1) | 3.13.2 (+ pip 26.2.1) | ⚠️ present, **differs** (B-020) |
-| Node.js / npm | frontend dev, tests | image base `node:22-alpine` (§3.1) | Node 24.13.0 / npm 11.6.2 | ⚠️ present, **differs** (B-020) |
-| Docker Engine / Desktop | Compose, images, kind/k3d | required (§3.2) | not found | ❌ **missing** (B-017) |
+| Python | backend dev, tests | image base `python:3.12-slim` (§3.1) | 3.13.2 (+ pip 26.2.1) | ⚠️ present, **differs** |
+| Node.js / npm | frontend dev, tests | image base `node:22-alpine` (§3.1) | Node 24.13.0 / npm 11.6.2 | ⚠️ present, **differs** |
+| Docker Engine / Desktop | Compose, images, kind/k3d | required (§3.2) | not found | ❌ **missing** |
 | Docker Compose v2 | one-command stack | required (§3.2) | not found (ships with Docker Desktop) | ❌ **missing** |
 | kubectl | Kubernetes phases, CD smoke | required (§3.3) | not found | ❌ **missing** |
 | kind **or** k3d | local cluster | one of them (§3.3) | neither found | ❌ **missing** |
@@ -35,7 +35,7 @@ Accounts/credentials needed later (not installed software): a GitHub account ✅
 
 ## 2. Nothing to do now
 
-Git, `gh`, curl, winget and Git Bash are fine. **No install is required to finish Phases 00–07** except optionally the version-alignment options in §5. Docker and the Kubernetes tools are first needed at **Phase 08**.
+Git, `gh`, curl, winget and Git Bash are fine. **Phases 00–02 are documents only**, so no install is needed to finish them. **Python 3.12 and Node 22 are needed from Phase 03/04** (whoever writes or reviews that code runs it), Docker from **Phase 08**, and the Kubernetes tools from **Phase 09**. §8 says who installs what, and by when.
 
 ## 3. Verify identity before any GitHub write (AGENTS.md §6)
 
@@ -51,7 +51,7 @@ A second contributor uses their **own** GitHub login and their own worktree; nob
 
 Run each command in an **elevated** PowerShell (Run as administrator). Package IDs were confirmed with `winget search --exact` on the scan date. Re-check versions with `winget show <id>` if a command fails.
 
-### 4.1 Docker Desktop + Compose (B-017) — needed at Phase 08
+### 4.1 Docker Desktop + Compose — needed at Phase 08
 
 ```powershell
 winget install -e --id Docker.DockerDesktop
@@ -122,7 +122,7 @@ winget install -e --id Sigstore.Cosign       # bonus ASG-BONUS-003 only
 | Vertical Pod Autoscaler | recommender in `updateMode: "Off"` (ASG-K8S-028) | Installed from the `kubernetes/autoscaler` repository's VPA scripts (bash + openssl — both present via Git Bash). Confirm against upstream at install time. |
 | Ingress controller | makes the `/` and `/api` Ingress work (ASG-K8S-009) | The assignment names none; the choice is a Phase 09 decision. |
 
-## 5. Version alignment (B-020) — optional
+## 5. Version alignment — optional
 
 The images will build with Python 3.12 and Node 22 regardless of the host. The mismatch only matters for tests run **outside** Docker. Pick one; do not uninstall existing versions:
 
@@ -154,3 +154,37 @@ Paste the outputs into the PR of the phase that first needs them (Phase 08 for D
 - Line endings: `.gitattributes` forces LF; do not override it with editor settings that write CRLF into Dockerfiles or shell scripts.
 - Use Git Bash (or WSL) for the POSIX scripts in the assignment (`vpa-up.sh`, curl loops); PowerShell for `winget`/`gh`.
 - Keep the repository on `C:` (not on a network or synced drive) so bind mounts and file watchers behave.
+- In Windows PowerShell 5.1 the execution policy can block `npm` (it runs `npm.ps1`); `npm.cmd` runs the same tool. Observed on Artfever's machine, where `npm --version` fails and `npm.cmd --version` prints 11.16.0. Use `npm.cmd` in that shell, or let the owner of the machine change the policy for their own user; nobody changes another person's machine.
+
+## 8. Install plan per machine (issue #59)
+
+Each contributor installs on **their own machine** (an AI session may propose the commands; the human approves any elevation prompt). Install only what is missing, use the commands in §4–§5, record the versions in the PR of the first package that needs the tool, and schedule Docker Desktop outside a working session (it needs administrator rights and usually a reboot).
+
+| Tool | Version | Needed by | Who, and by when | Commands | Verify |
+|---|---|---|---|---|---|
+| Python | 3.12 (side by side) | #37 (Phase 04, Taha); #41, #43, #45, #46 (Phases 05–07, Artfever) | the author before their first Python package; the reviewer before running the other's tests | §5 | `py -3.12 --version` |
+| Node.js | 22 (side by side) | #34, #35, #36 (Phase 03, Artfever) | Artfever before Phase 03; Taha before reviewing the frontend PRs (recommended) | §5 | `node --version` → v22.x in `frontend/` |
+| Docker Desktop + Compose | current | #47 (Taha), #48 (Artfever), the evidence packages | both, before Phase 08 | §4.1 | `docker version`, `docker compose version`, `docker run --rm hello-world` |
+| kubectl | current | #49, #50 | both, before Phase 09 | §4.2 | `kubectl version --client` |
+| kind **or** k3d | one of them, the **same** for both | #49, #50, #52 | both, before Phase 09; the choice is recorded in #49 | §4.3 | `kind version` (or `k3d version`) |
+| kustomize, kubeconform | current | #49, #51 (CI parity) | both, before Phase 09 (recommended) | §4.4 | `kustomize version`, `kubeconform -v` |
+| k6 | current | #50 | Artfever before Phase 09; Taha recommended | §4.5 | `k6 version` |
+| Trivy, Syft | optional | #51, #52 local copies | optional | §4.6 | — |
+
+**State per machine**
+- **Taha (`TahaSohail-Goat`)** — scanned 2026-09-25: git ✅, `gh` ✅, Python 3.13.2 (add 3.12 before #37), Node 24.13.0 (add 22 before reviewing frontend PRs), Docker ❌, kubectl ❌, kind/k3d ❌, k6 ❌. Windows 11, 15.8 GB RAM: use the `.wslconfig` suggestion in §4.1.
+- **Artfever (`Artfever`)** — reported 2026-09-25 by his own Windows PowerShell 5.1 session, in his review of PR #61 (raw output given there; not re-run by Taha's session). These are inventory results, not a request to install the later-phase tools now. Not reported yet: the Windows version, RAM, and virtualization / WSL 2 status, which §4.1 needs before Docker Desktop (Phase 08).
+
+| Tool | Reported by his session | Verdict, and what to do by when |
+|---|---|---|
+| Git | 2.54.0.windows.1 | ✅ |
+| `gh` | 2.101.0 | ✅ |
+| Python | 3.14.6; `py -3.12 --version` → no matching runtime | ⚠️ differs from `python:3.12-slim`. Add 3.12 side by side (§5) before running the backend tests of Phase 04 (recommended) and before #41 (Phase 05, required) |
+| Node.js | v24.18.0 | ⚠️ differs from `node:22-alpine`. Add Node 22 side by side (§5) before #34 (Phase 03, required) |
+| npm | `npm --version` fails: `npm.ps1` is blocked by the PowerShell execution policy; `npm.cmd --version` works and prints 11.16.0 | ⚠️ run `npm.cmd` in that shell, or change the execution policy for his own user; that is his decision and is not made here (§7) |
+| Docker / Compose | `docker`: command not found | ❌ before Phase 08 (#48), §4.1 |
+| kubectl | command not found | ❌ before Phase 09, §4.2 |
+| kind, k3d | command not found | ❌ before Phase 09; the same one as Taha's, chosen in #49, §4.3 |
+| k6 | command not found | ❌ before #50 (Phase 09), §4.5 |
+
+**Phase-start rule:** a package is not started until the tools it needs are installed and verified on the machine of the person who owns it.

@@ -63,7 +63,7 @@ If you cannot prove a requirement from:
 
 do not implement it as a mandatory assignment requirement.
 
-Write the uncertainty into `docs/BLOCKERS.md` or `docs/adr/`.
+Write the uncertainty into the PR or issue, or into `docs/adr/` when it is a design decision.
 
 ## 6. Git Safety
 - No direct commits to `main`. No direct commits to `dev` either: work happens on `feature/<issue-number>-<slug>` branches cut from `dev` and reaches `dev` by pull request; `dev` reaches `main` by a merge-commit pull request (`docs/GITHUB_WORKFLOW.md`).

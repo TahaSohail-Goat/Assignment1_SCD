@@ -19,7 +19,7 @@
 
 1. A citizen submits a complaint through a web interface.
 2. The system validates it and **triages it into a category, a priority and a one-line summary**, persists it durably, and shows it on a live operations dashboard with aggregate statistics (`ASG-FR-037`).
-3. The system runs as five cooperating containers on a laptop with one command (`ASG-GEN-005`, B-019) and as a scaled, probed, auto-scaling workload on a Kubernetes cluster in CI (`ASG-GEN-006`).
+3. The system runs as five cooperating containers on a laptop with one command (`ASG-GEN-005`) and as a scaled, probed, auto-scaling workload on a Kubernetes cluster in CI (`ASG-GEN-006`).
 
 **"Done" is defined by the assignment (§1.4 p3):**
 
@@ -27,7 +27,7 @@
 |---|---|
 | A stranger clones the repository and, with one command, has the whole system running **with seeded data** | `ASG-GEN-007` |
 | A second command puts it on a Kubernetes cluster | `ASG-GEN-008` |
-| A push to main tests it, builds signed and scanned images, deploys them, and can be **undone in thirty seconds** (image signing: see B-007) | `ASG-GEN-009`, `ASG-CICD-031` |
+| A push to main tests it, builds signed and scanned images, deploys them, and can be **undone in thirty seconds** (image signing is not required, per the instructor) | `ASG-GEN-009`, `ASG-CICD-031` |
 | Everything a claim in the README asserts can be demonstrated | `ASG-GEN-010` |
 
 Why each piece exists (§1.3 p2): a real frontend forces CORS, a build step, runtime configuration and a multi-stage image; an AI step "you do not control" forces structured output, validation, timeouts, retry, fallback, cost caching and rate limiting; PostgreSQL with migrations forces persistence, volumes and StatefulSets; Redis doing two jobs forces cache semantics and a distributed limiter; two Docker networks force segmentation; Kubernetes with an HPA forces declarative operations and resource requests.
@@ -132,7 +132,7 @@ stateDiagram-v2
 
 ## 5. Scope
 
-Every row is mandatory unless marked optional. Rubric marks are from §4 (their total is inconsistent in the source: 175 vs the stated 150 — B-002, deferred by the owner).
+Every row is mandatory unless marked optional. Rubric marks are from §4 (their total is inconsistent in the source: 175 vs the stated 150; the instructor left the rubric to the teaching assistant).
 
 | Area | What is in scope | IDs | Rubric part (marks) |
 |---|---|---|---|
@@ -169,11 +169,11 @@ Repository layout is fixed by §5.7 (`ASG-REPO-001…019`, [`REPOSITORY_STRUCTUR
 - Editing or deleting a complaint (no endpoint in the contract).
 - Attachments, notifications or any other channel than the web form.
 - The pagination response envelope, the JSON error-body shape and the request/response field names beyond those in §2.2–§2.3 (Phase 02 design; FR catalog issues #14/#15 list them as design questions).
-- The Ingress host name, and how `triaged_by` is set for the simulated and non-Groq providers (B-006).
+- The Ingress host name, and how `triaged_by` is set for the simulated and non-Groq providers (decided in Phase 02/05/07).
 
 ## 7. Functional requirements (summary)
 
-Full catalog: frontend `ASG-FR-001…017` in `docs/frs/frontend.md` (issue #14); API and domain `ASG-FR-020…037` in `docs/frs/api.md` (issue #15); index and entry template in [`FRs.md`](FRs.md). The two `frs/` files are created by those issues. Behavioural flows that exercise these requirements: [`USE_CASES.md`](USE_CASES.md) (issue #17). Owner decision B-004: the **nine** endpoints in the assignment's API table are the contract.
+Full catalog: frontend `ASG-FR-001…017` in `docs/frs/frontend.md` (issue #14); API and domain `ASG-FR-020…037` in `docs/frs/api.md` (issue #15); index and entry template in [`FRs.md`](FRs.md). The two `frs/` files are created by those issues. Behavioural flows that exercise these requirements: [`USE_CASES.md`](USE_CASES.md) (issue #17). Owner decision (confirmed by the instructor: no tenth endpoint): the **nine** endpoints in the assignment's API table are the contract.
 
 | Endpoint | Behaviour (§2.2 p5–6) |
 |---|---|
@@ -227,7 +227,7 @@ The product is accepted when **all** of the following hold; each item is verifie
 - [ ] **Every mandatory ID** in [`ASSIGNMENT_TRACEABILITY.md`](ASSIGNMENT_TRACEABILITY.md) is `PASS`, or has a documented exception.
 - [ ] **Rubric parts A–J** each have evidence for every line ([`RUBRIC.md`](RUBRIC.md)).
 - [ ] **No automatic deduction applies:** all eleven `ASG-DED-*` guards are verified — no secret anywhere in history (−20), no key in a manifest (−15), no unpinned image, `localhost` service call, frontend→database path, published DB/cache port, ungated publish, `:latest` deploy or DB Deployment without PVC (−8 each), no direct push to main, working clean-clone quickstart (−5 each).
-- [ ] **Submission package complete** ([`SUBMISSION.md`](SUBMISSION.md)): repository URL, successful `cd.yml` run, both GHCR images with SHA tags, demo video, `git shortlog -sn`, `kubectl get hpa -w` capture and chart, and `python scripts/check_submission.py` run (B-014).
+- [ ] **Submission package complete** ([`SUBMISSION.md`](SUBMISSION.md)): repository URL, successful `cd.yml` run, both GHCR images with SHA tags, demo video, `git shortlog -sn`, `kubectl get hpa -w` capture and chart, and `python scripts/check_submission.py` run.
 - [ ] **Both members can explain every part** at the individual viva (§5.4).
 
 ## 11. Demo requirements
@@ -245,7 +245,7 @@ Live demonstrations the assignment requires elsewhere (all must be real, never s
 | HPA scale-out under load: `kubectl get hpa -w` and a replicas-vs-load chart; VPA recommendations and updated requests | `ASG-K8S-024…029` | §3.3 p16 |
 | Rollback both ways: `kubectl rollout undo` and re-applying the previous overlay with the previous SHA | `ASG-CICD-028…030` | §3.4 p18–19 |
 | A red pipeline blocking a merge, fixed in the same PR, then green | `ASG-CICD-027` | §3.4 p18 |
-| Zero-downtime rollout under live load (scored as bonus; B-008 — planned anyway) | `ASG-K8S-021`, `ASG-BONUS-001` | §3.3 p15 |
+| Zero-downtime rollout under live load (scored as bonus; planned anyway) | `ASG-K8S-021`, `ASG-BONUS-001` | §3.3 p15 |
 | One deliberate, real merge conflict resolved, with 2–4 sentences on why that version won | `ASG-GH-009…011` | §4 A p19 |
 
 ## 12. Traceability references
@@ -266,14 +266,14 @@ Live demonstrations the assignment requires elsewhere (all must be real, never s
 
 ## 13. Open questions that touch the product
 
-Details and status in [`BLOCKERS.md`](BLOCKERS.md).
+Instructor answers and the decisions still open are in the decisions table of [`SUBMISSION.md`](SUBMISSION.md). The ones that touch the product:
 
-| ID | Question | Status |
-|---|---|---|
-| B-001 | Duration "2 Weeks" vs "four weeks"; no deadline date | Open |
-| B-002 / B-003 | Rubric sums to 175 (A–G to 120), not the stated 150 (110) | Deferred by the owner |
-| B-004 | "Ten endpoints" vs nine listed | Resolved by the owner: nine |
-| B-006 | `triaged_by` value for the simulated and non-Groq providers | Open (decide in Phase 05/07) |
-| B-007 | "Signed" images in §1.4 vs signing only as bonus | Open |
-| B-008 | Zero-downtime demo is imperative in §3.3, bonus in the rubric | Info (do it anyway) |
-| B-019 | "Five containers" only holds if Ollama runs in the default Compose stack | Info |
+| Question | Status |
+|---|---|
+| Duration "2 Weeks" vs "four weeks"; no deadline date | The instructor: the deadline is the Google Classroom one, "next Tuesday"; the exact date is to be confirmed |
+| Rubric sums to 175 (A–G to 120), not the stated 150 (110) | The instructor: left as it is; the teaching assistant manages it |
+| "Ten endpoints" vs nine listed | Nine; the instructor confirmed there is no tenth |
+| `triaged_by` value for the simulated and non-Groq providers | Open; decided in Phase 02 (API design) and recorded in an ADR |
+| "Signed" images in §1.4 vs signing only as bonus | The instructor: signing is not required (Cosign stays optional) |
+| Zero-downtime demo is imperative in §3.3, bonus in the rubric | Not asked; we do it anyway |
+| "Five containers" only holds if Ollama runs in the default Compose stack | Ollama stays in the default Compose stack |

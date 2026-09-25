@@ -3,7 +3,7 @@
 Living index mapping **every obligation in the assignment** to a stable ID, an owner, an issue, an artifact, a verification method and evidence. Built in Phase 00 from the complete [`docx/ASSIGNMENT.md`](../docx/ASSIGNMENT.md) (transcription of `docx/ASSIGNMENT_SOURCE.pdf`).
 
 - Source references are `§section pPDF-page`.
-- Nothing here is invented. Where the source is unclear the row points at a blocker (`B-xxx` in [`BLOCKERS.md`](BLOCKERS.md)).
+- Nothing here is invented. Where the source is unclear the row points at an extraction note (`EN-xx` in [`docx/EXTRACTION_NOTES.md`](../docx/EXTRACTION_NOTES.md)) or at the decisions table of [`SUBMISSION.md`](SUBMISSION.md).
 - **Owner** and **Issue** come from the Phase 02–12 allocation in issue #18 (`docs/TEAM_CONTRIBUTION.md`): the issue is the work package that implements or evidences the row, the owner is that package's owner (the other person reviews). Rows still `TBD` have no implementing package: bonus items, policy and informational rows.
 - Rubric marks and their mapping to these IDs live in [`RUBRIC.md`](RUBRIC.md); submission/viva/engineering-note items are expanded in [`SUBMISSION.md`](SUBMISSION.md).
 
@@ -33,7 +33,7 @@ The pack's required families are used unchanged. Phase 00 adds four families for
 
 - **Type:** `Mandatory` · `Recommended` (source says recommended/permitted) · `Constraint` · `Evidence` (must be demonstrated/captured) · `Bonus` · `Policy` · `Advisory` (context, no test) · `Deduction`.
 - **Verification:** `UT` unit test · `IT` integration test · `CI` CI job · `INS` inspection/lint · `CFG` config check · `DEMO` live/video demo · `MEAS` measurement · `DOC` document review.
-- **Status:** `Not started` · `Skeleton` (directory placeholder only) · `Blocked` (see blocker) · `Info` (no implementation; tracked for awareness).
+- **Status:** `Not started` · `Skeleton` (directory placeholder only) · `Blocked` (waiting on a decision, see `SUBMISSION.md`) · `Info` (no implementation; tracked for awareness).
 
 Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status`.
 
@@ -44,14 +44,14 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-GEN-001 | header p1 | Team of 2 members | Constraint | TBD | TBD | — | INS | `docs/TEAM_CONTRIBUTION.md` | Info |
-| ASG-GEN-002 | header p1; §5.1 p23 | Duration stated as "2 Weeks" but §5.1 says four weeks; no deadline date given | Advisory | TBD | TBD | — | DOC | — | Blocked (B-001) |
-| ASG-GEN-003 | header p1; §4 p19 | Total marks stated as 150; rubric sums to 175 | Advisory | TBD | TBD | — | DOC | `docs/RUBRIC.md` | Blocked (B-002) |
+| ASG-GEN-002 | header p1; §5.1 p23 | Duration stated as "2 Weeks" but §5.1 says four weeks; no deadline date given | Advisory | TBD | TBD | — | DOC | — | Info (deadline: `SUBMISSION.md`) |
+| ASG-GEN-003 | header p1; §4 p19 | Total marks stated as 150; rubric sums to 175 | Advisory | TBD | TBD | — | DOC | `docs/RUBRIC.md` | Info (rubric left to the TA: `SUBMISSION.md`) |
 | ASG-GEN-004 | §1.2 p2 | Product may be renamed; the contracts in §2 must be kept — they are what gets tested | Constraint | TBD | TBD | — | INS | — | Info |
 | ASG-GEN-005 | §1.2 p2 | Whole system runs as five cooperating containers on a laptop with one command | Mandatory | Artfever | #55 | `compose.yaml` | DEMO | `docs/evidence/` | Not started |
 | ASG-GEN-006 | §1.2 p2 | System also runs as a scaled, probed, auto-scaling workload on a Kubernetes cluster in CI | Mandatory | Artfever | #55 | `k8s/`, `.github/workflows/cd.yml` | CI | CI run link | Not started |
 | ASG-GEN-007 | §1.4 p3 | A stranger clones the repository and, with one command, has the whole system running with seeded data | Mandatory | Artfever | #55 | `README.md`, `compose.yaml` | DEMO | clean-clone log | Not started |
 | ASG-GEN-008 | §1.4 p3 | A second command puts the system on a Kubernetes cluster | Mandatory | Artfever | #55 | `k8s/`, `README.md` | DEMO | `docs/evidence/` | Not started |
-| ASG-GEN-009 | §1.4 p3 | A push to main tests it, builds signed and scanned images, deploys them, and can be undone in thirty seconds | Mandatory | Artfever | #55 | `.github/workflows/cd.yml` | CI, DEMO | CI run, rollback capture | Blocked (B-007) |
+| ASG-GEN-009 | §1.4 p3 | A push to main tests it, builds signed and scanned images, deploys them, and can be undone in thirty seconds | Mandatory | Artfever | #55 | `.github/workflows/cd.yml` | CI, DEMO | CI run, rollback capture | Not started (signing not required: `SUBMISSION.md`) |
 | ASG-GEN-010 | §1.4 p3 | Every claim in the README can be demonstrated | Mandatory | Artfever | #55 | `README.md` | INS | — | Not started |
 | ASG-GEN-011 | §5.1 p23 | Applicable configuration is "as written, teams of 2" (5 merged PRs, 35% commit floor); teams-of-3 and split-assignment variants do not apply | Constraint | TBD | TBD | — | DOC | — | Info |
 | ASG-GEN-012 | §5.1 p23 | Priority order if behind: F (AI) > C (backend) > I (CI/CD) > H (Kubernetes); never skip the fallback test | Advisory | TBD | TBD | — | — | — | Info |
@@ -87,14 +87,14 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-FR-026 | §2.2 p6 | `GET /api/complaints` returns `total` | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | — | Not started |
 | ASG-FR-027 | §2.2 p6 | `PATCH /api/complaints/{id}/status` enforces the state machine | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/`, `services/` | IT | — | Not started |
 | ASG-FR-028 | §2.2 p6 | Invalid transition returns 409 naming the attempted transition | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | UT, IT | — | Not started |
-| ASG-FR-029 | §2.2 p6 | `GET /api/stats` returns aggregates (counts by category and priority per ASG-FR-011); caching per ASG-CACHE-002…005 | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | — | Not started (see B-005, informational) |
+| ASG-FR-029 | §2.2 p6 | `GET /api/stats` returns aggregates (counts by category and priority per ASG-FR-011); caching per ASG-CACHE-002…005 | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | — | Not started (see EN-04, informational) |
 | ASG-FR-030 | §2.2 p6 | `GET /api/meta/providers` returns which triage provider is active and the last 20 triage outcomes (provider, latency ms, fallback y/n) | Mandatory | Artfever | #46 | `backend/app/routes/` | IT | — | Not started |
 | ASG-FR-031 | §2.2 p6 | `GET /health` is liveness: process is alive; must not touch the database | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | UT, IT | — | Not started |
 | ASG-FR-032 | §2.2 p6 | `GET /ready` returns 200 only if Postgres and Redis are both reachable; 503 naming the failed dependency | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | — | Not started |
 | ASG-FR-033 | §2.2 p6 | `GET /metrics` exposes Prometheus text format: request count, request latency histogram, triage latency, fallback counter | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | — | Not started |
 | ASG-FR-034 | §2.2 p6 | Status state machine: open→in_progress→resolved; open→rejected; in_progress→rejected; resolved and rejected are terminal; everything else is 409 | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | UT | — | Not started |
 | ASG-FR-035 | §2.2 p6 | The state machine is an explicit transition table, not a chain of ifs | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | INS, UT | — | Not started |
-| ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TahaSohail-Goat | #39 | `backend/app/routes/` | IT | — | Not started (nine endpoints, B-004 resolved by owner) |
+| ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TahaSohail-Goat | #39 | `backend/app/routes/` | IT | — | Not started (nine endpoints, confirmed by the instructor) |
 | ASG-FR-037 | §1.2 p2 | End-to-end intake flow: citizen submits → system validates → triages (category, priority, one-line summary) → persists durably → shown on live operations dashboard with aggregate statistics | Mandatory | TahaSohail-Goat | #53 | whole system | IT, DEMO | demo video | Not started |
 
 ## ASG-NFR — Non-functional requirements
@@ -135,7 +135,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-DATA-010 | §2.3 p7 | `priority` enum: high, normal, low | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
 | ASG-DATA-011 | §2.3 p7 | `status` enum: open, in_progress, resolved, rejected; default open | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
 | ASG-DATA-012 | §2.3 p7 | `ai_summary`: nullable, one line, ≤ 140 chars | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
-| ASG-DATA-013 | §2.3 p7 | `triaged_by`: llm:groq, llm:ollama, rules, rules:fallback (values for simulated/other hosted providers unspecified) | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Blocked (B-006) |
+| ASG-DATA-013 | §2.3 p7 | `triaged_by`: llm:groq, llm:ollama, rules, rules:fallback (values for simulated/other hosted providers unspecified) | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Open (values decided in Phase 02, #33: `SUBMISSION.md`) |
 | ASG-DATA-014 | §2.3 p8 | `triage_latency_ms`: integer | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
 | ASG-DATA-015 | §2.3 p8 | `created_at` / `updated_at`: timestamptz, UTC | Mandatory | TahaSohail-Goat | #40 | migration | IT | — | Not started |
 | ASG-DATA-016 | §2.3 p8 | Index on `(status, priority)` | Mandatory | TahaSohail-Goat | #40 | migration | INS | — | Not started |
@@ -252,7 +252,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-K8S-018 | §3.3 p15 | `readinessProbe`: httpGet `/ready`; SHOULD depend on the database | Mandatory | TahaSohail-Goat | #49 | `k8s/base/backend.yaml` | INS | — | Not started |
 | ASG-K8S-019 | §3.3 p15 | Rolling update `maxSurge: 1`, `maxUnavailable: 0` | Mandatory | TahaSohail-Goat | #49 | `k8s/base/backend.yaml` | INS | — | Not started |
 | ASG-K8S-020 | §3.3 p15 | `terminationGracePeriodSeconds` and a `preStop` sleep so the pod leaves Service endpoints before it stops accepting connections | Mandatory | TahaSohail-Goat | #49 | `k8s/base/backend.yaml` | INS | — | Not started |
-| ASG-K8S-021 | §3.3 p15 | Demonstrate a zero-downtime rollout: load generator during `kubectl set image`, zero failed requests (scored as bonus — see ASG-BONUS-001) | Evidence | Artfever | #50 | `load/k6-script.js` | DEMO | capture | Blocked (B-008) |
+| ASG-K8S-021 | §3.3 p15 | Demonstrate a zero-downtime rollout: load generator during `kubectl set image`, zero failed requests (scored as bonus — see ASG-BONUS-001) | Evidence | Artfever | #50 | `load/k6-script.js` | DEMO | capture | Not started (we do the demo anyway: `SUBMISSION.md`) |
 | ASG-K8S-022 | §3.3 p16; §4 H p21 | `resources.requests` (incl. `cpu`) and `limits` set on every container — the HPA needs the request as denominator | Mandatory | TahaSohail-Goat | #49 | `k8s/base/` | INS, CI | — | Not started |
 | ASG-K8S-023 | §3.3 p16 | metrics-server installed | Mandatory | Artfever | #50 | docs / overlay | DEMO | `kubectl top` capture | Not started |
 | ASG-K8S-024 | §3.3 p16 | Generate load with k6 or hey and capture the scale-out | Evidence | Artfever | #50 | `load/k6-script.js` | DEMO, MEAS | capture | Not started |
@@ -304,7 +304,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-GH-001 | §4 A p19 | `main` protected: no direct push, PR required, CI required, ≥ 1 approval | Mandatory | TahaSohail-Goat | #56 | repo settings | DEMO | `docs/evidence/` screenshot | Skeleton (ruleset active 2026-09-25; screenshot pending) |
-| ASG-GH-002 | §4 A p19 | Two-branch model: `dev` plus feature branches; no work committed directly to main | Mandatory | TahaSohail-Goat | #56 | branches | INS | branch list | Skeleton (`dev` exists; `feature/<n>-<slug>` flow, B-009 resolved) |
+| ASG-GH-002 | §4 A p19 | Two-branch model: `dev` plus feature branches; no work committed directly to main | Mandatory | TahaSohail-Goat | #56 | branches | INS | branch list | Skeleton (`dev` exists; `feature/<n>-<slug>` flow) |
 | ASG-GH-003 | §4 A p19 | ≥ 5 merged PRs | Mandatory | TahaSohail-Goat | #56 | GitHub | INS | PR list | Not started (PR #9 has no partner review) |
 | ASG-GH-004 | §4 A p19 | Each merged PR is linked to an Issue | Mandatory | TahaSohail-Goat | #56 | GitHub | INS | PR list | Not started |
 | ASG-GH-005 | §4 A p19 | Each merged PR has a substantive review comment from the partner | Mandatory | TahaSohail-Goat | #56 | GitHub | INS | PR reviews | Not started (enforced by rulesets) |
@@ -336,15 +336,15 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-DOC-015 | §4 J p22 | Video covers: clean clone → running system; AI triage; fallback; network isolation failing; HPA scaling; rollback | Mandatory | Artfever | #55 | video | DEMO | link | Not started |
 | ASG-DOC-016 | §4 J p22; §5.2 p23 | `docs/ENGINEERING-NOTES.md` answers all eight questions with references to the team's own files and lines (generic answers score zero) | Mandatory | Artfever | #54 | `docs/ENGINEERING-NOTES.md` | DOC | — | Skeleton |
 | ASG-DOC-017 | §5.2 p23 | EN-Q1: three laptop-vs-CI differences and the exact Dockerfile/manifest line freezing each | Evidence | Artfever | #54 | notes | DOC | — | Not started |
-| ASG-DOC-018 | §5.2 p23 | EN-Q2: position on the CI/CD maturity ladder (Lecture 03, slide 32); justify the rung; name the next rung and what it buys | Evidence | Artfever | #54 | notes | DOC | — | Blocked (B-013) |
+| ASG-DOC-018 | §5.2 p23 | EN-Q2: position on the CI/CD maturity ladder (Lecture 03, slide 32); justify the rung; name the next rung and what it buys | Evidence | Artfever | #54 | notes | DOC | — | Not started (lecture slides not required: `SUBMISSION.md`) |
 | ASG-DOC-019 | §5.2 p23 | EN-Q3: the exact line guaranteeing build-once-deploy-many and what breaks without it | Evidence | Artfever | #54 | notes | DOC | — | Not started |
-| ASG-DOC-020 | §5.2 p23 | EN-Q4: what "correct" means for a probabilistic LLM component and how CI stays deterministic (Lecture 01, slide 34) | Evidence | Artfever | #54 | notes | DOC | — | Blocked (B-013) |
+| ASG-DOC-020 | §5.2 p23 | EN-Q4: what "correct" means for a probabilistic LLM component and how CI stays deterministic (Lecture 01, slide 34) | Evidence | Artfever | #54 | notes | DOC | — | Not started (lecture slides not required: `SUBMISSION.md`) |
 | ASG-DOC-021 | §5.2 p23 | EN-Q5: measured HPA lag in seconds; where the time went; what would reduce it | Evidence | Artfever | #54 | notes | MEAS | — | Not started |
 | ASG-DOC-022 | §5.2 p24 | EN-Q6: why VPA is Off; failure mode of running it in Auto alongside HPA | Evidence | Artfever | #54 | notes | DOC | — | Not started |
 | ASG-DOC-023 | §5.2 p24 | EN-Q7: where the hosted-LLM caller lives given `internal: true`, and how it was resolved | Evidence | Artfever | #54 | notes | DOC | — | Not started |
 | ASG-DOC-024 | §5.2 p24 | EN-Q8: a failure that cost > 1 hour — symptoms, wrong first belief, the exact command/log line that revealed the truth | Evidence | Artfever | #54 | notes | DOC | — | Not started |
 | ASG-DOC-025 | §5.5 p25 | `docs/AI-USAGE.md`: tools named, which parts they wrote or shaped, what was changed afterwards and why | Mandatory | TahaSohail-Goat | #56 | `docs/AI-USAGE.md` | DOC | — | Skeleton |
-| ASG-DOC-026 | §5.7 p26 | `docs/TRIAGE.md` exists in the layout; its content is not specified | Advisory | Artfever | #46 | `docs/TRIAGE.md` | DOC | — | Blocked (B-016) |
+| ASG-DOC-026 | §5.7 p26 | `docs/TRIAGE.md` exists in the layout; its content is not specified | Advisory | Artfever | #46 | `docs/TRIAGE.md` | DOC | — | Open (purpose unspecified: `SUBMISSION.md`) |
 | ASG-DOC-027 | §5.7 p26; §4 A p19 | `docs/evidence/` holds screenshots: protection, conflict, blocked merge, `hpa -w`, scaling chart | Evidence | TahaSohail-Goat | #53 | `docs/evidence/` | DOC | — | Skeleton |
 | ASG-DOC-028 | §5.3 p24 | If a credential ever lands in history: rotate it and write an incident note | Policy | TBD | TBD | `docs/SECURITY.md` | DOC | — | Info |
 
@@ -376,7 +376,7 @@ Each deduction is a **guard**: the repository must never enter that state. See [
 | ASG-DED-007 | §5.3 p24 | Publishing or deploying job not gated by `needs:` | −8 | ASG-CICD-022 | INS | Not started |
 | ASG-DED-008 | §5.3 p24 | Deploying `:latest` anywhere | −8 | ASG-CICD-023 | INS, CI | Not started |
 | ASG-DED-009 | §5.3 p24 | PostgreSQL as a Deployment with no PVC | −8 | ASG-K8S-006 | CI | Not started |
-| ASG-DED-010 | §5.3 p24 | Commits pushed directly to main | −5 | ASG-GH-001/002; `AGENTS.md` §6 | INS | Guard active (rulesets); B-012 info |
+| ASG-DED-010 | §5.3 p24 | Commits pushed directly to main | −5 | ASG-GH-001/002; `AGENTS.md` §6 | INS | Guard active (rulesets); initial commit: `SUBMISSION.md` |
 | ASG-DED-011 | §5.3 p24 | README quickstart that does not work from a clean clone | −5 | ASG-DOC-004, ASG-GEN-007 | DEMO | Not started |
 
 ## ASG-SUB — Submission, viva and policy
@@ -389,8 +389,8 @@ Each deduction is a **guard**: the repository must never enter that state. See [
 | ASG-SUB-004 | §5.8 p26 | Demo video link (unlisted) | Evidence | Artfever | #55 | video | DEMO | link | Not started |
 | ASG-SUB-005 | §5.8 p26 | `git shortlog -sn` output, pasted | Evidence | TahaSohail-Goat | #56 | terminal | MEAS | output | Not started |
 | ASG-SUB-006 | §5.8 p26 | `kubectl get hpa -w` capture and replicas-vs-load chart | Evidence | TahaSohail-Goat | #56 | `docs/evidence/` | DOC | files | Not started |
-| ASG-SUB-007 | §5.8 p26 | Run `python scripts/check_submission.py` from the repository root before submitting (a lint, not a grader) | Mandatory | TahaSohail-Goat | #56 | `scripts/check_submission.py` | CI | output | Blocked (B-014) |
-| ASG-SUB-008 | §5.3 p24 | Late submissions are not accepted and there is no retake (course policy); no deadline date is given | Policy | TBD | TBD | — | — | — | Blocked (B-001) |
+| ASG-SUB-007 | §5.8 p26 | Run `python scripts/check_submission.py` from the repository root before submitting (a lint, not a grader) | Mandatory | TahaSohail-Goat | #56 | `scripts/check_submission.py` | CI | output | Not started (optional; we write it: `SUBMISSION.md`) |
+| ASG-SUB-008 | §5.3 p24 | Late submissions are not accepted and there is no retake (course policy); no deadline date is given | Policy | TBD | TBD | — | — | — | Info (deadline: `SUBMISSION.md`) |
 | ASG-SUB-009 | §5.4 p24 | Viva: individual, 10 minutes each, repository open, including questions on the partner's code | Policy | TBD | TBD | — | — | — | Info |
 | ASG-SUB-010 | §5.4 p25 | Individual mark = team mark × viva factor: 1.0 explains any part; 0.75 solid on own work / shaky on partner's; 0.5 describes what but not why, cannot modify live; 0.0 cannot explain the submission | Policy | TBD | TBD | — | — | — | Info |
 | ASG-SUB-011 | §5.4 p25 | If a partner is not contributing, say so in week 1, not week 5 | Policy | TBD | TBD | `docs/TEAM_CONTRIBUTION.md` | — | — | Info |
@@ -414,13 +414,13 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 | ASG-REPO-010 | §5.7 | `k8s/base/{hpa,vpa,pdb}.yaml`, `k8s/base/kustomization.yaml` | Mandatory | TahaSohail-Goat | #49 | INS | Skeleton (dir) |
 | ASG-REPO-011 | §5.7 | `k8s/overlays/{dev,prod}/kustomization.yaml` | Mandatory | TahaSohail-Goat | #49 | INS | Skeleton (dirs) |
 | ASG-REPO-012 | §5.7 | `load/k6-script.js` | Mandatory | Artfever | #50 | INS | Skeleton (dir) |
-| ASG-REPO-013 | §5.7 | `docs/{ENGINEERING-NOTES,RUNBOOK,AI-USAGE,TRIAGE}.md` | Mandatory | Artfever | #54 | INS | Skeleton (`TRIAGE.md` blocked: B-016) |
+| ASG-REPO-013 | §5.7 | `docs/{ENGINEERING-NOTES,RUNBOOK,AI-USAGE,TRIAGE}.md` | Mandatory | Artfever | #54 | INS | Skeleton (`TRIAGE.md` purpose unspecified) |
 | ASG-REPO-014 | §5.7 | `docs/adr/0001-provider-interface.md` … `0004-pii-and-data-governance.md` | Mandatory | TahaSohail-Goat | #56 | INS | Skeleton |
 | ASG-REPO-015 | §5.7 | `docs/evidence/` | Mandatory | TahaSohail-Goat | #53 | INS | Skeleton |
-| ASG-REPO-016 | §5.7 | `scripts/check_submission.py` | Mandatory | TahaSohail-Goat | #56 | INS | Blocked (B-014) |
+| ASG-REPO-016 | §5.7 | `scripts/check_submission.py` | Mandatory | TahaSohail-Goat | #56 | INS | Not started (optional; we write it: `SUBMISSION.md`) |
 | ASG-REPO-017 | §5.7 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Mandatory | TahaSohail-Goat | #51 | INS | Skeleton (dir) |
 | ASG-REPO-018 | §5.7 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Mandatory | TahaSohail-Goat | #47 | INS | `.gitignore` done; rest not started |
-| ASG-REPO-019 | §5.7 | `README.md`, `LICENSE` | Mandatory | Artfever | #55 | INS | `README.md` placeholder; `LICENSE` blocked (B-015) |
+| ASG-REPO-019 | §5.7 | `README.md`, `LICENSE` | Mandatory | Artfever | #55 | INS | `README.md` placeholder; `LICENSE` not decided |
 
 ---
 
