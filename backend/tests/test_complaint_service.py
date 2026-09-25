@@ -40,7 +40,7 @@ def test_create_triages_then_persists_in_one_committed_transaction() -> None:
 
 def test_a_triage_failure_persists_nothing() -> None:
     class Failing:
-        def triage(self, text: str, location: str) -> object:
+        def triage(self, text: str, location: str, complaint_id: uuid.UUID) -> object:
             raise RuntimeError("provider down")
 
     unit_of_work = FakeUnitOfWork()

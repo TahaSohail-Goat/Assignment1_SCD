@@ -13,7 +13,9 @@ from fastapi.testclient import TestClient
 from app.config import Settings
 from app.domain import Category, Priority, Status
 from app.main import create_app
+from app.providers.triage.simulated import SimulatedTriage
 from app.services.complaints import TriageDecision
+from app.services.triage import TriageService
 from tests.conftest import FakeProbe
 from tests.fakes import FakeUnitOfWork, StubTriager
 
@@ -156,16 +158,33 @@ def test_a_validation_error_never_reaches_triage_or_the_repository(
     assert unit_of_work.repository.rows == {}
 
 
-def test_a_missing_triage_provider_is_a_500_in_the_error_model_not_a_stack_trace(
+def test_without_an_injected_triager_the_configured_provider_is_used(
     settings: Settings, unit_of_work: FakeUnitOfWork
 ) -> None:
     app = create_app(settings, probes=[FakeProbe("postgres")], unit_of_work=unit_of_work)
     with TestClient(app, raise_server_exceptions=False) as client:
-        response = client.post("/api/complaints", json=VALID)
+        body = _create(client)
 
-    assert response.status_code == 500
-    assert _error(response) == {"code": "internal_error", "message": "Internal server error"}
-    assert "X-Request-ID" in response.headers
+    assert body["triaged_by"] == "rules"  # the default TRIAGE_PROVIDER: deterministic, no network
+
+
+def test_the_mandatory_test_a_provider_that_always_raises_still_gives_201_and_rules_fallback(
+    settings: Settings, unit_of_work: FakeUnitOfWork
+) -> None:
+    """Assignment section 2.5 p12: "Write this test if you write no other"."""
+    triage = TriageService(SimulatedTriage.always_failing())
+    app = create_app(
+        settings, probes=[FakeProbe("postgres")], triager=triage, unit_of_work=unit_of_work
+    )
+    with TestClient(app, raise_server_exceptions=False) as client:
+        response = client.post("/api/complaints", json=VALID)
+    triage.close()
+
+    assert response.status_code == 201
+    body = response.json()
+    assert body["triaged_by"] == "rules:fallback"
+    assert body["category"] in {c.value for c in Category}
+    assert unit_of_work.repository.rows[uuid.UUID(body["id"])].triaged_by == "rules:fallback"
 
 
 # ---- GET /api/complaints/{id} ---------------------------------------------

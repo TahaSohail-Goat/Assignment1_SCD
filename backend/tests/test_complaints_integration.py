@@ -8,6 +8,8 @@ from sqlalchemy import Engine, text
 
 from app.config import Settings
 from app.main import create_app
+from app.providers.triage.simulated import SimulatedTriage
+from app.services.triage import TriageService
 from tests.conftest import FakeProbe
 from tests.fakes import StubTriager
 
@@ -75,3 +77,31 @@ def test_the_list_is_paged_newest_first_on_a_real_table(client: TestClient) -> N
     assert first["items"] == everything["items"][:2]
     stamps = [item["created_at"] for item in everything["items"]]
     assert stamps == sorted(stamps, reverse=True)
+
+
+def test_the_mandatory_case_on_a_real_table_an_always_raising_provider_stores_rules_fallback(
+    migrated: Engine, db_url: str
+) -> None:
+    with migrated.begin() as connection:
+        connection.execute(text("TRUNCATE complaints"))
+    settings = Settings(
+        database_url=db_url, redis_url="redis://redis:6379/0", dependency_check_timeout_seconds=1
+    )
+    triage = TriageService(SimulatedTriage.always_failing())
+    app = create_app(settings, probes=[FakeProbe("postgres")], triager=triage)
+
+    with TestClient(app, raise_server_exceptions=False) as client:
+        response = client.post(
+            "/api/complaints",
+            json={"text": "The transformer near our house is sparking.", "location": "Block B"},
+        )
+    triage.close()
+
+    assert response.status_code == 201 and response.json()["triaged_by"] == "rules:fallback"
+    with migrated.connect() as connection:
+        stored = connection.execute(
+            text("SELECT triaged_by, category::text, priority::text FROM complaints")
+        ).one()
+    assert tuple(stored) == ("rules:fallback", "electricity", "high")
+    with migrated.begin() as connection:
+        connection.execute(text("TRUNCATE complaints"))

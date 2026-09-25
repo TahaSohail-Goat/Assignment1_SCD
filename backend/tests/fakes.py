@@ -142,7 +142,9 @@ class StubTriager:
             latency_ms=7,
         )
         self.calls: list[tuple[str, str]] = []
+        self.ids: list[uuid.UUID] = []
 
-    def triage(self, text: str, location: str) -> TriageDecision:
+    def triage(self, text: str, location: str, complaint_id: uuid.UUID) -> TriageDecision:
         self.calls.append((text, location))
+        self.ids.append(complaint_id)
         return self.decision
