@@ -36,6 +36,7 @@ def test_the_jobs_of_the_assignment_exist() -> None:
         "test-frontend",
         "build",
         "scan",
+        "context-and-image-size",
         "manifests",
         "integration",
     }

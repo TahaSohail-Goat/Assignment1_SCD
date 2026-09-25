@@ -144,7 +144,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-DATA-019 | §2.3 p8 | Idempotent seed command loading ≥ 30 realistic complaints | Mandatory | Artfever | #41 | `backend/` seed | IT | — | Not started |
 | ASG-DATA-020 | §2.3 p8 | Seed complaints are in Urdu-influenced English, spread across categories | Mandatory | Artfever | #41 | seed data | INS | — | Not started |
 | ASG-DATA-021 | §2.3 p8 | Running the seed twice does not duplicate rows | Mandatory | Artfever | #41 | seed | IT | — | Not started |
-| ASG-DATA-022 | §2.3 p8 | `docker compose down` then `up` preserves every row | Evidence | TahaSohail-Goat | #53 | `compose.yaml` (`pgdata`) | DEMO | `docs/evidence/` | Not started |
+| ASG-DATA-022 | §2.3 p8 | `docker compose down` then `up` preserves every row | Evidence | TahaSohail-Goat | #53 | `compose.yaml` (`pgdata`) | DEMO | `docs/evidence/`, `ci.yml` step | CI evidence (P11, #53): rows survive `down` then `up`, run https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36189116384; video demo pending |
 | ASG-DATA-023 | §2.3 p8 | On Kubernetes, deleting the Postgres pod preserves every row | Evidence | Artfever | #54 | `k8s/base/postgres.yaml` | DEMO | `docs/evidence/` | Not started |
 
 ## ASG-CACHE — Cache layer
@@ -207,9 +207,9 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-DEVOPS-007 | §3.1 p12 | `HEALTHCHECK` declared | Mandatory | TahaSohail-Goat | #47 | `*/Dockerfile` | INS | `backend/tests/test_container_files.py` | Partial (P08-S01, #47: backend; frontend in #48) |
 | ASG-DEVOPS-008 | §3.1 p12 | Frontend builds with `node:22-alpine` and serves with `nginx:1.27-alpine` | Mandatory | Artfever | #48 | `frontend/Dockerfile` | INS | — | Not started |
 | ASG-DEVOPS-009 | §3.1 p12 | Final frontend image contains no Node, no `node_modules`, no source | Mandatory | Artfever | #48 | `frontend/Dockerfile` | INS | `docker history` | Not started |
-| ASG-DEVOPS-010 | §3.1 p12 | Report both stage sizes; a frontend image over ~60 MB indicates the multi-stage split is not working | Evidence | TahaSohail-Goat | #53 | `README.md` / notes | MEAS | size capture | Not started |
+| ASG-DEVOPS-010 | §3.1 p12 | Report both stage sizes; a frontend image over ~60 MB indicates the multi-stage split is not working | Evidence | TahaSohail-Goat | #53 | `README.md` / notes | MEAS | size capture, `docs/evidence/container-sizes.md` | Partial (P11: backend 207 MB measured in CI; frontend after #48) |
 | ASG-DEVOPS-011 | §3.1 p12 | `.dockerignore` in each build context excluding `.git`, `node_modules`, `.venv`, `__pycache__`, `.env`, test fixtures | Mandatory | TahaSohail-Goat | #47 | `backend/.dockerignore`, `frontend/.dockerignore` | INS | `backend/tests/test_container_files.py` | Partial (P08-S01, #47: backend; frontend in #48) |
-| ASG-DEVOPS-012 | §3.1 p12 | Report build-context size before and after `.dockerignore`, with numbers | Evidence | TahaSohail-Goat | #53 | notes | MEAS | size capture | Not started |
+| ASG-DEVOPS-012 | §3.1 p12 | Report build-context size before and after `.dockerignore`, with numbers | Evidence | TahaSohail-Goat | #53 | notes | MEAS | size capture, `docs/evidence/container-sizes.md` | Partial (P11: backend 196.61 MB to 193.07 kB measured in CI; frontend after #48) |
 | ASG-DEVOPS-013 | §3.2 p12–13 | Two Compose networks: `edge` (bridge) and `internal` (bridge, `internal: true`) | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); built and started in CI: https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36164848945 |
 | ASG-DEVOPS-014 | §3.2 p13 | frontend joins `edge` only | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
 | ASG-DEVOPS-015 | §3.2 p13 | backend joins both networks — the only service that bridges them | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); built and started in CI: https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36164848945 |
