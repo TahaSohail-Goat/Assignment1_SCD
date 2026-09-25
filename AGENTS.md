@@ -78,14 +78,14 @@ Write the uncertainty into the PR or issue, or into `docs/adr/` when it is a des
 Two AI-assisted sessions — one per contributor, each with that person's own tool (for example Claude Code for one, Codex for the other) — may run in parallel only when:
 - each session has a separate issue,
 - each session has its own branch/worktree,
-- file ownership is disjoint,
+- file ownership is disjoint (the single recorded exception, the planned merge conflict of Phase 07 for rubric A5, is in `docs/AI_SESSIONS.md` section 3),
 - both GitHub identities are real authenticated accounts,
 - neither session edits the same migration/workflow/manifest concurrently.
 
 Never impersonate the partner's identity.
 Never fabricate commits, review comments, approvals, or contribution.
 
-Use actual separate GitHub authentication/worktrees for both contributors. Each contributor's session authenticates as that contributor (browser login done by the person, never by pasting a token or password into an AI session) and follows `docs/PARTNER_RUNBOOK.md` for the step-by-step routine.
+Use actual separate GitHub authentication/worktrees for both contributors. The operating manual for both sessions — parallel versus handoff work, the phase-by-phase table and paste-ready prompts — is `docs/AI_SESSIONS.md`. Each contributor's session authenticates as that contributor (browser login done by the person, never by pasting a token or password into an AI session) and follows `docs/PARTNER_RUNBOOK.md` for the step-by-step routine.
 
 Any AI agent that reads this file (Codex reads `AGENTS.md` natively; Claude Code also loads `CLAUDE.md`) is bound by it. Where a repository document says "Claude Code", read "the contributor's AI session".
 
@@ -122,3 +122,6 @@ Report:
 - PR,
 - blockers,
 - next phase allowed.
+
+## 11. Phase Order
+Owner decision (2026-09-26, replacing "one phase at a time"): Phases 00 and 01 first; from Phase 02 both contributors work **in parallel** on their own issues, and a package waits only for a package it really depends on. Flow: issue -> feature branch from `dev` -> PR into `dev` -> review -> merge. `main` stays protected (PR + one approval). Details: `docs/AI_SESSIONS.md` section 2 and `docs/PHASE_STATUS.md`.
