@@ -89,9 +89,9 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-FR-028 | §2.2 p6 | Invalid transition returns 409 naming the attempted transition | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | UT, IT | — | Not started |
 | ASG-FR-029 | §2.2 p6 | `GET /api/stats` returns aggregates (counts by category and priority per ASG-FR-011); caching per ASG-CACHE-002…005 | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | — | Not started (see EN-04, informational) |
 | ASG-FR-030 | §2.2 p6 | `GET /api/meta/providers` returns which triage provider is active and the last 20 triage outcomes (provider, latency ms, fallback y/n) | Mandatory | Artfever | #46 | `backend/app/routes/` | IT | — | Not started |
-| ASG-FR-031 | §2.2 p6 | `GET /health` is liveness: process is alive; must not touch the database | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | UT, IT | — | Not started |
-| ASG-FR-032 | §2.2 p6 | `GET /ready` returns 200 only if Postgres and Redis are both reachable; 503 naming the failed dependency | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | — | Not started |
-| ASG-FR-033 | §2.2 p6 | `GET /metrics` exposes Prometheus text format: request count, request latency histogram, triage latency, fallback counter | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | — | Not started |
+| ASG-FR-031 | §2.2 p6 | `GET /health` is liveness: process is alive; must not touch the database | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | UT, IT | `backend/tests/test_health.py` | Implemented (P04-S01, #37) |
+| ASG-FR-032 | §2.2 p6 | `GET /ready` returns 200 only if Postgres and Redis are both reachable; 503 naming the failed dependency | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | `backend/tests/test_ready.py` | Implemented (P04-S01, #37) |
+| ASG-FR-033 | §2.2 p6 | `GET /metrics` exposes Prometheus text format: request count, request latency histogram, triage latency, fallback counter | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | `backend/tests/test_metrics.py` | Implemented (P04-S01, #37) |
 | ASG-FR-034 | §2.2 p6 | Status state machine: open→in_progress→resolved; open→rejected; in_progress→rejected; resolved and rejected are terminal; everything else is 409 | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | UT | — | Not started |
 | ASG-FR-035 | §2.2 p6 | The state machine is an explicit transition table, not a chain of ifs | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | INS, UT | — | Not started |
 | ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TahaSohail-Goat | #39 | `backend/app/routes/` | IT | — | Not started (nine endpoints, confirmed by the instructor) |
@@ -101,16 +101,16 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| ASG-NFR-001 | §2.2 p5 | Backend is FastAPI + Pydantic v2 (recommended) or Flask (permitted; must be stated in README) | Recommended | TahaSohail-Goat | #37 | `backend/pyproject.toml` | INS | — | Not started |
+| ASG-NFR-001 | §2.2 p5 | Backend is FastAPI + Pydantic v2 (recommended) or Flask (permitted; must be stated in README) | Recommended | TahaSohail-Goat | #37 | `backend/pyproject.toml` | INS | `backend/pyproject.toml` | Implemented (P04-S01, #37) |
 | ASG-NFR-002 | §2.2 p5 | Four layers `routes/ services/ repositories/ providers/`; dependency arrows point one way only | Mandatory | TahaSohail-Goat | #38 | `backend/app/` | INS | — | Skeleton |
 | ASG-NFR-003 | §2.2 p5 | `routes/`: HTTP only — parse, validate, serialise, status codes; no business rules | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | INS | — | Skeleton |
 | ASG-NFR-004 | §2.2 p5 | `services/`: business rules — triage orchestration, state machine, statistics | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | INS | — | Skeleton |
 | ASG-NFR-005 | §2.2 p5 | `repositories/`: all SQL lives here and nowhere else | Mandatory | TahaSohail-Goat | #38 | `backend/app/repositories/` | INS, CI | grep check | Skeleton |
 | ASG-NFR-006 | §2.2 p5 | `providers/`: outbound integrations (LLM, cache) behind interfaces | Mandatory | TahaSohail-Goat | #38 | `backend/app/providers/` | INS | — | Skeleton |
 | ASG-NFR-007 | §2.2 p5 | A route must not open a database session | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | INS | — | Not started |
-| ASG-NFR-008 | §2.2 p7 | Graceful shutdown on SIGTERM: stop accepting new requests, finish in-flight, close pool connections, exit | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | IT, DEMO | — | Not started |
-| ASG-NFR-009 | §2.2 p7 | Structured logging: JSON to stdout, never to a file | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | UT, INS | log sample | Not started |
-| ASG-NFR-010 | §2.2 p7 | Every log line carries `request_id` propagated from the `X-Request-ID` header (generate one if absent) | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | UT | log sample | Not started |
+| ASG-NFR-008 | §2.2 p7 | Graceful shutdown on SIGTERM: stop accepting new requests, finish in-flight, close pool connections, exit | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | IT, DEMO | `backend/tests/test_graceful_shutdown.py` | Implemented (P04-S01, #37) |
+| ASG-NFR-009 | §2.2 p7 | Structured logging: JSON to stdout, never to a file | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | UT, INS | `backend/tests/test_logging.py` | Implemented (P04-S01, #37) |
+| ASG-NFR-010 | §2.2 p7 | Every log line carries `request_id` propagated from the `X-Request-ID` header (generate one if absent) | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | UT | `backend/tests/test_request_context.py`, `backend/tests/test_logging.py` | Implemented (P04-S01, #37) |
 | ASG-NFR-011 | §2.2 p7 | One WARNING per triage fallback with the complaint id, the provider and the error class | Mandatory | TahaSohail-Goat | #44 | `backend/app/services/` | UT | log sample | Not started |
 | ASG-NFR-012 | §4 C p20 | ≥ 14 backend tests, unit and integration, deterministic | Mandatory | TahaSohail-Goat | #39 | `backend/tests/` | CI | test report | Skeleton |
 | ASG-NFR-013 | §3.4 p17; §4 C p20 | Backend coverage ≥ 65% on `app/` | Mandatory | TahaSohail-Goat | #39 | `backend/pyproject.toml` | CI | coverage report | Not started |
