@@ -22,6 +22,7 @@ export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly body: ApiErrorBody | null,
+    readonly retryAfter: string | null = null,
   ) {
     super(body?.error.message ?? `Request failed (${status})`)
     this.name = 'ApiError'
@@ -36,7 +37,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<{ data: T; 
   const body: unknown = await response.json().catch(() => null)
   if (!response.ok) {
     const errorBody = isApiErrorBody(body) ? body : null
-    throw new ApiError(response.status, errorBody)
+    throw new ApiError(response.status, errorBody, response.headers.get('Retry-After'))
   }
   return { data: body as T, response }
 }

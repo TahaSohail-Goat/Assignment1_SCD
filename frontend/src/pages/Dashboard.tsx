@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   ApiError, listComplaints, updateStatus,
   type Category, type ComplaintPage, type Priority, type Status,
@@ -19,26 +19,33 @@ export default function Dashboard() {
   const [failure, setFailure] = useState('')
   const [rowError, setRowError] = useState<Record<string, string>>({})
   const [updating, setUpdating] = useState<string | null>(null)
+  const requestVersion = useRef(0)
 
   const load = useCallback(async () => {
+    const version = ++requestVersion.current
     setLoading(true)
     setFailure('')
     try {
-      setResult(await listComplaints({
+      const nextResult = await listComplaints({
         page,
         page_size: pageSize,
         category: category || undefined,
         priority: priority || undefined,
         status: status || undefined,
-      }))
+      })
+      if (version === requestVersion.current) setResult(nextResult)
     } catch (error) {
-      setFailure(error instanceof Error ? error.message : 'Could not load complaints.')
+      if (version === requestVersion.current)
+        setFailure(error instanceof Error ? error.message : 'Could not load complaints.')
     } finally {
-      setLoading(false)
+      if (version === requestVersion.current) setLoading(false)
     }
   }, [category, priority, status, page])
 
-  useEffect(() => { void load() }, [load])
+  useEffect(() => {
+    void load()
+    return () => { requestVersion.current += 1 }
+  }, [load])
 
   async function changeStatus(id: string, next: Status) {
     setUpdating(id)

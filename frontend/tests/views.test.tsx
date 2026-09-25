@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { type ReactNode } from 'react'
 import Submit from '../src/pages/Submit'
 import Dashboard from '../src/pages/Dashboard'
@@ -78,6 +78,16 @@ it('renders server field-level 400 validation after client validation accepted',
   expect(await screen.findByText('Location is outside the service area')).toBeTruthy()
 })
 
+it('shows the server Retry-After seconds when complaint submission is rate limited', async () => {
+  vi.stubGlobal('fetch', vi.fn(async () => reply(429, {
+    error: { code: 'rate_limited', message: 'Too many complaint submissions' },
+  }, { 'Retry-After': '37' })))
+  render(<Submit />)
+  fillSubmit()
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  expect(await screen.findByText('Too many complaint submissions Retry after 37 seconds.')).toBeTruthy()
+})
+
 it('shows a 409 message verbatim and leaves the previous status visible', async () => {
   const fetchMock = vi.fn()
     .mockResolvedValueOnce(reply(200, { items: [complaint], total: 1, page: 1, page_size: 20 }))
@@ -111,6 +121,28 @@ it('combines dashboard filters and moves to the next page', async () => {
   })
   fireEvent.click(screen.getByRole('button', { name: 'Next' }))
   await waitFor(() => expect(String(fetchMock.mock.lastCall?.[0])).toContain('page=2'))
+})
+
+it('ignores an older list response after the operator changes a filter', async () => {
+  let finishInitial!: (response: Response) => void
+  let finishFiltered!: (response: Response) => void
+  const initial = new Promise<Response>((resolve) => { finishInitial = resolve })
+  const filtered = new Promise<Response>((resolve) => { finishFiltered = resolve })
+  const fetchMock = vi.fn().mockReturnValueOnce(initial).mockReturnValueOnce(filtered)
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Dashboard />)
+  fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'water' } })
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+  await act(async () => {
+    finishFiltered(reply(200, { items: [{ ...complaint, text: 'Filtered water complaint' }],
+      total: 1, page: 1, page_size: 20 }))
+  })
+  expect(screen.getByText('Filtered water complaint')).toBeTruthy()
+  await act(async () => {
+    finishInitial(reply(200, { items: [complaint], total: 1, page: 1, page_size: 20 }))
+  })
+  expect(screen.getByText('Filtered water complaint')).toBeTruthy()
+  expect(screen.queryByText(complaint.text)).toBeNull()
 })
 
 it.each(['HIT', 'MISS', null] as const)('shows the X-Cache state %s from the response', async (cache) => {
