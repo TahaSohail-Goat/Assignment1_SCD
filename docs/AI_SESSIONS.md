@@ -22,7 +22,7 @@ A phase N is **complete** only when **all** of these hold:
 2. every pull request of the phase is merged into `dev` with a substantive review from the other contributor;
 3. the phase gate in `docs/phases/PHASE-NN-*.md` is checked and its evidence exists;
 4. the phase's `dev` → `main` integration PR (merge commit, one approval) is merged;
-5. `docs/PHASE_STATUS.md` says **Complete**.
+5. `docs/PHASE_STATUS.md` says **Complete**: a small status PR into `dev`, opened after the integration PR has merged, changes the phase row. That PR is bookkeeping, not a package of the phase, and still needs the other contributor's approval.
 
 **Historical exception (Phase 00 only, PR #9).** The baseline PR #9 was merged into `main` on 2026-09-24, before the `dev` branch existed and before the second contributor was a repository collaborator (B-010). It has no `dev` step and no partner review, so condition 2 cannot hold for it; `docs/PHASE_STATUS.md` records it as "merged to `main`, no partner review", and it is neither redone nor rewritten. For Phase 00, condition 2 therefore covers every other Phase 00 pull request (#11, #60, #61). No other phase has an exception.
 
@@ -165,20 +165,27 @@ Follow the go-ahead gate. End with a HANDOFF comment on the PR and a NEXT block.
 Step: address the review on PR #<N> as <ME>. Read every comment (gh pr view <N> --comments; gh api repos/TahaSohail-Goat/Assignment1_SCD/pulls/<N>/comments). For each finding: fix it in a NEW commit (no amend after review), or explain in the thread why not. Re-run the PR's checks. Push to my own branch only. Post a reply that answers the reviewer's "why" question in the thread. Then request re-review (gh pr edit <N> --add-reviewer <OTHER>) and give the exact old-head and new-head SHAs with: git range-diff <oldbase>..<oldhead> <newbase>..<newhead>. Do not merge. End with NEXT.
 ```
 
-### 7.6 MERGE after approval (author only)
+### 7.6 MERGE after approval (author only; feature PRs into dev — the integration PR has its own checks in 7.7)
 
 ```text
 Step: merge PR #<N> as <ME> (the author). Verify, and show me the result of each check: the approval is on the CURRENT head (review commit == head SHA); reviewDecision APPROVED; mergeStateStatus CLEAN; no unresolved threads; base is dev; the branch is up to date with dev. Wait for my "go". Then gh pr merge <N> --rebase (or --merge). NEVER --squash. Delete the feature branch only after confirming its tree equals dev. Update the issue with the merged PR link. End with NEXT.
 ```
 
-### 7.7 OPEN / APPROVE the phase integration PR
+### 7.7 OPEN, then REVIEW and MERGE, the phase integration PR
 
 ```text
-Step: open the phase <PHASE> integration PR as <ME>. Preconditions (stop if any fails): every PR of the phase is merged into dev; phase-close checklist (docs/AI_SESSIONS.md section 6) is done except the merge to main. gh pr create --base main --head dev --title "chore(phase-<PHASE>): promote phase <PHASE> to main" with a body that lists what the phase delivered, the validation evidence, the phase gate quote, and "Closes #<parent>, #<sub1>, #<sub2>, …". Reviewer <OTHER>. Do not merge. NEXT: ask <OTHER> to review with prompt 7.2.
+Step: open the phase <PHASE> integration PR as <ME>. Preconditions (stop if any fails): every PR of the phase is merged into dev; phase-close checklist (docs/AI_SESSIONS.md section 6) is done except the merge to main. gh pr create --base main --head dev --title "chore(phase-<PHASE>): promote phase <PHASE> to main" with a body that lists what the phase delivered, the validation evidence, the phase gate quote, and "Closes #<parent>, #<sub1>, #<sub2>, …". Reviewer <OTHER>. Do not merge. NEXT: ask <OTHER> to review with the second prompt below.
 ```
 
 ```text
-Step: review and merge the integration PR #<N>. Reviewer: read gh pr diff main...dev only as a sum of PRs that were already reviewed (gh pr list --state merged --base dev), check that nothing else is in it, that CI/checks are green when required, and that the phase gate evidence exists; draft the review (7.2). Author: after approval, verify with 7.6 conditions, then gh pr merge <N> --merge (MERGE COMMIT ONLY; never --rebase or --squash on main; never --delete-branch, the head is dev). Then confirm the parent and sub-issues closed and update docs/PHASE_STATUS.md through the next PR.
+Step: review, then merge, the phase <PHASE> integration PR #<N> (base main, head dev). gh pr diff takes a PR number; `gh pr diff main...dev` does not work.
+Reviewer (read-only until the human says "post it"):
+1. gh pr view <N> --json baseRefName,headRefName,commits,mergeStateStatus,reviewDecision and gh pr diff <N> --name-only. Base must be main, head dev.
+2. The PR may carry only work that was already reviewed. git fetch origin --prune; git log --format=%s origin/main..origin/dev lists what it carries. Every subject must appear in a PR merged into dev: for each number from gh pr list --state merged --base dev --limit 200 --json number --jq '.[].number', run gh pr view <n> --json commits --jq '.commits[].messageHeadline'. Rebase-merging changes SHAs but not subjects; gh cuts long subjects with an ellipsis, so compare the first 60 characters. A commit with no source PR is a finding.
+3. git log --no-merges --oneline origin/dev..origin/main must print nothing (main holds no work that dev lacks).
+4. The body says "Closes #..." for every issue of the phase; the gate evidence named in docs/phases/PHASE-<PHASE>-*.md exists; the required status checks are green (none exist before Phase 10: say so).
+Draft the review with the six-point standard (7.2), including one "why" question, and wait for "post it".
+Author, after the approval, show the human the result of each check: base is main and head is dev; the approval's commit equals the current head SHA (gh pr view <N> --json reviews,headRefOid); reviewDecision APPROVED; mergeStateStatus CLEAN; no unresolved review threads; required checks green when they exist. The 7.6 conditions "base is dev" and "up to date with dev" do not apply here. Wait for "go", then gh pr merge <N> --merge (MERGE COMMIT ONLY; never --rebase or --squash on main; never --delete-branch, the head is dev). Then confirm that the parent and sub-issues are closed and open the small status PR into dev that sets the phase row of docs/PHASE_STATUS.md to Complete; the phase is Complete when the other contributor has approved it and it is merged.
 ```
 
 ### 7.8 HOLD
