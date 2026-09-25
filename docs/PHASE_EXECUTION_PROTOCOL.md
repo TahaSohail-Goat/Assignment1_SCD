@@ -15,7 +15,7 @@ Inspect current files and existing implementation.
 Ensure parent/sub-issues exist with requirement IDs.
 
 ## 5. Branch
-Create `dev/<issue-number>-<slug>`.
+Create `feature/<issue-number>-<slug>` from `dev`.
 
 ## 6. Implement
 Make small, coherent commits.
@@ -27,13 +27,13 @@ Run tests/checks/evidence.
 Update docs, ADRs, evidence, traceability.
 
 ## 9. PR
-Open/update PR.
+Open/update the PR into `dev`. When the phase gate is met, open the `dev` → `main` integration PR (merge commit).
 
 ## 10. Review
 Partner review must be substantive.
 
 ## 11. Rebase
-Before merge when required.
+Rebase the feature branch on `origin/dev` before merge when required. `dev` and `main` are never rebased.
 
 ## 12. Merge
 Only after branch protection and CI.

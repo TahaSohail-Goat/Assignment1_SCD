@@ -2,16 +2,40 @@
 
 ## Branch Model
 
+Decision (owner, 2026-09-25): the assignment's literal two-branch model — `dev` for work, `main` for deployable software — plus short-lived feature branches (assignment §3.4, rubric A2, `ASG-GH-002`).
+
 `main`
-- protected
-- deployable
-- no direct push
+- protected (see "Branch protection and review")
+- deployable; the only branch CD deploys from
+- no direct push and no direct commit, ever (`ASG-DED-010`)
+- changed only by a pull request from `dev`
 
-`dev/<issue-number>-<slug>`
-- developer integration branch for the specific issue
-- this is the branch named by the assignment's dev/feature workflow
+`dev`
+- long-lived integration branch ("dev for work")
+- changed only by pull requests from feature branches — no direct commits either
+- `ci.yml` runs on every push to it (`ASG-CICD-003`)
+- reaches `main` only through a `dev` → `main` pull request
 
-Do not create arbitrary branch names.
+`feature/<issue-number>-<slug>`
+- one short-lived branch per issue, cut from the current `dev`
+- lowercase kebab-case slug, e.g. `feature/12-frontend-submit-form`
+- used for every kind of work (code, docs, chores), merged into `dev` by pull request, then deleted
+
+Do not create arbitrary branch names. The earlier `dev/<issue-number>-<slug>` convention is **retired**: git cannot hold a branch called `dev` and branches under `dev/` at the same time. (Phase 00 used `dev/1-phase-00-baseline` for PR #9; that branch was deleted after its merge — last commit `000d3de`, tree identical to `main`.)
+
+## Pull-Request Flow
+
+```
+feature/<n>-<slug>  ──PR──►  dev  ──PR──►  main
+```
+
+1. **Feature PR (base `dev`).** Title `<type>(<scope>): <summary>`; body cites the requirement IDs and `Related issue: #<n>`; needs a substantive partner review before merge.
+2. **Integration PR (`dev` → `main`).** Opened when a phase (or a coherent slice) is done; needs CI green and ≥ 1 approval once protection is on.
+3. **Merge strategy.**
+   - Feature → `dev`: *Rebase and merge* or *Create a merge commit*. **Do not squash**: rubric A4 counts commits and each partner's share (`ASG-GH-006`, `ASG-GH-008`), and squashing erases both.
+   - `dev` → `main`: **Create a merge commit only.** A rebase-merge would copy `dev`'s commits onto `main` under new SHAs, `dev` would no longer contain what `main` has, and every later integration PR would show duplicate commits and conflicts.
+4. **Closing issues.** GitHub closes `Closes #n` issues only when the PR lands on the *default* branch (`main`). Feature PRs therefore say `Related issue: #n`; the `dev` → `main` PR lists `Closes #a, #b, …`. An issue finished earlier than that is closed manually with a link to its merged PR.
+5. **CI triggers.** Assignment §3.4 says `ci.yml` runs "on pull request to main, on push to dev". Under that literal reading a feature PR into `dev` gets no PR-triggered run. Phase 10 decides whether `ci.yml` also triggers on `pull_request` to `dev` (a superset of the requirement; recommended so feature PRs are gated before they reach `dev`).
 
 ## Issue Hierarchy
 
@@ -98,19 +122,42 @@ PR body:
 
 ## Required Partner Review
 
-The assignment requires substantive partner review comments. A review must discuss code/documentation behavior or evidence. "LGTM" alone is not sufficient evidence of substantive review.
+The assignment requires substantive partner review comments (rubric A3, `ASG-GH-005`). A review must discuss code/documentation behavior or evidence. "LGTM" alone is not sufficient evidence of substantive review.
+
+A review counts when it:
+1. is posted by the **other contributor's own GitHub account** (never by the author, never on someone's behalf);
+2. shows the diff was actually read — it names files, lines or behaviours;
+3. checks the change against the linked requirement IDs and the issue's acceptance criteria;
+4. states what was verified (commands run, assignment sections cross-checked);
+5. ends in an approval or in specific requested changes, and approves only once blocking comments are resolved;
+6. includes at least one "why" question to the author whose answer stays in the thread (viva preparation, `ASG-SUB-009`).
+
+Reviewer routine (each person runs it under their own login):
+
+```
+gh auth status                         # confirm you are acting as yourself
+gh pr checkout <n>                     # get the actual branch
+gh pr diff <n>                         # read the change
+gh pr review <n> --comment -b "…"      # substantive comment (line comments in the Files tab are better)
+gh pr review <n> --request-changes -b "…"
+gh pr review <n> --approve -b "Verified: … Checked against: ASG-… Question answered: …"
+```
+
+AI assistance in a review is allowed only in the reviewer's **own** session and account, after the reviewer has read the change and can defend every comment; it is logged in `docs/AI-USAGE.md`. A review the reviewer has not read is not a review.
 
 ## Rebase / Merge
 
-Before merge:
+Before merging a **feature** PR:
 1. `git fetch origin`
-2. `git rebase origin/main`
+2. `git rebase origin/dev`
 3. resolve conflicts
 4. run full required checks
-5. push using `--force-with-lease` only to your own branch
+5. push using `--force-with-lease` only to your own feature branch
 6. wait for CI
 7. obtain required approval
-8. merge via PR
+8. merge via PR into `dev`
+
+`dev` is never rebased or force-pushed. If `main` ever contains something `dev` lacks, merge `main` into `dev` through a PR rather than rewriting `dev`.
 
 Never bypass protection.
 
@@ -136,14 +183,33 @@ Documented set plus the phase labels. Two labels were **added** in Phase 00 beca
 
 ### Issue and branch numbering
 - One parent issue per phase; sub-issues are linked as GitHub sub-issues and listed in the parent body.
-- One branch per issue: `dev/<issue-number>-<slug>`. Phase 00 uses `dev/1-phase-00-baseline` (parent issue #1), and one PR covers sub-issues #2–#8.
-- The branch-name convention conflicts with the assignment's literal "dev" branch wording; see `docs/BLOCKERS.md` **B-009**. Decide before the second PR.
+- One branch per issue: `feature/<issue-number>-<slug>`, cut from `dev` (see "Branch Model"). Where several small sub-issues form one reviewable change, one branch may carry them; the PR then names every issue.
+- Phase 00 (history): parent #1, sub-issues #2–#8, PR #9 from `dev/1-phase-00-baseline` (rebase-merged by the owner on 2026-09-25, without a partner review because the partner was not yet a collaborator — it therefore does not count toward `ASG-GH-005`). Follow-up #10 applies the review decisions.
+- Branch-model decision recorded in `docs/SUBMISSION.md` (decisions table).
 
 ### Issue templates
 `.github/ISSUE_TEMPLATE/` provides `phase.yml` (parent), `feature.yml`, `docs.yml` and `bug.yml`. Every template carries the sections required above (objective, requirement IDs, context, in/out of scope, acceptance criteria, test/evidence criteria, owner, dependencies, definition of done). The pull-request template is `.github/pull_request_template.md`.
 
-### Branch protection and review
-`main` is not protected yet and the second collaborator does not exist yet (`docs/BLOCKERS.md` B-010, B-011). Until both are resolved every change goes through a PR **and no PR is merged**.
+### Branch protection and review (as configured 2026-09-25)
+Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write). Protection is implemented as two repository **rulesets** (Settings → Rules → Rulesets); the exported JSON is in `docs/evidence/`.
+
+| Setting | `main` (ruleset 23990471) | `dev` (ruleset 23990939) |
+|---|---|---|
+| Deletion | blocked | blocked |
+| Force-push / non-fast-forward | blocked | blocked |
+| Pull request required | yes | yes |
+| Approvals required | **1** (the author cannot approve their own PR) | **1** |
+| Stale approvals dismissed on new push | yes | yes |
+| Review threads must be resolved | yes | yes |
+| Bypass actors | none (admin included) | none |
+| Allowed merge methods | **merge commit only** | rebase or merge commit |
+| Required status checks | *not yet* — added with `ci.yml` in Phase 10 (rubric I1); names must match the job names | *not yet* |
+
+Repository level: **squash merge is disabled** (it would erase the per-author commit counts rubric A4 measures); *delete branch on merge* stays **off** (it would try to delete `dev` after every `dev` → `main` merge); auto-merge is off.
+
+Still open for `ASG-GH-001`: a screenshot of the ruleset page in `docs/evidence/` (a CLI cannot take one; the JSON exports are supporting evidence only) and the required status checks.
+
+Merge only PRs that have a substantive partner review — an unreviewed merge cannot count toward the "≥ 5 merged PRs with partner review" rubric line, and the rulesets now enforce it.
 
 ### Requirement IDs in issues
 Every issue and PR cites `ASG-*` IDs from `docs/ASSIGNMENT_TRACEABILITY.md`. When a PR completes an ID, update that row's Owner/Issue/Artifact/Evidence/Status in the same PR.

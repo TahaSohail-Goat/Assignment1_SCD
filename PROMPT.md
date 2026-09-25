@@ -51,14 +51,14 @@ Rules:
 For every phase:
 - create/update issues;
 - use proper labels;
-- create a `dev/<issue-number>-<slug>` branch;
+- create a `feature/<issue-number>-<slug>` branch from `dev`;
 - implement against acceptance criteria;
 - test;
 - document evidence;
 - commit with conventional prefixes;
 - push;
 - open/update a PR;
-- rebase from `origin/main` when required;
+- rebase from `origin/dev` when required (feature branches only; `dev` is never rebased);
 - re-run checks;
 - merge only after branch protection/review/CI requirements are satisfied.
 
@@ -102,13 +102,13 @@ For every implementation unit:
 4. Add acceptance criteria.
 5. Add labels.
 6. Assign the real owner.
-7. Create the branch using `dev/<issue-number>-<slug>`.
+7. Create the branch using `feature/<issue-number>-<slug>`, cut from `dev`.
 8. Commit with conventional naming.
 9. Push the branch.
-10. Open a PR with requirement IDs and evidence.
+10. Open a PR into `dev` with requirement IDs and evidence (`dev` → `main` PRs are opened when a phase or slice is complete; see `docs/GITHUB_WORKFLOW.md`).
 11. Partner provides a substantive review comment.
 12. Resolve feedback.
-13. Fetch and rebase on `origin/main` when required.
+13. Fetch and rebase the feature branch on `origin/dev` when required.
 14. Re-run all checks.
 15. Merge only after protected-branch rules are satisfied.
 
@@ -120,7 +120,7 @@ Do not invent the partner as an assignee until the partner is actually a reposit
 
 # PARALLEL SESSIONS PROMPT
 
-The team may use two Claude Code sessions.
+The team may use two AI sessions, one per contributor, each with that person's own tool (for example Claude Code and Codex) and their own GitHub login. See `docs/PARTNER_RUNBOOK.md`.
 
 Session A:
 - contributor account A,

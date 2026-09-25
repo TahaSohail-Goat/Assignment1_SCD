@@ -63,11 +63,11 @@ If you cannot prove a requirement from:
 
 do not implement it as a mandatory assignment requirement.
 
-Write the uncertainty into `docs/BLOCKERS.md` or `docs/adr/`.
+Write the uncertainty into the PR or issue, or into `docs/adr/` when it is a design decision.
 
 ## 6. Git Safety
-- No direct commits to `main`.
-- No force push to shared branches.
+- No direct commits to `main`. No direct commits to `dev` either: work happens on `feature/<issue-number>-<slug>` branches cut from `dev` and reaches `dev` by pull request; `dev` reaches `main` by a merge-commit pull request (`docs/GITHUB_WORKFLOW.md`).
+- No force push to shared branches (`main`, `dev`).
 - No `--no-verify` to hide failures.
 - Use `--force-with-lease` only after an intentional rebase on your own issue branch.
 - Never rewrite another contributor's work.
@@ -75,7 +75,7 @@ Write the uncertainty into `docs/BLOCKERS.md` or `docs/adr/`.
 - Verify GitHub identity before any remote action.
 
 ## 7. Two-Session Collaboration
-Two Claude Code sessions may run in parallel only when:
+Two AI-assisted sessions — one per contributor, each with that person's own tool (for example Claude Code for one, Codex for the other) — may run in parallel only when:
 - each session has a separate issue,
 - each session has its own branch/worktree,
 - file ownership is disjoint,
@@ -85,12 +85,14 @@ Two Claude Code sessions may run in parallel only when:
 Never impersonate the partner's identity.
 Never fabricate commits, review comments, approvals, or contribution.
 
-Use actual separate GitHub authentication/worktrees for both contributors.
+Use actual separate GitHub authentication/worktrees for both contributors. Each contributor's session authenticates as that contributor (browser login done by the person, never by pasting a token or password into an AI session) and follows `docs/PARTNER_RUNBOOK.md` for the step-by-step routine.
+
+Any AI agent that reads this file (Codex reads `AGENTS.md` natively; Claude Code also loads `CLAUDE.md`) is bound by it. Where a repository document says "Claude Code", read "the contributor's AI session".
 
 ## 8. Contribution Balance
 The assignment requires `git shortlog -sn` to show neither partner below 35%.
 
-Therefore Claude Code must maintain a contribution plan based on estimated effort and real authorship. Do not optimize for artificial commit counts. Favor meaningful, reviewable work.
+Therefore each contributor's AI session must maintain a contribution plan based on estimated effort and real authorship. Do not optimize for artificial commit counts. Favor meaningful, reviewable work.
 
 ## 9. Assignment-Specific Security
 The assignment has severe automatic deductions for:

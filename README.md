@@ -14,7 +14,7 @@ This repository is developed in phases from the authoritative assignment.
 
 ## Source of Truth
 The assignment source is stored under `docx/` (`ASSIGNMENT_SOURCE.pdf`, unchanged).
-The Markdown transcription (`docx/ASSIGNMENT.md`) is for searchable engineering use and must faithfully preserve the source content; anomalies found while transcribing are in `docx/EXTRACTION_NOTES.md`. Requirement IDs, rubric mapping and open questions live in `docs/ASSIGNMENT_TRACEABILITY.md`, `docs/RUBRIC.md` and `docs/BLOCKERS.md`.
+The Markdown transcription (`docx/ASSIGNMENT.md`) is for searchable engineering use and must faithfully preserve the source content; anomalies found while transcribing are in `docx/EXTRACTION_NOTES.md`. Requirement IDs, rubric mapping and open questions live in `docs/ASSIGNMENT_TRACEABILITY.md`, `docs/RUBRIC.md`; instructor answers and decisions are in `docs/SUBMISSION.md`.
 
 ## Working Principle
 No requirement is implemented from memory or assumption. Requirements are mapped to traceability IDs, issues, code, tests, and evidence.

@@ -1,25 +1,32 @@
 # Phase Status
 
-Updated at the end of every phase. A phase is **Complete** only when its gate in `docs/phases/PHASE-NN-*.md` is satisfied and its PR is merged under the branch-protection rules. The next permitted phase is the first one that is not Complete.
+Snapshot of 2026-09-25. Team target: everything done by Sunday 27 Sep 2026 (the Google Classroom deadline is "next Tuesday"; see [`SUBMISSION.md`](SUBMISSION.md)).
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
-| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8) | `dev/1-phase-00-baseline` | #9 (open, **not merged**) | Work complete; awaiting review and merge decision (B-009, B-010, B-011) |
-| 01 | Requirements Engineering | — | — | — | Not started |
-| 02 | Architecture & Repository Structure | — | — | — | Not started |
-| 03 | Frontend | — | — | — | Not started |
-| 04 | Backend & Domain Layer | — | — | — | Not started |
-| 05 | Data Layer | — | — | — | Not started |
-| 06 | Cache, Rate Limiting & Reliability | — | — | — | Not started |
-| 07 | AI Layer | — | — | — | Not started |
-| 08 | Docker & Compose | — | — | — | Not started (needs Docker, B-017) |
-| 09 | Kubernetes | — | — | — | Not started (needs Docker + kubectl + kind/k3d) |
-| 10 | CI/CD | — | — | — | Not started |
-| 11 | QA, Evidence & Reflection | — | — | — | Not started |
-| 12 | Final Assignment Audit & Submission | — | — | — | Not started |
+| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8 closed; open: #10, #58, #59) | `feature/58-…` · `feature/59-…` | #9 and #11 merged; #61 open into `dev` | Nearly done: #61 merges, then Phases 00–01 go to `main` together |
+| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/<n>-<slug>` per issue | #19 and #20 merged; #57 open; #14, #16, #17 in progress | In progress: `TahaSohail-Goat` finishes Phases 00–01 (owner decision), `Artfever` reviews |
+| 02 | Architecture & Repository Structure | #21 (packages #32, #33) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
+| 03 | Frontend | #22 (packages #34, #35, #36) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever |
+| 04 | Backend & Domain Layer | #23 (packages #37, #38, #39) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: TahaSohail-Goat |
+| 05 | Data Layer | #24 (packages #40, #41) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
+| 06 | Cache, Rate Limiting & Reliability | #25 (packages #42, #43) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
+| 07 | AI Layer | #26 (packages #44, #45, #46) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
+| 08 | Docker & Compose | #27 (packages #47, #48) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat (needs Docker) |
+| 09 | Kubernetes | #28 (packages #49, #50) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat (needs Docker + kubectl + kind/k3d) |
+| 10 | CI/CD | #29 (packages #51, #52) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
+| 11 | QA, Evidence & Reflection | #30 (packages #53, #54) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
+| 12 | Final Assignment Audit & Submission | #31 (packages #55, #56) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 
 ## Next permitted phase
 
-**Phase 01 — Requirements Engineering**, after the Phase 00 PR has been reviewed (documentation PRs are not merged until the repository review is complete — `START_HERE.md` §6) and the team has answered or consciously deferred the open items in `docs/BLOCKERS.md` that affect Phase 01: B-004 (endpoint count), B-006 (`triaged_by` values) and B-009 (branch model).
+## How we work now
 
-If the merge is deferred, Phase 01 is branched from `dev/1-phase-00-baseline` (a stacked PR) rather than from `main`, because it edits the Phase 00 documents.
+- **Phases 00 and 01 are finished first, by `TahaSohail-Goat` (Claude Code)**, including #14, #16 and #17, which were first allocated to `Artfever`. `Artfever` reviews them.
+- **From Phase 02 both work in parallel** on their own issues as allocated in `docs/TEAM_CONTRIBUTION.md`. A package waits only for a package it depends on (listed in its issue).
+- **Flow:** issue → `feature/<n>-<slug>` from `dev` → PR into `dev` → the other contributor reviews → merge. The reviewer approves unless there is a real defect (broken build, missing requirement, secret, invented requirement); wording nits are comments, not change requests.
+- **`dev` → `main`:** one integration PR when a coherent block is done. `main` is protected (PR, one approval, CI once it exists): that is what the assignment requires.
+
+Instructor answers, open decisions and the deadline are in the decisions table of [`SUBMISSION.md`](SUBMISSION.md).
+
+Remaining for full protection evidence: the ruleset screenshot (`docs/evidence/protection-*`, P12-S02, #56) and required status checks with `ci.yml` (P10-S01, #51).

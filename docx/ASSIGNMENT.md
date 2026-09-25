@@ -463,7 +463,7 @@ previous overlay with the previous SHA (declarative, auditable, the correct answ
 
 150 marks. One line per item; the mark is what that line is worth.
 
-> [Transcriber note: the rubric items below sum to 175, not 150, and parts A–G sum to 120, not the "110" stated in §5.1. This is a property of the source. See EXTRACTION_NOTES.md EN-06 and docs/BLOCKERS.md B-002 / B-003.]
+> [Transcriber note: the rubric items below sum to 175, not 150, and parts A–G sum to 120, not the "110" stated in §5.1. This is a property of the source. See EXTRACTION_NOTES.md EN-06 and the decisions table in docs/SUBMISSION.md.]
 
 ### A · Collaboration and version control — 15
 

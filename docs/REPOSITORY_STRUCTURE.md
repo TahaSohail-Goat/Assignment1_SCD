@@ -27,12 +27,12 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 │   │                                                         ingress, configmap, secret, hpa, vpa, pdb, kustomization
 │   └── overlays/{dev,prod}/                   📁  Phase 09   kustomization.yaml each
 ├── load/                                      📁  Phase 09   k6-script.js  (ASG-REPO-012)
-├── scripts/                                   📁  Phase 12   check_submission.py (B-014)  (ASG-REPO-016)
+├── scripts/                                   📁  Phase 12   check_submission.py  (ASG-REPO-016)
 ├── docs/                                      ASG-REPO-013…015
 │   ├── ENGINEERING-NOTES.md · RUNBOOK.md · AI-USAGE.md          ✅ stubs (final content Phase 11–12)
-│   ├── TRIAGE.md                              ⏳ purpose unspecified (B-016)
+│   ├── TRIAGE.md                              ⏳ purpose unspecified
 │   ├── adr/0001…0004-*.md                     ✅ stubs (the four ADRs the rubric requires)
-│   ├── evidence/                              📁  Phase 11   screenshots, captures, charts
+│   ├── evidence/                              ✅  ruleset JSON exports (Phase 00); screenshots, captures, charts (Phase 11)
 │   └── …governance documents (see DOCUMENT_INDEX.md)           ✅
 ├── docx/                                      ✅ authoritative assignment source + transcription
 │   ├── ASSIGNMENT_SOURCE.pdf                  ✅ unchanged, SHA-256 in EXTRACTION_NOTES.md
@@ -45,7 +45,7 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 ├── compose.yaml · compose.prod.yaml · .env.example              ⏳ Phase 08  (ASG-REPO-018)
 ├── .gitignore · .gitattributes                ✅ Phase 00
 ├── README.md                                  ✅ placeholder; real README Phase 12   (ASG-REPO-019)
-├── LICENSE                                    ⏳ type not specified (B-015)
+├── LICENSE                                    ⏳ type not decided
 ├── CLAUDE.md · AGENTS.md · PROMPT.md · START_HERE.md            ✅ governance / execution framework
 ```
 
