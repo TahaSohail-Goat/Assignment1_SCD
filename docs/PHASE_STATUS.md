@@ -4,8 +4,8 @@ Updated at the end of every phase. A phase is **Complete** only when its gate in
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
-| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8, follow-up #10) | `dev/1-phase-00-baseline` (retired) · `feature/10-branching-model-and-review-decisions` (merged, deleted) | #9 merged to `main` (no partner review) · #11 merged into `dev` after `Artfever`'s approval | Baseline merged; `dev` carries the follow-up. Parent #1 and #10 close with the Phase 01 `dev` → `main` integration PR |
-| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/13-prd` · `feature/15-fr-catalog-api-domain` · `feature/18-traceability-and-allocation` · #14, #16, #17 by `Artfever` | #19, #20 open into `dev` (re-review requested) · #18's PR open | In progress: 15/15 effort points; PRD and API catalog under review; allocation of Phases 02–12 in review |
+| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8 closed; open: #10, #58, #59) | `dev/1-phase-00-baseline` (retired) · `feature/10-…` (merged, deleted) · `feature/58-ai-session-protocol` | #9 merged to `main` · #11 merged into `dev` · #60 open into `dev` | **Close-out in progress** (owner rule: finish one phase before the next): #60 (session protocol), #59 (instructor and team questions), then the Phase 00 `dev` → `main` integration PR, which closes #1, #10, #58, #59 |
+| 01 | Requirements Engineering | #12 (sub-issues #13–#18, all open) | `feature/13-prd` · `feature/15-fr-catalog-api-domain` · `feature/18-traceability-and-allocation` · #14, #16, #17 not started | #19, #20, #57 open into `dev` | **Waiting for Phase 00 to be complete on `main`.** Then: `Artfever`'s Codex writes #16 and #17 while Claude Code runs the merge chain #19 → #20 → #57; #14 after #20 merges (`docs/AI_SESSIONS.md` section 4) |
 | 02 | Architecture & Repository Structure | #21 (packages #32, #33) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 | 03 | Frontend | #22 (packages #34, #35, #36) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever |
 | 04 | Backend & Domain Layer | #23 (packages #37, #38, #39) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: TahaSohail-Goat |
@@ -20,12 +20,12 @@ Updated at the end of every phase. A phase is **Complete** only when its gate in
 
 ## Next permitted phase
 
-**Phase 01 — Requirements Engineering** (issue #12) is in progress: the PRD (#13, PR #19) and the API/domain FR catalog (#15, PR #20) await `Artfever`'s re-review; `Artfever`'s Codex session takes #16 (NFR catalog), #17 (use cases) and #14 (frontend FR catalog); #18 (this allocation) is in review.
+**Phase 00 — close-out** comes first (owner decision 2026-09-25: complete one phase entirely before starting another; `AGENTS.md` §11). It is complete when: PR #60 (session protocol, issue #58) is merged into `dev`; the open instructor and team questions (#59) each have an answer or an "asked <date>; interim decision" note, merged into `dev`; and the Phase 00 `dev` → `main` integration PR is merged with a merge commit, closing #1, #10, #58 and #59.
 
-**Phase 02** (issue #21) may start when Phase 01's gate is met — every mandatory assignment obligation is represented by a requirement ID or documented as non-requirement / bonus / future — which needs #14, #15, #16, #17 and #18 merged into `dev`, followed by the Phase 01 `dev` → `main` integration PR (merge commit, one approval).
+**Phase 01 — Requirements Engineering** (issue #12) continues only after that. Its state today: PRD (#13, PR #19) and API/domain FR catalog (#15, PR #20) await `Artfever`'s re-review, the allocation (#18, PR #57) is open, and #14, #16, #17 (Codex) have not started. It is complete when #13–#18 are merged into `dev` and the Phase 01 integration PR is merged into `main`; that is the gate for **Phase 02** (issue #21): every mandatory assignment obligation is represented by a requirement ID or documented as non-requirement / bonus / future.
 
 Preconditions met: ✅ partner is a collaborator (B-010) · ✅ `main` and `dev` are protected by rulesets (B-011) · ✅ PR #11 merged into `dev`.
 
-Open items that do **not** block Phase 01: B-002/B-003 (deferred by the owner), B-006 (`triaged_by` values — decided in P02-S02, #33), B-001, B-007, B-008, B-013–B-016, B-021 (design questions, answered in P02-S02). Resolved: B-004, B-009, B-010, B-011.
+Open items that do **not** block Phase 01: B-002/B-003 (deferred by the owner), B-006 (`triaged_by` values — decided in P02-S02, #33), B-021 (design questions, answered in P02-S02); B-001, B-007, B-008, B-012–B-016 are tracked in #59. Resolved: B-004, B-009, B-010, B-011.
 
 Remaining for full protection evidence: the ruleset screenshot (`docs/evidence/protection-*`, P12-S02, #56) and required status checks with `ci.yml` (P10-S01, #51).
