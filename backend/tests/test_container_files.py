@@ -141,7 +141,7 @@ def test_every_service_restarts_and_has_limits(name: str) -> None:
     service = SERVICES[name]
 
     assert service["restart"] in {"unless-stopped", "no"}
-    if name != "migrate":  # the one-shot migration must not restart in a loop
+    if name not in {"migrate", "ollama-pull"}:  # one-shot jobs must not restart in a loop
         assert service["restart"] == "unless-stopped"
     limits = service["deploy"]["resources"]["limits"]
     assert limits["cpus"] and limits["memory"]
@@ -177,8 +177,11 @@ def test_credentials_come_from_the_environment_not_from_the_file() -> None:
 
 
 def test_services_reach_each_other_by_service_name_never_localhost() -> None:
-    for service in SERVICES.values():
-        for value in (service.get("environment") or {}).values():
+    for name, service in SERVICES.items():
+        for key, value in (service.get("environment") or {}).items():
+            if name == "ollama-pull" and key == "OLLAMA_HOST":
+                # This one-shot process starts its own temporary local daemon to fetch the model.
+                continue
             assert "localhost" not in str(value)
             assert "127.0.0.1" not in str(value)
 
@@ -195,3 +198,38 @@ def test_every_variable_the_compose_file_needs_is_in_the_example() -> None:
 def test_env_is_ignored_and_the_example_is_not() -> None:
     assert ".env" in GITIGNORE
     assert "!.env.example" in GITIGNORE
+
+
+def test_frontend_image_has_separate_node_and_nginx_stages() -> None:
+    instructions = _instructions((REPOSITORY / "frontend" / "Dockerfile").read_text())
+    bases = [args for keyword, args in instructions if keyword == "FROM"]
+
+    assert len(bases) == 2
+    assert bases[0].startswith("node:22.")
+    assert "-alpine" in bases[0]
+    assert bases[1].startswith("nginx:1.27.")
+    assert "-alpine" in bases[1]
+    assert any(keyword == "USER" and args == "nginx" for keyword, args in instructions)
+    assert any(keyword == "HEALTHCHECK" for keyword, _ in instructions)
+    assert any(
+        "--from=builder" in args and "/app/dist/" in args
+        for keyword, args in instructions
+        if keyword == "COPY"
+    )
+    assert "node_modules" in (REPOSITORY / "frontend" / ".dockerignore").read_text()
+
+
+def test_production_compose_uses_only_images_and_keeps_data_ports_private() -> None:
+    production = yaml.safe_load((REPOSITORY / "compose.prod.yaml").read_text())
+    services = production["services"]
+
+    assert production["networks"]["internal"]["internal"] is True
+    assert services["frontend"]["networks"] == ["edge"]
+    assert services["backend"]["networks"] == ["edge", "internal"]
+    for name in ("database", "cache"):
+        assert services[name]["networks"] == ["internal"]
+        assert "ports" not in services[name]
+    for service in services.values():
+        assert "build" not in service
+    for name in ("backend", "frontend", "migrate"):
+        assert "${IMAGE_TAG:" in services[name]["image"]

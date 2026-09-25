@@ -27,8 +27,13 @@ The `.dockerignore` removes the virtual environment, bytecode caches, tests and 
 - The builder stage (pip, wheel caches, build tools) is **not** in the final image: only the virtual
   environment is copied across.
 
-## Frontend
+## Frontend (ASG-DEVOPS-009, -010, -012)
 
-Not measured yet: `frontend/Dockerfile` arrives with issue #48. The assignment states that a
-frontend image over about 60 MB means the multi-stage split is not working; the same job will
-report it once the Dockerfile exists.
+The CI `context-and-image-size` job now builds the Node builder and nginx runtime stages and
+measures the frontend context with and without `.dockerignore`. Numerical measurements and the
+runtime content check are pending a CI run on the #48 branch. Docker is not installed on Artfever's
+machine, so no local image size or runtime result is claimed.
+
+The `integration` job also captures the actual output of
+`docker compose exec -T frontend ping -c 1 -W 2 database`; a failed name lookup is required.
+Its output and the video demonstration are pending.
