@@ -32,7 +32,6 @@
 | `docs/RUNBOOK.md` | Operational procedures | Deployment/demo |
 | `docs/ENGINEERING-NOTES.md` | Answers to the assignment's eight reflection questions | Final phase (log failures as they happen) |
 | `docs/AI-USAGE.md` | Honest AI-assistance disclosure | Throughout; finalize before submission |
-| `docs/BLOCKERS.md` | Unresolved source/implementation questions (`B-xxx`) | Whenever something is unclear |
 | `docs/PHASE_EXECUTION_PROTOCOL.md` · `docs/QUALITY_GATES.md` | Phase loop and gates | Start/end of each phase |
 | `docs/adr/` | Architecture decision records (the four required ADRs plus any others) | When making or revisiting a decision |
 | `docs/phases/PHASE-NN-*.md` | Scope of each phase | The current phase only |
@@ -49,4 +48,4 @@ Use the phase prompt and this table to determine the minimum reading set. Expand
 1. `docx/ASSIGNMENT_SOURCE.pdf` / `docx/ASSIGNMENT.md` (highest).
 2. Approved ADRs and the current issue's acceptance criteria.
 3. Governance and phase documents in this repository.
-4. Anything else — never overrides 1–3. Conflicts and ambiguities go to `docs/BLOCKERS.md`.
+4. Anything else — never overrides 1–3. Conflicts and ambiguities are noted in the PR or issue; instructor answers and decisions are in `docs/SUBMISSION.md`.

@@ -10,7 +10,7 @@ Related: [`AGENTS.md`](../AGENTS.md) (the contract, read by Codex natively) · [
 2. 👤 **Human-only actions:** signing in to GitHub in the browser (step 2), reading every diff before approving, and the decision to approve or merge. **Never paste a password, token or `gh auth token` output into an AI chat or a file.**
 3. **AI use is allowed and must be disclosed** (assignment §5.5): add a row to *your* table in [`AI-USAGE.md`](AI-USAGE.md) in the same PR as the work. At the viva you must be able to explain every line you committed and every review you approved (assignment §5.4).
 4. **Network access:** git and `gh` need the network. If Codex runs in a sandbox that blocks it, allow those commands through the tool's approval or network setting (check your Codex version's documentation for the exact option); allow only what is needed.
-5. Everything in [`AGENTS.md`](../AGENTS.md) applies: no direct commits to `main` or `dev`, no force-push to shared branches, no secrets, requirement IDs on everything, no invented requirements (unknowns go to [`BLOCKERS.md`](BLOCKERS.md)).
+5. Everything in [`AGENTS.md`](../AGENTS.md) applies: no direct commits to `main` or `dev`, no force-push to shared branches, no secrets, requirement IDs on everything, no invented requirements (unknowns go to the PR or issue).
 
 ## 1. Install the tools (once)
 
@@ -204,7 +204,7 @@ STEP 3 - MY ISSUES (only after #11 is merged into dev)
 For each of #16, #17, #14, in that order, follow section 7 of docs/PARTNER_RUNBOOK.md:
 - git switch dev && git pull --ff-only, then git switch -c feature/<issue-number>-<slug>
 - I own only these files: #16 docs/NFRs.md; #17 docs/USE_CASES.md; #14 docs/frs/frontend.md and my link row in docs/FRs.md (after PR #20 is merged; use the entry template in docs/FRs.md). Never edit files owned by Taha's open issues: #13 docs/PRD.md; #15 docs/FRs.md and docs/frs/api.md; #18 docs/TEAM_CONTRIBUTION.md, docs/ASSIGNMENT_TRACEABILITY.md, docs/PHASE_STATUS.md.
-- Quality bar: every statement cites an assignment section and page or an ASG-* ID that exists in docs/ASSIGNMENT_TRACEABILITY.md. No invented numbers, endpoints, fields or SLOs. Unknowns go to the catalog's design-questions table or docs/BLOCKERS.md. Where the assignment gives numbers (10 s timeout, TTL 30 s, coverage 65 percent, and so on) use exactly those.
+- Quality bar: every statement cites an assignment section and page or an ASG-* ID that exists in docs/ASSIGNMENT_TRACEABILITY.md. No invented numbers, endpoints, fields or SLOs. Unknowns go to the catalog's design-questions table or the PR description. Where the assignment gives numbers (10 s timeout, TTL 30 s, coverage 65 percent, and so on) use exactly those.
 - Before committing check: every ASG-* ID you cite exists, tables render, links resolve, no secrets, no other file touched.
 - Commit: conventional message (for example: docs(nfr): classify non-functional requirements). Write it to a file and use git commit -F <file>. The body lists "Requirements: ASG-..." and "Refs #<issue>", and ends with the trailer: Assisted-by: OpenAI Codex
 - Pull request: base dev; copy .github/pull_request_template.md and fill every section; "Related issue: #<n>" (not "Closes"); reviewer TahaSohail-Goat; labels type:docs, phase:01-requirements, area:docs, status:review; assignee @me. Add one row to MY table in docs/AI-USAGE.md inside the same PR.

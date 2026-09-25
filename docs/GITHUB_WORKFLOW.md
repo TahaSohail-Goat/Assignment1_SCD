@@ -2,7 +2,7 @@
 
 ## Branch Model
 
-Decision **B-009** (owner, 2026-09-25): the assignment's literal two-branch model — `dev` for work, `main` for deployable software — plus short-lived feature branches (assignment §3.4, rubric A2, `ASG-GH-002`).
+Decision (owner, 2026-09-25): the assignment's literal two-branch model — `dev` for work, `main` for deployable software — plus short-lived feature branches (assignment §3.4, rubric A2, `ASG-GH-002`).
 
 `main`
 - protected (see "Branch protection and review")
@@ -185,13 +185,13 @@ Documented set plus the phase labels. Two labels were **added** in Phase 00 beca
 - One parent issue per phase; sub-issues are linked as GitHub sub-issues and listed in the parent body.
 - One branch per issue: `feature/<issue-number>-<slug>`, cut from `dev` (see "Branch Model"). Where several small sub-issues form one reviewable change, one branch may carry them; the PR then names every issue.
 - Phase 00 (history): parent #1, sub-issues #2–#8, PR #9 from `dev/1-phase-00-baseline` (rebase-merged by the owner on 2026-09-25, without a partner review because the partner was not yet a collaborator — it therefore does not count toward `ASG-GH-005`). Follow-up #10 applies the review decisions.
-- Branch-model decision recorded as `docs/BLOCKERS.md` **B-009** (resolved).
+- Branch-model decision recorded in `docs/SUBMISSION.md` (decisions table).
 
 ### Issue templates
 `.github/ISSUE_TEMPLATE/` provides `phase.yml` (parent), `feature.yml`, `docs.yml` and `bug.yml`. Every template carries the sections required above (objective, requirement IDs, context, in/out of scope, acceptance criteria, test/evidence criteria, owner, dependencies, definition of done). The pull-request template is `.github/pull_request_template.md`.
 
 ### Branch protection and review (as configured 2026-09-25)
-Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write; B-010). Protection is implemented as two repository **rulesets** (Settings → Rules → Rulesets); the exported JSON is in `docs/evidence/`.
+Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write). Protection is implemented as two repository **rulesets** (Settings → Rules → Rulesets); the exported JSON is in `docs/evidence/`.
 
 | Setting | `main` (ruleset 23990471) | `dev` (ruleset 23990939) |
 |---|---|---|

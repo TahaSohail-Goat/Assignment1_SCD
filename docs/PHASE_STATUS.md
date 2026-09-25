@@ -1,32 +1,30 @@
 # Phase Status
 
-Updated at the end of every phase. A phase is **Complete** only when its gate in `docs/phases/PHASE-NN-*.md` is satisfied and its PR is merged under the branch-protection rules. The next permitted phase is the first one that is not Complete.
+Snapshot of 2026-09-25. Team target: everything done by Sunday 27 Sep 2026 (the Google Classroom deadline is "next Tuesday"; see [`SUBMISSION.md`](SUBMISSION.md)).
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
-| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8, follow-up #10) | `dev/1-phase-00-baseline` (retired) · `feature/10-branching-model-and-review-decisions` | #9 merged to `main` (no partner review) · #11 open into `dev`, awaiting `Artfever`'s review | Baseline merged. Follow-up #10/#11 applies the review decisions and the real protection settings; parent #1 closes when #11 lands |
-| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/<n>-<slug>` per issue, cut from `dev` after #11 merges | — | Issues created and split 15/15 effort points between `TahaSohail-Goat` and `Artfever`; branches wait for #11 |
+| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8, #10, #58, #59) | `feature/10-…` (merged) · `feature/58-…` · `feature/59-…` | #9 and #11 merged; #60, #61 open into `dev` | Nearly done: #60 and #61 merge, then `dev` goes to `main` |
+| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/<n>-<slug>` per issue | #19, #20, #57 open into `dev`; #14, #16, #17 still to write | In progress: `TahaSohail-Goat` finishes Phases 00–01 |
 | 02 | Architecture & Repository Structure | — | — | — | Not started |
 | 03 | Frontend | — | — | — | Not started |
 | 04 | Backend & Domain Layer | — | — | — | Not started |
 | 05 | Data Layer | — | — | — | Not started |
 | 06 | Cache, Rate Limiting & Reliability | — | — | — | Not started |
 | 07 | AI Layer | — | — | — | Not started |
-| 08 | Docker & Compose | — | — | — | Not started (needs Docker, B-017) |
+| 08 | Docker & Compose | — | — | — | Not started (needs Docker) |
 | 09 | Kubernetes | — | — | — | Not started (needs Docker + kubectl + kind/k3d) |
 | 10 | CI/CD | — | — | — | Not started |
 | 11 | QA, Evidence & Reflection | — | — | — | Not started |
 | 12 | Final Assignment Audit & Submission | — | — | — | Not started |
 
-## Next permitted phase
+## How we work now
 
-**Phase 01 — Requirements Engineering** (issue #12). Its issues exist and are assigned; work starts on branches cut from `dev` as soon as PR #11 is merged.
+- **Phases 00 and 01 are finished first, by `TahaSohail-Goat` (Claude Code)**, including the three Phase 01 packages that were first allocated to `Artfever` (#14, #16, #17). `Artfever` reviews them.
+- **From Phase 02 both work in parallel** on their own issues as allocated in `docs/TEAM_CONTRIBUTION.md`. Where one package needs the other's merged code, that package waits; otherwise nobody waits.
+- **Flow:** issue → `feature/<n>-<slug>` from `dev` → PR into `dev` → the other contributor reviews and approves → merge. The reviewer approves unless there is a real defect (broken build, missing requirement, secret, invented requirement); wording nits are comments, not change requests.
+- **`dev` → `main`:** one integration PR when a coherent block is done. `main` is protected (PR, one approval, CI once it exists): that is what the assignment requires.
 
-Preconditions:
-1. ✅ The partner is a repository collaborator (`Artfever`, write) — B-010.
-2. ✅ `main` and `dev` are protected by rulesets (1 approval, no bypass) — B-011.
-3. ⏳ PR #11 (branch model and settings documentation) is approved by `Artfever` and merged into `dev`. Until then branches would be based on stale documentation.
-
-Open items that do **not** block Phase 01: B-002/B-003 (deferred by the owner), B-006 (`triaged_by` values — decide in Phase 05/07), B-001, B-007, B-008, B-013–B-016. Resolved: B-004, B-009, B-010, B-011.
+Instructor answers, open decisions and the deadline are in the decisions table of [`SUBMISSION.md`](SUBMISSION.md).
 
 Remaining for full protection evidence: the ruleset screenshot in `docs/evidence/` and required status checks with `ci.yml` (Phase 10).

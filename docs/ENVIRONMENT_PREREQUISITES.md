@@ -16,9 +16,9 @@ Phase 00 inspects the host **before** telling anyone to install anything. Only m
 | curl | smoke tests | — | curl.exe 8.21.0 | ✅ OK |
 | winget | installs below | — | 1.29.380 | ✅ OK |
 | openssl / bash | VPA install script (Phase 09) | — | OpenSSL and Git Bash from Git for Windows | ✅ OK |
-| Python | backend dev, tests | image base `python:3.12-slim` (§3.1) | 3.13.2 (+ pip 26.2.1) | ⚠️ present, **differs** (B-020) |
-| Node.js / npm | frontend dev, tests | image base `node:22-alpine` (§3.1) | Node 24.13.0 / npm 11.6.2 | ⚠️ present, **differs** (B-020) |
-| Docker Engine / Desktop | Compose, images, kind/k3d | required (§3.2) | not found | ❌ **missing** (B-017) |
+| Python | backend dev, tests | image base `python:3.12-slim` (§3.1) | 3.13.2 (+ pip 26.2.1) | ⚠️ present, **differs** |
+| Node.js / npm | frontend dev, tests | image base `node:22-alpine` (§3.1) | Node 24.13.0 / npm 11.6.2 | ⚠️ present, **differs** |
+| Docker Engine / Desktop | Compose, images, kind/k3d | required (§3.2) | not found | ❌ **missing** |
 | Docker Compose v2 | one-command stack | required (§3.2) | not found (ships with Docker Desktop) | ❌ **missing** |
 | kubectl | Kubernetes phases, CD smoke | required (§3.3) | not found | ❌ **missing** |
 | kind **or** k3d | local cluster | one of them (§3.3) | neither found | ❌ **missing** |
@@ -51,7 +51,7 @@ A second contributor uses their **own** GitHub login and their own worktree; nob
 
 Run each command in an **elevated** PowerShell (Run as administrator). Package IDs were confirmed with `winget search --exact` on the scan date. Re-check versions with `winget show <id>` if a command fails.
 
-### 4.1 Docker Desktop + Compose (B-017) — needed at Phase 08
+### 4.1 Docker Desktop + Compose — needed at Phase 08
 
 ```powershell
 winget install -e --id Docker.DockerDesktop
@@ -122,7 +122,7 @@ winget install -e --id Sigstore.Cosign       # bonus ASG-BONUS-003 only
 | Vertical Pod Autoscaler | recommender in `updateMode: "Off"` (ASG-K8S-028) | Installed from the `kubernetes/autoscaler` repository's VPA scripts (bash + openssl — both present via Git Bash). Confirm against upstream at install time. |
 | Ingress controller | makes the `/` and `/api` Ingress work (ASG-K8S-009) | The assignment names none; the choice is a Phase 09 decision. |
 
-## 5. Version alignment (B-020) — optional
+## 5. Version alignment — optional
 
 The images will build with Python 3.12 and Node 22 regardless of the host. The mismatch only matters for tests run **outside** Docker. Pick one; do not uninstall existing versions:
 
@@ -179,8 +179,8 @@ Each contributor installs on **their own machine** (an AI session may propose th
 |---|---|---|
 | Git | 2.54.0.windows.1 | ✅ |
 | `gh` | 2.101.0 | ✅ |
-| Python | 3.14.6; `py -3.12 --version` → no matching runtime | ⚠️ differs from `python:3.12-slim` (B-020). Add 3.12 side by side (§5) before running the backend tests of Phase 04 (recommended) and before #41 (Phase 05, required) |
-| Node.js | v24.18.0 | ⚠️ differs from `node:22-alpine` (B-020). Add Node 22 side by side (§5) before #34 (Phase 03, required) |
+| Python | 3.14.6; `py -3.12 --version` → no matching runtime | ⚠️ differs from `python:3.12-slim`. Add 3.12 side by side (§5) before running the backend tests of Phase 04 (recommended) and before #41 (Phase 05, required) |
+| Node.js | v24.18.0 | ⚠️ differs from `node:22-alpine`. Add Node 22 side by side (§5) before #34 (Phase 03, required) |
 | npm | `npm --version` fails: `npm.ps1` is blocked by the PowerShell execution policy; `npm.cmd --version` works and prints 11.16.0 | ⚠️ run `npm.cmd` in that shell, or change the execution policy for his own user; that is his decision and is not made here (§7) |
 | Docker / Compose | `docker`: command not found | ❌ before Phase 08 (#48), §4.1 |
 | kubectl | command not found | ❌ before Phase 09, §4.2 |
