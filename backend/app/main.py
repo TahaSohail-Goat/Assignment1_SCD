@@ -19,6 +19,7 @@ from app.database import create_db_engine, create_session_factory
 from app.http_errors import install_error_handlers
 from app.logging import configure_logging
 from app.middleware import RequestContextMiddleware
+from app.openapi import install_openapi
 from app.providers.cache import KeyValueCache, RedisCache
 from app.providers.triage.factory import build_provider
 from app.repositories.health import DatabaseHealthRepository
@@ -114,6 +115,7 @@ def create_app(
     app = FastAPI(title="CivicPulse API", version="0.1.0", lifespan=lifespan)
     app.add_middleware(RequestContextMiddleware)
     install_error_handlers(app)
+    install_openapi(app)
     app.include_router(health.router)
     app.include_router(metrics.router)
     app.include_router(complaints.router)

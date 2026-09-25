@@ -410,7 +410,7 @@ def test_the_openapi_document_names_the_error_responses_and_the_status_codes(
     schema = client.get("/openapi.json").json()
 
     post = schema["paths"]["/api/complaints"]["post"]
-    patch = schema["paths"]["/api/complaints/{complaint_id}/status"]["patch"]
+    patch = schema["paths"]["/api/complaints/{id}/status"]["patch"]
     assert {"201", "400", "429"} <= set(post["responses"])
     assert {"200", "400", "404", "409"} <= set(patch["responses"])
     assert "ErrorResponse" in schema["components"]["schemas"]

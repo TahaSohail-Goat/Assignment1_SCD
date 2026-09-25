@@ -10,6 +10,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
 
 from app.http_errors import error_response
+from app.schemas.complaints import ErrorResponse
 from app.services.readiness import ReadinessService
 
 router = APIRouter()
@@ -20,7 +21,11 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@router.get("/ready", response_model=None)
+@router.get(
+    "/ready",
+    response_model=None,
+    responses={503: {"model": ErrorResponse, "description": "A dependency is not reachable"}},
+)
 def ready(request: Request) -> JSONResponse | dict[str, Any]:
     readiness: ReadinessService = request.app.state.readiness
     report = readiness.run()

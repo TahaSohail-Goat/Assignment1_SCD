@@ -94,7 +94,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-FR-033 | §2.2 p6 | `GET /metrics` exposes Prometheus text format: request count, request latency histogram, triage latency, fallback counter | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | `backend/tests/test_metrics.py` | Implemented (P04-S01, #37) |
 | ASG-FR-034 | §2.2 p6 | Status state machine: open→in_progress→resolved; open→rejected; in_progress→rejected; resolved and rejected are terminal; everything else is 409 | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | UT | `backend/tests/test_state_machine.py` | Implemented (P04-S02, #38) |
 | ASG-FR-035 | §2.2 p6 | The state machine is an explicit transition table, not a chain of ifs | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | INS, UT | `backend/tests/test_state_machine.py` | Implemented (P04-S02, #38) |
-| ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TahaSohail-Goat | #39 | `backend/app/routes/` | IT | — | Not started (nine endpoints, confirmed by the instructor) |
+| ASG-FR-036 | §4 C p19 | All endpoints in the API contract are implemented to contract with correct status codes (rubric says "ten"; the table lists nine) | Mandatory | TahaSohail-Goat | #39 | `backend/app/routes/` | IT | `backend/tests/test_contract.py` | Implemented for eight of nine endpoints (P04-S03, #39); GET /api/meta/providers is enforced once #46 merges |
 | ASG-FR-037 | §1.2 p2 | End-to-end intake flow: citizen submits → system validates → triages (category, priority, one-line summary) → persists durably → shown on live operations dashboard with aggregate statistics | Mandatory | TahaSohail-Goat | #53 | whole system | IT, DEMO | demo video | Not started |
 
 ## ASG-NFR — Non-functional requirements
@@ -112,10 +112,10 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-NFR-009 | §2.2 p7 | Structured logging: JSON to stdout, never to a file | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | UT, INS | `backend/tests/test_logging.py` | Implemented (P04-S01, #37) |
 | ASG-NFR-010 | §2.2 p7 | Every log line carries `request_id` propagated from the `X-Request-ID` header (generate one if absent) | Mandatory | TahaSohail-Goat | #37 | `backend/app/` | UT | `backend/tests/test_request_context.py`, `backend/tests/test_logging.py` | Implemented (P04-S01, #37) |
 | ASG-NFR-011 | §2.2 p7 | One WARNING per triage fallback with the complaint id, the provider and the error class | Mandatory | TahaSohail-Goat | #44 | `backend/app/services/` | UT | `backend/tests/test_triage_service.py` | Implemented (P07-S01, #44) |
-| ASG-NFR-012 | §4 C p20 | ≥ 14 backend tests, unit and integration, deterministic | Mandatory | TahaSohail-Goat | #39 | `backend/tests/` | CI | test report | Skeleton |
-| ASG-NFR-013 | §3.4 p17; §4 C p20 | Backend coverage ≥ 65% on `app/` | Mandatory | TahaSohail-Goat | #39 | `backend/pyproject.toml` | CI | coverage report | Not started |
+| ASG-NFR-012 | §4 C p20 | ≥ 14 backend tests, unit and integration, deterministic | Mandatory | TahaSohail-Goat | #39 | `backend/tests/` | CI | `backend/tests/` (249 tests) | Implemented (P04-S03, #39) |
+| ASG-NFR-013 | §3.4 p17; §4 C p20 | Backend coverage ≥ 65% on `app/` | Mandatory | TahaSohail-Goat | #39 | `backend/pyproject.toml` | CI | `backend/pyproject.toml` (`--cov-fail-under=65`), coverage 97% | Implemented (P04-S03, #39) |
 | ASG-NFR-014 | §3.4 p17; §4 B p19 | ≥ 5 meaningful frontend component tests (Vitest) passing in CI | Mandatory | Artfever | #36 | `frontend/tests/` | CI | test report | Skeleton |
-| ASG-NFR-015 | §2.5 p11–12 | Test suite is green on every run; no `time.sleep()` and no re-runs to get a pass — determinism by design | Mandatory | TahaSohail-Goat | #39 | `backend/tests/` | CI | repeated-run log | Not started |
+| ASG-NFR-015 | §2.5 p11–12 | Test suite is green on every run; no `time.sleep()` and no re-runs to get a pass — determinism by design | Mandatory | TahaSohail-Goat | #39 | `backend/tests/` | CI | `backend/tests/test_determinism.py`, ten green runs in a row | Implemented (P04-S03, #39) |
 | ASG-NFR-016 | §5.3 p24; §3.4 p17 | No `localhost` for service-to-service communication (containers/pods use service names) | Constraint | TahaSohail-Goat | #47 | `compose*.yaml`, `k8s/` | INS, CI | integration job | Not started |
 | ASG-NFR-017 | §2.1 p5 | Anything in the browser bundle is public: no credentials/keys in build output ("it's minified" is not a defence) | Constraint | Artfever | #34 | `frontend/` | INS | bundle scan | Not started |
 
@@ -405,7 +405,7 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 | ASG-REPO-001 | §5.7 | `backend/app/{routes,services,repositories,providers}/` | Mandatory | TahaSohail-Goat | #37 | INS | Skeleton |
 | ASG-REPO-002 | §5.7 | `backend/app/providers/triage/{base,llm,ollama,rules,simulated,factory}.py` | Mandatory | TahaSohail-Goat | #44 | INS | Skeleton (dir) |
 | ASG-REPO-003 | §5.7 | `backend/alembic/versions/` | Mandatory | TahaSohail-Goat | #40 | INS | Implemented (P05-S01, #40) |
-| ASG-REPO-004 | §5.7 | `backend/tests/` | Mandatory | TahaSohail-Goat | #39 | INS | Skeleton |
+| ASG-REPO-004 | §5.7 | `backend/tests/` | Mandatory | TahaSohail-Goat | #39 | INS | Implemented (P04-S03, #39) |
 | ASG-REPO-005 | §5.7 | `backend/Dockerfile`, `backend/.dockerignore`, `backend/pyproject.toml` | Mandatory | TahaSohail-Goat | #37 | INS | Not started |
 | ASG-REPO-006 | §5.7 | `frontend/src/{components,pages,api}/` | Mandatory | Artfever | #34 | INS | Skeleton |
 | ASG-REPO-007 | §5.7 | `frontend/tests/` | Mandatory | Artfever | #36 | INS | Skeleton |
