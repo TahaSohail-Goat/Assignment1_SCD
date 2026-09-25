@@ -1,0 +1,21 @@
+# Local development: images built on the laptop and loaded into the cluster
+# (`kind load docker-image civicpulse-backend:dev civicpulse-frontend:dev`).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: civicpulse-backend
+    newTag: dev
+  - name: civicpulse-frontend
+    newTag: dev
+patches:
+  # The real Secret is created out of band (see base/secret.yaml); rendering the placeholder
+  # would overwrite it on every apply.
+  - patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: civicpulse-secrets
+        namespace: civicpulse

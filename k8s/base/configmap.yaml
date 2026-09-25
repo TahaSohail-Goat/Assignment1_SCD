@@ -1,0 +1,16 @@
+# Non-secret configuration (ASG-K8S-010). Passwords and API keys are in secret.yaml, never here.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: civicpulse-config
+  namespace: civicpulse
+  labels:
+    app.kubernetes.io/part-of: civicpulse
+data:
+  POSTGRES_USER: civicpulse
+  POSTGRES_DB: civicpulse
+  # Service names, never localhost (ASG-NFR-016): `database` and `cache` are the Services below.
+  REDIS_URL: redis://cache:6379/0
+  LOG_LEVEL: INFO
+  # rules | simulated | llm | ollama. `llm` needs a real GROQ_API_KEY in the Secret.
+  TRIAGE_PROVIDER: rules

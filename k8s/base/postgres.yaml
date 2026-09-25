@@ -1,0 +1,93 @@
+# PostgreSQL is a StatefulSet with volumeClaimTemplates (ASG-K8S-006, ASG-K8S-008).
+#
+# Why not a Deployment: a database needs a stable identity and stable storage. A Deployment's pod
+# gets a new name on every restart and, with a shared PVC, two replicas would open the same data
+# directory; a StatefulSet gives each pod its own PVC (data-database-0) that follows the pod's
+# name across restarts and reschedules, and starts/stops pods one at a time in order.
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: civicpulse
+  labels:
+    app.kubernetes.io/name: database
+    app.kubernetes.io/part-of: civicpulse
+spec:
+  type: ClusterIP # never a NodePort or a LoadBalancer (ASG-DED-006)
+  selector:
+    app.kubernetes.io/name: database
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: database
+  namespace: civicpulse
+  labels:
+    app.kubernetes.io/name: database
+    app.kubernetes.io/part-of: civicpulse
+spec:
+  serviceName: database
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: database
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: database
+        app.kubernetes.io/part-of: civicpulse
+    spec:
+      securityContext:
+        fsGroup: 70 # the postgres user of the alpine image owns the volume
+      containers:
+        - name: postgres
+          image: postgres:16.10-alpine
+          ports:
+            - name: postgres
+              containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef: { name: civicpulse-config, key: POSTGRES_USER }
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef: { name: civicpulse-config, key: POSTGRES_DB }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: civicpulse-secrets, key: POSTGRES_PASSWORD }
+            - name: PGDATA # a subdirectory: the volume root holds lost+found on some storage classes
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          startupProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+            periodSeconds: 2
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests: { cpu: 100m, memory: 256Mi }
+            limits: { cpu: "1", memory: 512Mi }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: database
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
