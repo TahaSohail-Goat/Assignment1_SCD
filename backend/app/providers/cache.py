@@ -60,5 +60,16 @@ class RedisCache:
         except redis.RedisError as error:
             raise CacheUnavailableError(type(error).__name__) from error
 
+    def increment_with_ttl(self, key: str, ttl_seconds: int) -> int:
+        """One atomic Redis operation shared by every backend replica."""
+        try:
+            with self.client.pipeline(transaction=True) as pipe:
+                pipe.incr(key)
+                pipe.expire(key, ttl_seconds)
+                result = pipe.execute()
+            return int(cast("str | int", result[0]))
+        except redis.RedisError as error:
+            raise CacheUnavailableError(type(error).__name__) from error
+
     def close(self) -> None:
         self.client.close()

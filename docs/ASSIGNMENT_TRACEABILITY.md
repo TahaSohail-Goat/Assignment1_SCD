@@ -80,7 +80,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-FR-017 | §2.1 p4 | Mechanism is `/config.js` generated at container start from env vars **or** nginx proxy of `/api`; the choice is stated in an ADR | Mandatory | Artfever | #34 | `docs/adr/0002-frontend-runtime-config.md` | DOC | — | Not started |
 | ASG-FR-020 | §2.2 p5 | `POST /api/complaints`: validate → triage → persist; respond 201 | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | `backend/tests/test_complaints_api.py` | Implemented for validate and persist (P04-S02, #38); triage in #44, limiter in #43 |
 | ASG-FR-021 | §2.2 p5 | `POST /api/complaints` returns 400 with a field-level error body on invalid input | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | `backend/tests/test_complaints_api.py` | Implemented (P04-S02, #38) |
-| ASG-FR-022 | §2.2 p5 | `POST /api/complaints` returns 429 when the caller exceeds the rate limit (mechanism: ASG-CACHE-007…009) | Mandatory | Artfever | #43 | `backend/app/routes/` | IT | — | Not started |
+| ASG-FR-022 | §2.2 p5 | `POST /api/complaints` returns 429 when the caller exceeds the rate limit (mechanism: ASG-CACHE-007…009) | Mandatory | Artfever | #43 | `backend/app/routes/` | IT | `backend/tests/test_rate_limit.py` | Implemented (#43); real Redis run pending |
 | ASG-FR-023 | §2.2 p5 | `GET /api/complaints/{id}` returns 200 or 404 | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | `backend/tests/test_complaints_api.py` | Implemented (P04-S02, #38) |
 | ASG-FR-024 | §2.2 p6 | `GET /api/complaints` filters by category, priority, status | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | `backend/tests/test_complaints_api.py` | Implemented (P04-S02, #38) |
 | ASG-FR-025 | §2.2 p6 | `GET /api/complaints` paginates with `page` and `page_size` (≤ 100) | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | `backend/tests/test_complaints_api.py` | Implemented (P04-S02, #38) |
@@ -157,12 +157,12 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-CACHE-004 | §2.4 p8 | `/api/stats` responds with `X-Cache: HIT` or `MISS` | Mandatory | TahaSohail-Goat | #42 | `backend/app/routes/` | IT | `backend/tests/test_stats_api.py` | Implemented (P06-S01, #42) |
 | ASG-CACHE-005 | §2.4 p8 | Cache is invalidated on write, so a new complaint appears in stats immediately | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | `backend/tests/test_stats_service.py`, `backend/tests/test_stats_api.py` | Implemented (P06-S01, #42) |
 | ASG-CACHE-006 | §2.4 p8 | Be able to explain at viva why TTL **and** explicit invalidation are both used | Evidence | TahaSohail-Goat | #42 | `docs/ENGINEERING-NOTES.md` | DOC | `docs/CACHE.md`, `backend/tests/test_stats_service.py` | Implemented (P06-S01, #42) |
-| ASG-CACHE-007 | §2.4 p8 | Job 2: distributed rate limiter (fixed-window or token-bucket) in Redis, keyed by client IP | Mandatory | Artfever | #43 | `backend/app/` | IT | — | Not started |
-| ASG-CACHE-008 | §2.4 p8 | Rate limiter protects `POST /api/complaints` | Mandatory | Artfever | #43 | `backend/app/routes/` | IT | — | Not started |
-| ASG-CACHE-009 | §2.4 p8 | When exceeded: 429 with a `Retry-After` header | Mandatory | Artfever | #43 | `backend/app/` | IT | curl capture | Not started |
-| ASG-CACHE-010 | §2.4 p8 | Limiter is distributed (Redis), not an in-process dictionary (holds under HPA scale-out) | Constraint | Artfever | #43 | `backend/app/` | INS | — | Not started |
+| ASG-CACHE-007 | §2.4 p8 | Job 2: distributed rate limiter (fixed-window or token-bucket) in Redis, keyed by client IP | Mandatory | Artfever | #43 | `backend/app/` | IT | `backend/tests/test_rate_limit.py` | Implemented (#43); real Redis run pending |
+| ASG-CACHE-008 | §2.4 p8 | Rate limiter protects `POST /api/complaints` | Mandatory | Artfever | #43 | `backend/app/routes/` | IT | `backend/tests/test_rate_limit.py` | Implemented (#43) |
+| ASG-CACHE-009 | §2.4 p8 | When exceeded: 429 with a `Retry-After` header | Mandatory | Artfever | #43 | `backend/app/` | IT | `backend/tests/test_rate_limit.py` | Implemented (#43); curl capture pending |
+| ASG-CACHE-010 | §2.4 p8 | Limiter is distributed (Redis), not an in-process dictionary (holds under HPA scale-out) | Constraint | Artfever | #43 | `backend/app/` | INS | `backend/tests/test_rate_limit.py` (two app instances) | Implemented (#43); HPA check pending |
 | ASG-CACHE-011 | §2.4 p9 | Redis AOF enabled on a named volume | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); restart check in #53 |
-| ASG-CACHE-012 | §2.4 p9 | Written justification: why the cache needs a volume although a cache can be rebuilt | Evidence | Artfever | #43 | `docs/ENGINEERING-NOTES.md` | DOC | — | Not started |
+| ASG-CACHE-012 | §2.4 p9 | Written justification: why the cache needs a volume although a cache can be rebuilt | Evidence | Artfever | #43 | `docs/ENGINEERING-NOTES.md` | DOC | `docs/CACHE.md`, `docs/ENGINEERING-NOTES.md` | Decision recorded (#43) |
 
 ## ASG-AI — AI layer
 
