@@ -45,4 +45,4 @@ Only after branch protection and CI.
 Tick every acceptance box of the phase's issues (they close with the integration PR) and update the traceability rows.
 
 ## 14. Integrate
-First a status PR into `dev` sets the phase row in `docs/PHASE_STATUS.md` to Complete. Then open the phase's `dev` → `main` integration PR (its body lists `Closes #…` for every issue of the phase), get the other contributor's approval on its final head, merge with a **merge commit**, and confirm that the row says Complete on `main`. Prompts: `docs/AI_SESSIONS.md` section 7.7.
+First a status PR into `dev` sets the phase row in `docs/PHASE_STATUS.md` to Complete. Then open the phase's `dev` → `main` integration PR (its body lists `Closes #…` for the issues of the phase that are still open; issues closed earlier are not repeated), get the other contributor's approval on its final head, merge with a **merge commit**, and confirm that the row says Complete on `main`. Prompts: `docs/AI_SESSIONS.md` section 7.7.
