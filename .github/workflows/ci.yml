@@ -1,0 +1,292 @@
+# Continuous integration (ASG-CICD-003..011, 024..026).
+# Runs on a pull request to main or dev and on a push to dev. It never publishes anything:
+# publishing is cd.yml and release.yml (issue #52), gated by `needs:`.
+#
+# Third-party actions are pinned to a commit SHA (the tag is in the comment): a tag can be moved,
+# a SHA cannot.
+#
+# Three jobs are switched on by the files they need, so this workflow is green from the first
+# merge and starts checking each part the moment it lands:
+#   - frontend test:    when frontend/package.json defines a "test" script (issue #36)
+#   - frontend image:   when frontend/Dockerfile exists (issue #48)
+#   - manifests:        when k8s/overlays/prod/kustomization.yaml exists (issue #49)
+# The final audit (#56) fails if any of them is still switched off at submission.
+
+name: ci
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.12"
+  NODE_VERSION: "22"
+
+jobs:
+  lint-and-type:
+    name: lint-and-type
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Backend dependencies
+        working-directory: backend
+        run: pip install -r requirements-dev.txt
+      - name: ruff (lint)
+        working-directory: backend
+        run: ruff check .
+      - name: ruff (format)
+        working-directory: backend
+        run: ruff format --check .
+      - name: mypy
+        working-directory: backend
+        run: mypy
+      - name: Frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: eslint
+        working-directory: frontend
+        run: npm run lint
+      - name: tsc --noEmit
+        working-directory: frontend
+        run: npm run typecheck
+      - name: API contract snapshot
+        working-directory: frontend
+        run: npm run check:api-contract
+
+  test-backend:
+    name: test-backend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TRIAGE_PROVIDER: simulated
+      TEST_DATABASE_URL: postgresql+psycopg://postgres:postgres@127.0.0.1:5432/civicpulse_test
+    services:
+      postgres:
+        image: postgres:16.10-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: civicpulse_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d civicpulse_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements-dev.txt
+      - name: Backend dependencies
+        working-directory: backend
+        run: pip install -r requirements-dev.txt
+      # The coverage gate (--cov-fail-under=65 on app/) is part of the pytest options in
+      # pyproject.toml, so this step fails below 65%.
+      - name: pytest with coverage
+        working-directory: backend
+        run: pytest
+
+  test-frontend:
+    name: test-frontend
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Is a test script defined yet
+        id: has_tests
+        run: |
+          if node -e 'process.exit(require("./frontend/package.json").scripts?.test ? 0 : 1)'; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::frontend/package.json has no test script yet (issue #36); nothing to run"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Frontend dependencies
+        if: steps.has_tests.outputs.present == 'true'
+        working-directory: frontend
+        run: npm ci
+      - name: Vitest
+        if: steps.has_tests.outputs.present == 'true'
+        working-directory: frontend
+        run: npm test
+
+  build:
+    name: build (${{ matrix.image }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [backend, frontend]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Is there a Dockerfile for this image yet
+        id: has_dockerfile
+        run: |
+          if [ -f "${{ matrix.image }}/Dockerfile" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::${{ matrix.image }}/Dockerfile does not exist yet (issue #48); nothing to build"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        if: steps.has_dockerfile.outputs.present == 'true'
+      # push: false: a pull request must not publish an image (ASG-CICD-007).
+      - name: Build the image without pushing it
+        if: steps.has_dockerfile.outputs.present == 'true'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.image }}
+          push: false
+          tags: civicpulse-${{ matrix.image }}:ci
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+  scan:
+    name: scan (${{ matrix.image }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [backend, frontend]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Is there a Dockerfile for this image yet
+        id: has_dockerfile
+        run: |
+          if [ -f "${{ matrix.image }}/Dockerfile" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::${{ matrix.image }}/Dockerfile does not exist yet (issue #48); nothing to scan"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+        if: steps.has_dockerfile.outputs.present == 'true'
+      - name: Build the image into the local daemon
+        if: steps.has_dockerfile.outputs.present == 'true'
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: ${{ matrix.image }}
+          load: true
+          push: false
+          tags: civicpulse-${{ matrix.image }}:ci
+          cache-from: type=gha,scope=${{ matrix.image }}
+      # Fails on HIGH or CRITICAL findings that have a fixed version available (ASG-CICD-008).
+      - name: Trivy
+        if: steps.has_dockerfile.outputs.present == 'true'
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: civicpulse-${{ matrix.image }}:ci
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          exit-code: "1"
+          format: table
+
+  manifests:
+    name: manifests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      KUBECONFORM_VERSION: v0.8.0
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Is there a production overlay yet
+        id: has_overlay
+        run: |
+          if [ -f k8s/overlays/prod/kustomization.yaml ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::k8s/overlays/prod does not exist yet (issue #49); nothing to validate"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install kubeconform
+        if: steps.has_overlay.outputs.present == 'true'
+        run: |
+          curl -sSfL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            | tar -xz -C /usr/local/bin kubeconform
+          kubeconform -v
+      # kubectl (preinstalled on the runner) embeds kustomize.
+      - name: kustomize build overlays/prod | kubeconform
+        if: steps.has_overlay.outputs.present == 'true'
+        run: |
+          kubectl kustomize k8s/overlays/prod \
+            | kubeconform -strict -summary -ignore-missing-schemas -kubernetes-version 1.30.0
+
+  integration:
+    name: integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: [test-backend]
+    env:
+      API: http://127.0.0.1:8000
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Configuration from .env.example, with a throwaway password
+        run: |
+          cp .env.example .env
+          sed -i 's/^POSTGRES_PASSWORD=.*/POSTGRES_PASSWORD=ci-only-'"$(openssl rand -hex 8)"'/' .env
+          sed -i 's/^TRIAGE_PROVIDER=.*/TRIAGE_PROVIDER=rules/' .env
+      - name: docker compose up -d
+        run: docker compose up -d --build
+      - name: Wait for /ready
+        run: |
+          curl --silent --show-error --fail --retry 40 --retry-delay 3 \
+            --retry-connrefused --retry-all-errors "$API/ready"
+      - name: POST a complaint, GET it back, assert the category
+        run: |
+          created="$(curl --silent --show-error --fail -X POST "$API/api/complaints" \
+            -H 'Content-Type: application/json' \
+            -d '{"text":"The water tap in our lane has had no supply for three days.","location":"Lane 3"}')"
+          echo "$created"
+          id="$(echo "$created" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+          fetched="$(curl --silent --show-error --fail "$API/api/complaints/$id")"
+          echo "$fetched"
+          echo "$fetched" | python3 -c '
+          import json, sys
+          body = json.load(sys.stdin)
+          assert body["category"] == "water", body["category"]
+          assert body["status"] == "open", body["status"]
+          '
+      - name: X-Cache goes MISS then HIT
+        run: |
+          # The POST above emptied the cache key, so the first read is a MISS and the second a HIT.
+          first="$(curl --silent --show-error --fail -D - -o /dev/null "$API/api/stats" | tr -d '\r' | grep -i '^x-cache:' | awk '{print $2}')"
+          second="$(curl --silent --show-error --fail -D - -o /dev/null "$API/api/stats" | tr -d '\r' | grep -i '^x-cache:' | awk '{print $2}')"
+          echo "first=$first second=$second"
+          test "$first" = "MISS"
+          test "$second" = "HIT"
+      - name: Compose state and backend log on failure
+        if: failure()
+        run: |
+          docker compose ps -a
+          docker compose logs --no-color --tail 200
+      - name: docker compose down -v
+        if: always()
+        run: docker compose down -v
