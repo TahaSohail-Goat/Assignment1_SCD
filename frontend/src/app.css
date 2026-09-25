@@ -35,8 +35,13 @@ dd { margin: 0; }
 .complaint-list h3 { margin-top: 0; text-transform: capitalize; }
 .complaint-list label { display: block; max-width: 360px; font-weight: 650; }
 .pagination { margin-top: 1rem; }
+.stat-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.stat-grid section { border: 1px solid #dce7e3; border-radius: .7rem; padding: 1rem; }
+.stat-grid dl { grid-template-columns: 1fr; }
+.stat-grid dl > div { display: flex; justify-content: space-between; gap: 1rem; }
 @media (max-width: 700px) {
   header { display: block; }
   header nav { margin-top: 1rem; flex-wrap: wrap; }
   .filters { grid-template-columns: 1fr; }
+  .stat-grid { grid-template-columns: 1fr; }
 }
