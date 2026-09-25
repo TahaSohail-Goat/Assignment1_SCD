@@ -14,3 +14,6 @@ data:
   LOG_LEVEL: INFO
   # rules | simulated | llm | ollama. `llm` needs a real GROQ_API_KEY in the Secret.
   TRIAGE_PROVIDER: rules
+  # The Ingress sits in front of the backend and sets X-Forwarded-For, so the rate limiter takes the
+  # client address from it (otherwise every client shares the controller's address).
+  TRUST_FORWARDED_FOR: "true"
