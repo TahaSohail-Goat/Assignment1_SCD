@@ -87,7 +87,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-FR-026 | §2.2 p6 | `GET /api/complaints` returns `total` | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/` | IT | `backend/tests/test_complaints_api.py` | Implemented (P04-S02, #38) |
 | ASG-FR-027 | §2.2 p6 | `PATCH /api/complaints/{id}/status` enforces the state machine | Mandatory | TahaSohail-Goat | #38 | `backend/app/routes/`, `services/` | IT | `backend/tests/test_complaints_api.py`, `backend/tests/test_state_machine.py` | Implemented (P04-S02, #38) |
 | ASG-FR-028 | §2.2 p6 | Invalid transition returns 409 naming the attempted transition | Mandatory | TahaSohail-Goat | #38 | `backend/app/services/` | UT, IT | `backend/tests/test_complaints_api.py` | Implemented (P04-S02, #38) |
-| ASG-FR-029 | §2.2 p6 | `GET /api/stats` returns aggregates (counts by category and priority per ASG-FR-011); caching per ASG-CACHE-002…005 | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | — | Not started (see EN-04, informational) |
+| ASG-FR-029 | §2.2 p6 | `GET /api/stats` returns aggregates (counts by category and priority per ASG-FR-011); caching per ASG-CACHE-002…005 | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | `backend/tests/test_stats_api.py`, `backend/tests/test_stats_service.py` | Implemented (P06-S01, #42) |
 | ASG-FR-030 | §2.2 p6 | `GET /api/meta/providers` returns which triage provider is active and the last 20 triage outcomes (provider, latency ms, fallback y/n) | Mandatory | Artfever | #46 | `backend/app/routes/` | IT | — | Not started |
 | ASG-FR-031 | §2.2 p6 | `GET /health` is liveness: process is alive; must not touch the database | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | UT, IT | `backend/tests/test_health.py` | Implemented (P04-S01, #37) |
 | ASG-FR-032 | §2.2 p6 | `GET /ready` returns 200 only if Postgres and Redis are both reachable; 503 naming the failed dependency | Mandatory | TahaSohail-Goat | #37 | `backend/app/routes/` | IT | `backend/tests/test_ready.py` | Implemented (P04-S01, #37) |
@@ -152,11 +152,11 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-CACHE-001 | §2.4 p8 | Redis 7 | Mandatory | TahaSohail-Goat | #42 | `compose.yaml`, `k8s/base/redis.yaml` | CFG | — | Not started |
-| ASG-CACHE-002 | §2.4 p8 | Job 1: read-through cache for `/api/stats` | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | — | Not started |
-| ASG-CACHE-003 | §2.4 p8 | Stats cache TTL is 30 s | Mandatory | TahaSohail-Goat | #42 | `backend/app/` | IT | — | Not started |
-| ASG-CACHE-004 | §2.4 p8 | `/api/stats` responds with `X-Cache: HIT` or `MISS` | Mandatory | TahaSohail-Goat | #42 | `backend/app/routes/` | IT | — | Not started |
-| ASG-CACHE-005 | §2.4 p8 | Cache is invalidated on write, so a new complaint appears in stats immediately | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | — | Not started |
-| ASG-CACHE-006 | §2.4 p8 | Be able to explain at viva why TTL **and** explicit invalidation are both used | Evidence | TahaSohail-Goat | #42 | `docs/ENGINEERING-NOTES.md` | DOC | — | Not started |
+| ASG-CACHE-002 | §2.4 p8 | Job 1: read-through cache for `/api/stats` | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | `backend/tests/test_stats_service.py` | Implemented (P06-S01, #42) |
+| ASG-CACHE-003 | §2.4 p8 | Stats cache TTL is 30 s | Mandatory | TahaSohail-Goat | #42 | `backend/app/` | IT | `backend/tests/test_redis_cache.py`, `backend/tests/test_stats_service.py` | Implemented (P06-S01, #42) |
+| ASG-CACHE-004 | §2.4 p8 | `/api/stats` responds with `X-Cache: HIT` or `MISS` | Mandatory | TahaSohail-Goat | #42 | `backend/app/routes/` | IT | `backend/tests/test_stats_api.py` | Implemented (P06-S01, #42) |
+| ASG-CACHE-005 | §2.4 p8 | Cache is invalidated on write, so a new complaint appears in stats immediately | Mandatory | TahaSohail-Goat | #42 | `backend/app/services/` | IT | `backend/tests/test_stats_service.py`, `backend/tests/test_stats_api.py` | Implemented (P06-S01, #42) |
+| ASG-CACHE-006 | §2.4 p8 | Be able to explain at viva why TTL **and** explicit invalidation are both used | Evidence | TahaSohail-Goat | #42 | `docs/ENGINEERING-NOTES.md` | DOC | `docs/CACHE.md`, `backend/tests/test_stats_service.py` | Implemented (P06-S01, #42) |
 | ASG-CACHE-007 | §2.4 p8 | Job 2: distributed rate limiter (fixed-window or token-bucket) in Redis, keyed by client IP | Mandatory | Artfever | #43 | `backend/app/` | IT | — | Not started |
 | ASG-CACHE-008 | §2.4 p8 | Rate limiter protects `POST /api/complaints` | Mandatory | Artfever | #43 | `backend/app/routes/` | IT | — | Not started |
 | ASG-CACHE-009 | §2.4 p8 | When exceeded: 429 with a `Retry-After` header | Mandatory | Artfever | #43 | `backend/app/` | IT | curl capture | Not started |

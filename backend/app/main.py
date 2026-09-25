@@ -19,13 +19,14 @@ from app.database import create_db_engine, create_session_factory
 from app.http_errors import install_error_handlers
 from app.logging import configure_logging
 from app.middleware import RequestContextMiddleware
-from app.providers.cache import RedisCache
+from app.providers.cache import KeyValueCache, RedisCache
 from app.providers.triage.factory import build_provider
 from app.repositories.health import DatabaseHealthRepository
 from app.repositories.uow import SqlUnitOfWork, UnitOfWork
-from app.routes import complaints, health, metrics
+from app.routes import complaints, health, metrics, stats
 from app.services.complaints import ComplaintService, Triager
 from app.services.readiness import DependencyProbe, ReadinessService
+from app.services.stats import StatsService
 from app.services.triage import TriageService
 
 logger = logging.getLogger("app.main")
@@ -36,11 +37,12 @@ def create_app(
     probes: list[DependencyProbe] | None = None,
     triager: Triager | None = None,
     unit_of_work: Callable[[], UnitOfWork] | None = None,
+    cache: KeyValueCache | None = None,
 ) -> FastAPI:
     """Build the app.
 
-    ``probes``, ``triager`` and ``unit_of_work`` let tests replace PostgreSQL, Redis and the
-    triage providers; in production they are built from the settings.
+    ``probes``, ``triager``, ``unit_of_work`` and ``cache`` let tests replace PostgreSQL, Redis
+    and the triage providers; in production they are built from the settings.
     """
     settings = settings or get_settings()
     configure_logging(settings.log_level)
@@ -48,20 +50,25 @@ def create_app(
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         closers: list[Callable[[], None]] = []
+        timeout = settings.dependency_check_timeout_seconds
+
         engine: Engine | None = None
         if probes is None or unit_of_work is None:
-            engine = create_db_engine(
-                settings.database_url, settings.dependency_check_timeout_seconds
-            )
+            engine = create_db_engine(settings.database_url, timeout)
             closers.append(engine.dispose)
 
+        redis_cache: RedisCache | None = None
+        if probes is None or cache is None:
+            redis_cache = RedisCache(settings.redis_url, timeout)
+            closers.append(redis_cache.close)
+
         active_probes: list[DependencyProbe]
-        if probes is None and engine is not None:
-            cache = RedisCache(settings.redis_url, settings.dependency_check_timeout_seconds)
-            closers.append(cache.close)
-            active_probes = [DatabaseHealthRepository(engine), cache]
-        else:
-            active_probes = probes or []
+        if probes is not None:
+            active_probes = probes
+        elif engine is not None and redis_cache is not None:
+            active_probes = [DatabaseHealthRepository(engine), redis_cache]
+        else:  # unreachable: both exist whenever no probes were given
+            raise RuntimeError("no probes and no connections")
 
         active_unit_of_work: Callable[[], UnitOfWork]
         if unit_of_work is not None:
@@ -76,6 +83,10 @@ def create_app(
         else:  # unreachable: the engine exists whenever no unit of work was given
             raise RuntimeError("no unit of work and no engine")
 
+        active_cache: KeyValueCache | None = cache or redis_cache
+        if active_cache is None:  # unreachable: a Redis cache is built whenever none was given
+            raise RuntimeError("no cache")
+
         active_triager: Triager
         if triager is not None:
             active_triager = triager
@@ -84,9 +95,13 @@ def create_app(
             closers.append(triage_service.close)
             active_triager = triage_service
 
-        readiness = ReadinessService(active_probes, settings.dependency_check_timeout_seconds)
+        stats_service = StatsService(active_unit_of_work, active_cache)
+        readiness = ReadinessService(active_probes, timeout)
         app.state.readiness = readiness
-        app.state.complaints = ComplaintService(active_unit_of_work, active_triager)
+        app.state.stats = stats_service
+        app.state.complaints = ComplaintService(
+            active_unit_of_work, active_triager, after_create=stats_service.invalidate
+        )
         logger.info("startup complete")
         try:
             yield
@@ -102,4 +117,5 @@ def create_app(
     app.include_router(health.router)
     app.include_router(metrics.router)
     app.include_router(complaints.router)
+    app.include_router(stats.router)
     return app
