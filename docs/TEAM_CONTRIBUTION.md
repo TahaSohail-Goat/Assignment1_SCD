@@ -86,26 +86,17 @@ Decided in issue #18; **both members must accept it in the PR thread**. The pare
 
 **How the split was made.** Points are **relative effort** (a 7-point package is about 1.75 times a 4-point one), not hours and not commit counts; the assignment's own estimate for the whole project is roughly 35–45 hours per student (§5.1), and the points are used only to balance the two halves. The halves were balanced to the point, then checked against three rules:
 
-1. **Vertical lanes keep parallel sessions conflict-free.** `TahaSohail-Goat` owns the backend contract path (API design, backend, migrations, cache invalidation, the provider interface and fallback, the backend image, the Kubernetes base, `ci.yml`, the compose-side evidence, the final audit). `Artfever` owns the frontend, the LLM and Ollama providers with the triage cache and guardrail, the rate limiter, the seed, the frontend image and production Compose, HPA/VPA and load testing, `cd.yml`/`release.yml`, the Kubernetes-side evidence and notes, and the README and video.
-2. **Both touch almost every phase.** The only phases where one person owns everything are Phase 03 (frontend, `Artfever`) and Phase 04 (backend, `TahaSohail-Goat`). They meet at the API design (P02-S02), which `Artfever` must confirm works for the frontend before it merges.
+1. **Vertical lanes keep the sessions conflict-free.** `TahaSohail-Goat` owns the backend contract path (API design, backend, migrations, cache invalidation, the provider interface and fallback, the backend image, the Kubernetes base, `ci.yml`, the compose-side evidence, the final audit). `Artfever` owns the frontend, the LLM and Ollama providers with the triage cache and guardrail, the rate limiter, the seed, the frontend image and production Compose, HPA/VPA and load testing, `cd.yml`/`release.yml`, the Kubernetes-side evidence and notes, and the README and video.
+2. **Both touch almost every phase.** The only phases where one person owns everything are Phase 03 (frontend, `Artfever`) and Phase 04 (backend, `TahaSohail-Goat`); because phases run one at a time, the other session only reviews during those. The two halves meet at the API design (P02-S02), which `Artfever` must confirm works for the frontend before it merges.
 3. **The highest-value areas are split** (rubric priority F > C > I > H, assignment §5.1): the AI layer is 7 points for `TahaSohail-Goat` and 12 for `Artfever`; CI/CD, Kubernetes and Docker are split evenly.
 
 Because each person also **reviews every package of the other**, both read all of the code. The individual viva asks about the partner's code (assignment §5.4); see *Explain-back and viva readiness* below.
 
-### Sequencing (parallel lanes)
+### Sequencing (one phase at a time)
 
-Order is by dependency, not by date (no deadline is stated in the assignment, B-001). Two sessions run in parallel; `→` means "only after the previous package has merged into `dev`".
+Owner decision (2026-09-25, `AGENTS.md` §11): **a phase is finished completely — issues closed, PRs merged into `dev` with review, gate checked, `dev` → `main` integration PR merged — before the next phase starts.** Parallel work therefore happens only *inside* a phase, on packages with different owners, no dependency and disjoint files; everything else is a handoff (one session waits for the other). The phase-by-phase table saying who writes, who reviews and which steps are parallel, handoff or solo is in `docs/AI_SESSIONS.md` (section 4); the prompts for each step are in section 7 of that file.
 
-| Step | `TahaSohail-Goat` (Claude Code) | `Artfever` (Codex) |
-|---|---|---|
-| 1 · Phase 02 | #33 API design | #32 architecture document |
-| 2 · Phases 03–05 | #37 → #38 → #39 backend; #40 migrations and repositories | #34 → #35, #36 frontend; #41 seed (after #40) |
-| 3 · Phases 06–07 | #42 stats cache; #44 provider interface and fallback | #43 rate limiter; #45 LLM and Ollama providers; #46 triage cache, guardrail, ADRs |
-| 4 · Phase 08 | #47 backend image and `compose.yaml` → | → #48 frontend image, Ollama, `compose.prod.yaml` |
-| 5 · Phase 09 | #49 Kustomize base and overlays → | → #50 HPA, VPA, load test |
-| 6 · Phase 10 | #51 `ci.yml`, required checks | #52 `cd.yml`, `release.yml`, rollback |
-| 7 · Phase 11 | #53 Compose evidence, RUNBOOK | #54 Kubernetes evidence, ENGINEERING-NOTES |
-| 8 · Phase 12 | #56 audit, `check_submission.py`, submission package | #55 README and demo video |
+In short: Phases 02, 06, 10, 11 and 12 have parallel windows; Phases 05, 08 and 09 are handoff chains (the second package needs the first one merged); Phase 03 is solo for `Artfever` and Phase 04 is solo for `TahaSohail-Goat` (the other session only reviews); Phase 07 runs #44 and #46 in parallel by design (see the planned merge conflict below), with #45 after #44. No deadline is stated in the assignment (B-001), so order is by dependency, not by date.
 
 ### File ownership and serialization
 
@@ -117,15 +108,15 @@ Each package lists the files it owns; a session never edits a file owned by an o
 - **#35 P03-S02** (`Artfever`): `frontend/src/pages/Submit*`; `frontend/src/pages/Dashboard*`; `frontend/src/components/** (except ErrorBoundary*)`
 - **#36 P03-S03** (`Artfever`): `frontend/src/pages/Stats*`; `frontend/src/components/ErrorBoundary*`; `frontend/tests/**`
 - **#37 P04-S01** (`TahaSohail-Goat`): `backend/pyproject.toml`; `backend/app/main.py`; `backend/app/config.py`; `backend/app/logging.py`; `backend/app/middleware.py`; `backend/app/routes/health.py`; `backend/app/routes/metrics.py` — *pyproject.toml and the lockfile are conflict-heavy: dependency additions by the other contributor go through this owner or a one-line PR.*
-- **#38 P04-S02** (`TahaSohail-Goat`): `backend/app/routes/complaints.py`; `backend/app/services/complaints.py`; `backend/app/services/state_machine.py`; `backend/app/schemas/**`; `backend/app/errors.py` — *The create-complaint service function is touched again by P06-S01 and P07-S03 (planned real merge conflict).*
+- **#38 P04-S02** (`TahaSohail-Goat`): `backend/app/routes/complaints.py`; `backend/app/services/complaints.py`; `backend/app/services/state_machine.py`; `backend/app/schemas/**`; `backend/app/errors.py` — *The create-complaint service is touched again by #42 (cache invalidation); the planned real merge conflict is in `backend/app/services/triage.py` (#44 and #46).*
 - **#39 P04-S03** (`TahaSohail-Goat`): `backend/tests/**`; `backend coverage configuration`
 - **#40 P05-S01** (`TahaSohail-Goat`): `backend/alembic/**`; `backend/alembic.ini`; `backend/app/repositories/**`; `docs/DATA_MODEL.md` — *Migration heads are conflict-heavy: only this owner adds migrations.*
 - **#41 P05-S02** (`Artfever`): `backend/app/seed/**`; `backend seed data file`; `seed test`
-- **#42 P06-S01** (`TahaSohail-Goat`): `backend/app/services/stats.py`; `backend/app/providers/cache.py`; `docs/CACHE.md (stats section)` — *Touches the create-complaint service to invalidate the cache: planned real merge conflict with P07-S03.*
+- **#42 P06-S01** (`TahaSohail-Goat`): `backend/app/services/stats.py`; `backend/app/providers/cache.py`; `docs/CACHE.md (stats section)` — *Touches the create-complaint service only to invalidate the cache.*
 - **#43 P06-S02** (`Artfever`): `backend/app/services/rate_limit.py`; `docs/CACHE.md (rate-limit and AOF sections)` — *docs/CACHE.md is edited by P06-S01 and P06-S02: P06-S01 merges first, P06-S02 rebases.*
 - **#44 P07-S01** (`TahaSohail-Goat`): `backend/app/providers/triage/base.py`; `backend/app/providers/triage/rules.py`; `backend/app/providers/triage/simulated.py`; `backend/app/providers/triage/factory.py`; `backend/app/services/triage.py`
 - **#45 P07-S02** (`Artfever`): `backend/app/providers/triage/llm.py`; `backend/app/providers/triage/ollama.py`; `docs/AI.md (provider section)` — *New Python dependencies (for example the OpenAI SDK) go through the P04-S01 owner or a one-line PR.*
-- **#46 P07-S03** (`Artfever`): `backend/app/services/triage_cache.py`; `backend/app/routes/meta.py`; `docs/adr/0001-provider-interface.md`; `docs/adr/0004-pii-and-data-governance.md`; `docs/TRIAGE.md`; `backend/tests/test_injection*.py` — *Touches the create-complaint service: planned real merge conflict with P06-S01.*
+- **#46 P07-S03** (`Artfever`): `backend/app/services/triage_cache.py`; `backend/app/services/triage.py (cache and latency hooks only; shared with #44)`; `backend/app/routes/meta.py`; `docs/adr/0001-provider-interface.md`; `docs/adr/0004-pii-and-data-governance.md`; `docs/TRIAGE.md`; `backend/tests/test_injection*.py` — *Touches `backend/app/services/triage.py`: planned real merge conflict with #44.*
 - **#47 P08-S01** (`TahaSohail-Goat`): `backend/Dockerfile`; `backend/.dockerignore`; `compose.yaml`; `.env.example` — *compose.yaml is conflict-heavy: this owner first; P08-S02 adds frontend and Ollama only after this merges.*
 - **#48 P08-S02** (`Artfever`): `frontend/Dockerfile`; `frontend/.dockerignore`; `frontend/nginx.conf`; `compose.prod.yaml`; `compose.yaml (frontend and ollama services only)`
 - **#49 P09-S01** (`TahaSohail-Goat`): `k8s/base/{namespace,backend,frontend,postgres,redis,ingress,configmap,secret,pdb}.yaml`; `k8s/base/kustomization.yaml`; `k8s/overlays/**` — *k8s/base/kustomization.yaml is conflict-heavy: this owner first; P09-S02 adds its entries after.*
@@ -142,6 +133,7 @@ Files that two packages both touch are **serialized** (one after the other) or *
 | File | Rule |
 |---|---|
 | `docs/CACHE.md` | P06-S01 merges first (stats section); P06-S02 rebases (rate-limit and AOF sections) |
+| `backend/app/services/triage.py` | #44 (fallback orchestration) and #46 (cache and latency hooks) are developed in parallel from the same `dev` commit; the second to merge resolves the real conflict (see below) |
 | `compose.yaml` | P08-S01 first; P08-S02 adds frontend and Ollama services after it merges |
 | `k8s/base/kustomization.yaml` | P09-S01 first; P09-S02 adds its entries after it merges |
 | `docs/BLOCKERS.md` | append-only rows and edits to the owner's own rows |
@@ -150,12 +142,12 @@ Other conflict-heavy files: migrations (only #40 adds them); `backend/pyproject.
 
 ### Planned real merge conflict (rubric A5, `ASG-GH-009…011`)
 
-The rubric wants "one deliberate merge conflict on real code, resolved". It must be **real** — produced by genuine, required changes on two genuine branches, never by editing lines just to collide.
+The rubric wants "one deliberate merge conflict on real code, resolved". It must be **real** — produced by genuine, required changes on two genuine branches, never by editing lines just to collide. Because phases run one at a time (`AGENTS.md` §11), both branches must belong to the same phase.
 
-- **The overlap:** #42 (`TahaSohail-Goat`: invalidate the stats cache on write) and #46 (`Artfever`: content-hash triage cache and latency recording) both have to change the create-complaint flow in `backend/app/services/complaints.py` (created by #38).
-- **How it happens:** both branches are cut from the same `dev` commit after #38 and #44 have merged and are developed independently. The second one to merge resolves the conflict on their own branch.
+- **The overlap (Phase 07):** #44 (`TahaSohail-Goat`: the fallback orchestration — on provider failure use the rules provider, record `triaged_by = "rules:fallback"`, log the WARNING) and #46 (`Artfever`: the content-hash triage cache and latency recording) both have to change the triage orchestration in `backend/app/services/triage.py`.
+- **How it happens:** both branches are cut from the same `dev` commit (after Phase 06 is complete) and developed independently. #46 does not wait for #44 to merge: it codes against the `TriageProvider` interface that the assignment itself defines (§2.5), and #45 (LLM and Ollama providers) is the package that waits for #44. The second of #44 and #46 to merge resolves the conflict on their own branch.
 - **Evidence** (`docs/evidence/conflict-*`): the conflict markers, the resolution, the merge/rebase result, and 2–4 sentences on why that version won — written by the person who resolved it and understood by both.
-- **If git merges the two branches cleanly**, no conflict is manufactured. The next genuine overlap is used instead (for example concurrent edits to the same function by any two open packages), and the reason is recorded.
+- **If git merges the two branches cleanly**, no conflict is manufactured. The next genuine overlap in the same phase is used instead (for example two open packages editing the same function), and the reason is recorded.
 
 ### Demo video speaking split (rubric J4: ≤ 5 minutes, both partners speaking)
 
