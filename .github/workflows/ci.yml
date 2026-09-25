@@ -167,6 +167,28 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.image }}
           cache-to: type=gha,mode=max,scope=${{ matrix.image }}
 
+  context-and-image-size:
+    name: context-and-image-size
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # ASG-DEVOPS-010 and 012: numbers, not adjectives. The build context is what `docker build`
+      # sends to the daemon; the second figure is the same directory without its .dockerignore.
+      - name: Backend build context and image size
+        run: |
+          with_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size backend 2>&1 | grep -m1 -o 'transferring context: [0-9.]*[kMG]*B')"
+          rm -rf /tmp/noignore && cp -r backend /tmp/noignore && rm /tmp/noignore/.dockerignore
+          without_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size-noignore /tmp/noignore 2>&1 | grep -m1 -o 'transferring context: [0-9.]*[kMG]*B')"
+          {
+            echo "### Backend"
+            echo "- build context with .dockerignore: ${with_ignore#transferring context: }"
+            echo "- build context without .dockerignore: ${without_ignore#transferring context: }"
+            docker image ls civicpulse-backend:size --format '- image size: {{.Size}}'
+            echo "- stage sizes:"
+            docker history civicpulse-backend:size --format '  - {{.Size}}  {{.CreatedBy}}' | head -12
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
   scan:
     name: scan (${{ matrix.image }})
     runs-on: ubuntu-24.04
@@ -266,6 +288,7 @@ jobs:
             -d '{"text":"The water tap in our lane has had no supply for three days.","location":"Lane 3"}')"
           echo "$created"
           id="$(echo "$created" | python3 -c 'import json,sys; print(json.load(sys.stdin)["id"])')"
+          echo "COMPLAINT_ID=$id" >> "$GITHUB_ENV"
           fetched="$(curl --silent --show-error --fail "$API/api/complaints/$id")"
           echo "$fetched"
           echo "$fetched" | python3 -c '
@@ -282,6 +305,32 @@ jobs:
           echo "first=$first second=$second"
           test "$first" = "MISS"
           test "$second" = "HIT"
+      - name: Networks and published ports (ASG-DEVOPS-013..016)
+        run: |
+          internal="$(docker network inspect civicpulse_internal --format '{{.Internal}}')"
+          edge="$(docker network inspect civicpulse_edge --format '{{.Internal}}')"
+          echo "internal.Internal=$internal edge.Internal=$edge"
+          test "$internal" = "true"
+          test "$edge" = "false"
+          for service in database cache; do
+            docker compose port "$service" "$([ "$service" = database ] && echo 5432 || echo 6379)"               && { echo "$service publishes a port"; exit 1; } || echo "$service publishes no port"
+          done
+          docker compose exec -T backend python -c "import socket; socket.create_connection(('database', 5432), 2); socket.create_connection(('cache', 6379), 2); print('backend reaches database and cache')"
+      - name: Redis append-only file is on, on the named volume
+        run: |
+          docker compose exec -T cache redis-cli CONFIG GET appendonly | tee /dev/stderr | grep -qx yes
+          docker volume inspect civicpulse_redisdata --format '{{.Name}} exists'
+      - name: docker compose down, then up, preserves the rows (ASG-DATA-022)
+        run: |
+          docker compose down
+          docker compose up -d
+          curl --silent --show-error --fail --retry 40 --retry-delay 3             --retry-connrefused --retry-all-errors "$API/ready"
+          fetched="$(curl --silent --show-error --fail "$API/api/complaints/$COMPLAINT_ID")"
+          echo "$fetched"
+          echo "$fetched" | python3 -c '
+          import json, sys
+          assert json.load(sys.stdin)["category"] == "water"
+          '
       - name: Compose state and backend log on failure
         if: failure()
         run: |
