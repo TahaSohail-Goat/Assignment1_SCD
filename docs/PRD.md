@@ -34,19 +34,37 @@ Why each piece exists (§1.3 p2): a real frontend forces CORS, a build step, run
 
 ## 3. Users and actors
 
+Only the citizen and the operator are **users of the product**: the complaint workflow in §4 involves the citizen, the operator and the triage provider. The other actors are listed because requirements in later families need an actor, and the assignment itself frames "done" and grading around them. They are kept out of the workflow.
+
+### 3.1 Users in the complaint workflow
+
 | Actor | Kind | What they do | Source |
 |---|---|---|---|
 | **Citizen** | human | Submits a free-text complaint, a location and an optional contact; sees the returned category, priority, AI summary and which provider produced it | §1.2 p2, §2.1 p4 |
 | **Operator** | human | Uses the dashboard: paginated, filterable list (category, priority, status); advances a complaint's status; reads aggregate counts and whether they came from the cache | §2.1 p4 |
+
+### 3.2 Systems the workflow depends on
+
+| Actor | Kind | What they do | Source |
+|---|---|---|---|
 | **Triage provider** | external, replaceable | *The reader.* Hosted free-tier LLM (Groq recommended primary, Google AI Studio/Gemini recommended alternative, others acceptable if free and documented); Ollama container (offline); rule-based fallback; simulated provider for CI | §2.5 p9–10 |
-| **Stranger / evaluator** | human | Clones the repository, runs one command, reads the README, watches the demo, grades against the rubric, and examines each student individually at the viva | §1.4 p3, §5.4 p24–25, §5.8 p26 |
 | **Platform automation** | system | CI/CD workflows, the Kubernetes control plane, HPA and VPA acting on the deployed system | §3.3–3.4 p14–19 |
+
+*Platform automation* is the actor of the probe, autoscaling and pipeline requirements: for example `/health` and `/ready` are called by Kubernetes probes and the Compose healthcheck (`ASG-FR-031/032`), and `ASG-K8S-*`, `ASG-DEVOPS-*` and `ASG-CICD-*` describe what the platform does to the system.
+
+### 3.3 Stakeholders (they judge the delivery; they do not use the product)
+
+| Actor | Kind | What they do | Source |
+|---|---|---|---|
+| **Stranger / evaluator** | human | Clones the repository, runs one command, reads the README, watches the demo, grades against the rubric, and examines each student individually at the viva | §1.4 p3, §5.4 p24–25, §5.8 p26 |
+
+The *stranger / evaluator* is the actor of the handover requirements: "a stranger clones your repository and, with one command, has the whole system running" (§1.4 p3, `ASG-GEN-007…010`), and the person who grades and examines each student (§5.4, §5.8).
 
 The assignment defines **no login, roles or permissions**: nothing distinguishes an operator from a citizen at the API level (see §6.2).
 
 ## 4. End-to-end complaint workflow
 
-Steps come from §2.1–§2.5 and §1.2; nothing else is assumed.
+Steps come from §2.1–§2.5 and §1.2; nothing else is assumed. The detailed flows, including the alternate and failure paths, are the use cases in [`USE_CASES.md`](USE_CASES.md) (issue #17).
 
 1. The citizen fills the submission form. Client-side validation mirrors the server's rules without replacing them (`ASG-FR-004/005`).
 2. `POST /api/complaints` is guarded by the distributed, IP-keyed rate limiter in Redis; an exceeded limit answers **429 with `Retry-After`** (`ASG-CACHE-007…009`).
@@ -155,7 +173,7 @@ Repository layout is fixed by §5.7 (`ASG-REPO-001…019`, [`REPOSITORY_STRUCTUR
 
 ## 7. Functional requirements (summary)
 
-Full catalog: frontend `ASG-FR-001…017` in `docs/frs/frontend.md` (issue #14); API and domain `ASG-FR-020…037` in `docs/frs/api.md` (issue #15); index and entry template in [`FRs.md`](FRs.md). The two `frs/` files are created by those issues. Owner decision B-004: the **nine** endpoints in the assignment's API table are the contract.
+Full catalog: frontend `ASG-FR-001…017` in `docs/frs/frontend.md` (issue #14); API and domain `ASG-FR-020…037` in `docs/frs/api.md` (issue #15); index and entry template in [`FRs.md`](FRs.md). The two `frs/` files are created by those issues. Behavioural flows that exercise these requirements: [`USE_CASES.md`](USE_CASES.md) (issue #17). Owner decision B-004: the **nine** endpoints in the assignment's API table are the contract.
 
 | Endpoint | Behaviour (§2.2 p5–6) |
 |---|---|
@@ -237,7 +255,7 @@ Live demonstrations the assignment requires elsewhere (all must be real, never s
 | 1 Product problem | `ASG-AI-*` (replaceable reader, safe fallback) |
 | 2 Product outcome | `ASG-GEN-004…010`, `ASG-FR-037`, `ASG-CICD-031` |
 | 3 Actors | `ASG-FR-004…012`, `ASG-AI-003…008`, `ASG-SUB-009…011` |
-| 4 Workflow | `ASG-FR-020…034`, `ASG-CACHE-002…009`, `ASG-AI-010…016`, `ASG-DATA-005…015` |
+| 4 Workflow | `ASG-FR-020…034`, `ASG-CACHE-002…009`, `ASG-AI-010…016`, `ASG-DATA-005…015`; use cases in [`USE_CASES.md`](USE_CASES.md) |
 | 5 Scope | all families; `ASG-BONUS-001…008` |
 | 6 Non-goals | `ASG-FR-002/003`, `ASG-K8S-001`, `ASG-CACHE-010`, `ASG-DED-008` |
 | 7 Functional | `ASG-FR-001…017`, `ASG-FR-020…037` (018–019 are intentionally unused) |
