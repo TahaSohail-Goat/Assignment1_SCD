@@ -344,6 +344,19 @@ jobs:
           import json, sys
           assert json.load(sys.stdin)["category"] == "water"
           '
+      # The commands of docs/RUNBOOK.md sections 3, 4, 5, 7 and 10, run as written.
+      - name: RUNBOOK commands
+        run: |
+          curl -fsS -H 'X-Request-ID: runbook-check' "$API/health"
+          curl -fsS "$API/metrics" | head -3
+          docker compose logs --tail 50 backend | grep -F '"request_id": "runbook-check"'             || docker compose logs --tail 50 backend | grep -F 'runbook-check'
+          docker compose run --rm migrate alembic current
+          docker compose run --rm migrate alembic upgrade head
+          curl -fsS -X POST "$API/api/complaints" -H 'Content-Type: application/json'             -d '{"text":"Garbage has not been collected from our street for a week.","location":"Ward 4"}' > /dev/null
+          curl -si "$API/api/stats" | grep -i '^x-cache'
+          docker compose exec -T cache redis-cli TTL stats:v1
+          docker compose exec -T cache redis-cli GET stats:v1
+          docker compose ps
       - name: Compose state and backend log on failure
         if: failure()
         run: |
