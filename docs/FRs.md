@@ -6,7 +6,7 @@ Functional requirements are extracted from [`docx/ASSIGNMENT.md`](../docx/ASSIGN
 
 | Catalog | IDs | File | Issue | Author |
 |---|---|---|---|---|
-| Frontend (views, client, runtime config) | `ASG-FR-001…017` | `docs/frs/frontend.md` (added by #14, which also adds its link here) | #14 | `Artfever` |
+| Frontend (views, client, runtime config) | `ASG-FR-001…017` | [`frs/frontend.md`](frs/frontend.md) | #14 | `TahaSohail-Goat` |
 | API and domain rules (nine endpoints, state machine) | `ASG-FR-020…037` | [`frs/api.md`](frs/api.md) | #15 | `TahaSohail-Goat` |
 
 `ASG-FR-018` and `ASG-FR-019` are intentionally unused (a gap left between the two groups). IDs are never reused or renumbered.
@@ -49,7 +49,7 @@ Legend for **Test mapping**: `UT` unit test · `IT` integration test against the
 
 | Group | IDs | Count | Status |
 |---|---|---|---|
-| Frontend | `ASG-FR-001…017` | 17 | Catalog in progress (#14) |
+| Frontend | `ASG-FR-001…017` | 17 | Catalog in [`frs/frontend.md`](frs/frontend.md) (#14) |
 | API and domain | `ASG-FR-020…037` | 18 | Catalog in [`frs/api.md`](frs/api.md) (#15) |
 | **Total** | | **35** | |
 
