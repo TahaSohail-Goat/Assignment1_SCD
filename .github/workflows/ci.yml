@@ -177,9 +177,14 @@ jobs:
       # sends to the daemon; the second figure is the same directory without its .dockerignore.
       - name: Backend build context and image size
         run: |
-          with_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size backend 2>&1 | grep -m1 -o 'transferring context: [0-9.]*[kMG]*B')"
+          # A developer's working tree after `pip install`: a virtualenv and bytecode caches sit
+          # inside backend/, which is exactly what .dockerignore keeps out of the context.
+          python3 -m venv backend/.venv
+          backend/.venv/bin/pip install --quiet -r backend/requirements-dev.txt
+          backend/.venv/bin/python -m compileall -q backend/app > /dev/null
+          with_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size backend 2>&1 | grep -o 'transferring context: [0-9.]*[kMG]*B' | tail -1)"
           rm -rf /tmp/noignore && cp -r backend /tmp/noignore && rm /tmp/noignore/.dockerignore
-          without_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size-noignore /tmp/noignore 2>&1 | grep -m1 -o 'transferring context: [0-9.]*[kMG]*B')"
+          without_ignore="$(docker build --no-cache --progress=plain -t civicpulse-backend:size-noignore /tmp/noignore 2>&1 | grep -o 'transferring context: [0-9.]*[kMG]*B' | tail -1)"
           {
             echo "### Backend"
             echo "- build context with .dockerignore: ${with_ignore#transferring context: }"
