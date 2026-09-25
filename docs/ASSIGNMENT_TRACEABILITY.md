@@ -116,7 +116,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-NFR-013 | §3.4 p17; §4 C p20 | Backend coverage ≥ 65% on `app/` | Mandatory | TahaSohail-Goat | #39 | `backend/pyproject.toml` | CI | `backend/pyproject.toml` (`--cov-fail-under=65`), coverage 97% | Implemented (P04-S03, #39) |
 | ASG-NFR-014 | §3.4 p17; §4 B p19 | ≥ 5 meaningful frontend component tests (Vitest) passing in CI | Mandatory | Artfever | #36 | `frontend/tests/` | CI | test report | Skeleton |
 | ASG-NFR-015 | §2.5 p11–12 | Test suite is green on every run; no `time.sleep()` and no re-runs to get a pass — determinism by design | Mandatory | TahaSohail-Goat | #39 | `backend/tests/` | CI | `backend/tests/test_determinism.py`, ten green runs in a row | Implemented (P04-S03, #39) |
-| ASG-NFR-016 | §5.3 p24; §3.4 p17 | No `localhost` for service-to-service communication (containers/pods use service names) | Constraint | TahaSohail-Goat | #47 | `compose*.yaml`, `k8s/` | INS, CI | integration job | Not started |
+| ASG-NFR-016 | §5.3 p24; §3.4 p17 | No `localhost` for service-to-service communication (containers/pods use service names) | Constraint | TahaSohail-Goat | #47 | `compose*.yaml`, `k8s/` | INS, CI | integration job, `backend/tests/test_container_files.py` | Partial (P08-S01, #47: compose; k8s in #49) |
 | ASG-NFR-017 | §2.1 p5 | Anything in the browser bundle is public: no credentials/keys in build output ("it's minified" is not a defence) | Constraint | Artfever | #34 | `frontend/` | INS | bundle scan | Not started |
 
 ## ASG-DATA — Data layer
@@ -161,7 +161,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-CACHE-008 | §2.4 p8 | Rate limiter protects `POST /api/complaints` | Mandatory | Artfever | #43 | `backend/app/routes/` | IT | — | Not started |
 | ASG-CACHE-009 | §2.4 p8 | When exceeded: 429 with a `Retry-After` header | Mandatory | Artfever | #43 | `backend/app/` | IT | curl capture | Not started |
 | ASG-CACHE-010 | §2.4 p8 | Limiter is distributed (Redis), not an in-process dictionary (holds under HPA scale-out) | Constraint | Artfever | #43 | `backend/app/` | INS | — | Not started |
-| ASG-CACHE-011 | §2.4 p9 | Redis AOF enabled on a named volume | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG | — | Not started |
+| ASG-CACHE-011 | §2.4 p9 | Redis AOF enabled on a named volume | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); restart check in #53 |
 | ASG-CACHE-012 | §2.4 p9 | Written justification: why the cache needs a volume although a cache can be rebuilt | Evidence | Artfever | #43 | `docs/ENGINEERING-NOTES.md` | DOC | — | Not started |
 
 ## ASG-AI — AI layer
@@ -198,33 +198,33 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| ASG-DEVOPS-001 | §3.1 p12 | Two images (backend, frontend), both multi-stage, pinned, non-root | Mandatory | TahaSohail-Goat | #47 | `*/Dockerfile` | INS, CI | — | Not started |
-| ASG-DEVOPS-002 | §3.1 p12 | Backend base is `python:3.12-slim` | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | — | Not started |
-| ASG-DEVOPS-003 | §3.1 p12 | Backend dependencies installed in a builder stage | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | — | Not started |
-| ASG-DEVOPS-004 | §3.1 p12 | Cache-friendly COPY order (requirements before source) | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | — | Not started |
-| ASG-DEVOPS-005 | §3.1 p12 | Backend runs as a non-root `USER` | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | — | Not started |
-| ASG-DEVOPS-006 | §3.1 p12 | Backend `CMD` in exec form | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | — | Not started |
-| ASG-DEVOPS-007 | §3.1 p12 | `HEALTHCHECK` declared | Mandatory | TahaSohail-Goat | #47 | `*/Dockerfile` | INS | — | Not started |
+| ASG-DEVOPS-001 | §3.1 p12 | Two images (backend, frontend), both multi-stage, pinned, non-root | Mandatory | TahaSohail-Goat | #47 | `*/Dockerfile` | INS, CI | `backend/tests/test_container_files.py` | Partial (P08-S01, #47: backend; frontend in #48) |
+| ASG-DEVOPS-002 | §3.1 p12 | Backend base is `python:3.12-slim` | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-003 | §3.1 p12 | Backend dependencies installed in a builder stage | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-004 | §3.1 p12 | Cache-friendly COPY order (requirements before source) | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-005 | §3.1 p12 | Backend runs as a non-root `USER` | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-006 | §3.1 p12 | Backend `CMD` in exec form | Mandatory | TahaSohail-Goat | #47 | `backend/Dockerfile` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-007 | §3.1 p12 | `HEALTHCHECK` declared | Mandatory | TahaSohail-Goat | #47 | `*/Dockerfile` | INS | `backend/tests/test_container_files.py` | Partial (P08-S01, #47: backend; frontend in #48) |
 | ASG-DEVOPS-008 | §3.1 p12 | Frontend builds with `node:22-alpine` and serves with `nginx:1.27-alpine` | Mandatory | Artfever | #48 | `frontend/Dockerfile` | INS | — | Not started |
 | ASG-DEVOPS-009 | §3.1 p12 | Final frontend image contains no Node, no `node_modules`, no source | Mandatory | Artfever | #48 | `frontend/Dockerfile` | INS | `docker history` | Not started |
 | ASG-DEVOPS-010 | §3.1 p12 | Report both stage sizes; a frontend image over ~60 MB indicates the multi-stage split is not working | Evidence | TahaSohail-Goat | #53 | `README.md` / notes | MEAS | size capture | Not started |
-| ASG-DEVOPS-011 | §3.1 p12 | `.dockerignore` in each build context excluding `.git`, `node_modules`, `.venv`, `__pycache__`, `.env`, test fixtures | Mandatory | TahaSohail-Goat | #47 | `backend/.dockerignore`, `frontend/.dockerignore` | INS | — | Not started |
+| ASG-DEVOPS-011 | §3.1 p12 | `.dockerignore` in each build context excluding `.git`, `node_modules`, `.venv`, `__pycache__`, `.env`, test fixtures | Mandatory | TahaSohail-Goat | #47 | `backend/.dockerignore`, `frontend/.dockerignore` | INS | `backend/tests/test_container_files.py` | Partial (P08-S01, #47: backend; frontend in #48) |
 | ASG-DEVOPS-012 | §3.1 p12 | Report build-context size before and after `.dockerignore`, with numbers | Evidence | TahaSohail-Goat | #53 | notes | MEAS | size capture | Not started |
-| ASG-DEVOPS-013 | §3.2 p12–13 | Two Compose networks: `edge` (bridge) and `internal` (bridge, `internal: true`) | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG | — | Not started |
+| ASG-DEVOPS-013 | §3.2 p12–13 | Two Compose networks: `edge` (bridge) and `internal` (bridge, `internal: true`) | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
 | ASG-DEVOPS-014 | §3.2 p13 | frontend joins `edge` only | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
-| ASG-DEVOPS-015 | §3.2 p13 | backend joins both networks — the only service that bridges them | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
-| ASG-DEVOPS-016 | §3.2 p13 | database and cache join `internal` only | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
+| ASG-DEVOPS-015 | §3.2 p13 | backend joins both networks — the only service that bridges them | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-016 | §3.2 p13 | database and cache join `internal` only | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
 | ASG-DEVOPS-017 | §3.2 p13 | `docker compose exec frontend ping database` must fail; demonstrate the failure in the video | Evidence | Artfever | #48 | — | DEMO | video + capture | Not started |
 | ASG-DEVOPS-018 | §3.2 p13 | Resolve and document where the hosted-LLM caller lives given `internal: true` (more than one defensible design) | Evidence | Artfever | #32 | `docs/ENGINEERING-NOTES.md` | DOC | — | Not started |
-| ASG-DEVOPS-019 | §3.2 p13 | Three named volumes `pgdata`, `redisdata`, `ollama_models`, each justified | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG, DOC | — | Not started |
-| ASG-DEVOPS-020 | §3.2 p13 | Development-only bind mount of source into the backend for hot reload; present in `compose.yaml`, absent from `compose.prod.yaml`; one sentence on why | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG, DOC | — | Not started |
-| ASG-DEVOPS-021 | §3.2 p13 | Healthchecks on every service | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
-| ASG-DEVOPS-022 | §3.2 p13 | `depends_on` with `condition: service_healthy` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
-| ASG-DEVOPS-023 | §3.2 p13 | All credentials via `${...}` from `.env` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | INS | — | Not started |
-| ASG-DEVOPS-024 | §3.2 p13 | `.env.example` committed; `.env` gitignored | Mandatory | TahaSohail-Goat | #47 | `.env.example`, `.gitignore` | INS | — | Skeleton |
-| ASG-DEVOPS-025 | §3.2 p13 | Every image tag pinned | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml`, Dockerfiles | INS, CI | — | Not started |
-| ASG-DEVOPS-026 | §3.2 p13 | `restart: unless-stopped` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
-| ASG-DEVOPS-027 | §3.2 p13 | Resource limits under `deploy.resources` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | — | Not started |
+| ASG-DEVOPS-019 | §3.2 p13 | Three named volumes `pgdata`, `redisdata`, `ollama_models`, each justified | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG, DOC | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-020 | §3.2 p13 | Development-only bind mount of source into the backend for hot reload; present in `compose.yaml`, absent from `compose.prod.yaml`; one sentence on why | Mandatory | TahaSohail-Goat | #47 | `compose.yaml` | CFG, DOC | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-021 | §3.2 p13 | Healthchecks on every service | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-022 | §3.2 p13 | `depends_on` with `condition: service_healthy` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-023 | §3.2 p13 | All credentials via `${...}` from `.env` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-024 | §3.2 p13 | `.env.example` committed; `.env` gitignored | Mandatory | TahaSohail-Goat | #47 | `.env.example`, `.gitignore` | INS | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-025 | §3.2 p13 | Every image tag pinned | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml`, Dockerfiles | INS, CI | `backend/tests/test_container_files.py` | Partial (P08-S01, #47: backend; frontend in #48) |
+| ASG-DEVOPS-026 | §3.2 p13 | `restart: unless-stopped` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
+| ASG-DEVOPS-027 | §3.2 p13 | Resource limits under `deploy.resources` | Mandatory | TahaSohail-Goat | #47 | `compose*.yaml` | CFG | `backend/tests/test_container_files.py` | Implemented (P08-S01, #47); build and run not yet checked: CI job in #51 |
 | ASG-DEVOPS-028 | §3.2 p13 | No published port on database or cache in the production file | Mandatory | Artfever | #48 | `compose.prod.yaml` | CFG, CI | — | Not started |
 | ASG-DEVOPS-029 | §3.2 p14 | Two files: `compose.yaml` (dev, `build:`) and `compose.prod.yaml` (deploy, `image:` with `${IMAGE_TAG}`, no `build:` key anywhere) | Mandatory | Artfever | #48 | `compose.yaml`, `compose.prod.yaml` | CFG, CI | — | Not started |
 
@@ -419,7 +419,7 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 | ASG-REPO-015 | §5.7 | `docs/evidence/` | Mandatory | TahaSohail-Goat | #53 | INS | Skeleton |
 | ASG-REPO-016 | §5.7 | `scripts/check_submission.py` | Mandatory | TahaSohail-Goat | #56 | INS | Not started (optional; we write it: `SUBMISSION.md`) |
 | ASG-REPO-017 | §5.7 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Mandatory | TahaSohail-Goat | #51 | INS | Skeleton (dir) |
-| ASG-REPO-018 | §5.7 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Mandatory | TahaSohail-Goat | #47 | INS | `.gitignore` done; rest not started |
+| ASG-REPO-018 | §5.7 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Mandatory | TahaSohail-Goat | #47 | INS, `backend/tests/test_container_files.py` | Partial (P08-S01, #47: compose.yaml, .env.example; compose.prod.yaml in #48) |
 | ASG-REPO-019 | §5.7 | `README.md`, `LICENSE` | Mandatory | Artfever | #55 | INS | `README.md` placeholder; `LICENSE` not decided |
 
 ---
