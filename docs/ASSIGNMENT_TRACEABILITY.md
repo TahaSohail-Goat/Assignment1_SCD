@@ -141,9 +141,9 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-DATA-016 | §2.3 p8 | Index on `(status, priority)` | Mandatory | TahaSohail-Goat | #40 | migration | INS | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
 | ASG-DATA-017 | §2.3 p8 | Index on `created_at` | Mandatory | TahaSohail-Goat | #40 | migration | INS | `backend/alembic/versions/0001_create_complaints.py`, `backend/tests/test_migrations.py` | Implemented (P05-S01, #40) |
 | ASG-DATA-018 | §2.3 p8; §4 D p20 | Engineering notes state, per index, which query it serves | Evidence | TahaSohail-Goat | #40 | `docs/ENGINEERING-NOTES.md` | DOC | `docs/DATA_MODEL.md` | Implemented (P05-S01, #40) |
-| ASG-DATA-019 | §2.3 p8 | Idempotent seed command loading ≥ 30 realistic complaints | Mandatory | Artfever | #41 | `backend/` seed | IT | — | Not started |
-| ASG-DATA-020 | §2.3 p8 | Seed complaints are in Urdu-influenced English, spread across categories | Mandatory | Artfever | #41 | seed data | INS | — | Not started |
-| ASG-DATA-021 | §2.3 p8 | Running the seed twice does not duplicate rows | Mandatory | Artfever | #41 | seed | IT | — | Not started |
+| ASG-DATA-019 | §2.3 p8 | Idempotent seed command loading ≥ 30 realistic complaints | Mandatory | Artfever | #41 | `backend/` seed | IT | `backend/app/seed.py`, `backend/tests/test_seed.py` | Implemented (#41); PostgreSQL CI passed on PR #79 |
+| ASG-DATA-020 | §2.3 p8 | Seed complaints are in Urdu-influenced English, spread across categories | Mandatory | Artfever | #41 | seed data | INS | `backend/app/seed.py` | Implemented (#41) |
+| ASG-DATA-021 | §2.3 p8 | Running the seed twice does not duplicate rows | Mandatory | Artfever | #41 | seed | IT | `backend/tests/test_seed.py` | Implemented (#41); PostgreSQL CI passed on PR #79 |
 | ASG-DATA-022 | §2.3 p8 | `docker compose down` then `up` preserves every row | Evidence | TahaSohail-Goat | #53 | `compose.yaml` (`pgdata`) | DEMO | `docs/evidence/`, `ci.yml` step | CI evidence (P11, #53): rows survive `down` then `up`, run https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36189116384; video demo pending |
 | ASG-DATA-023 | §2.3 p8 | On Kubernetes, deleting the Postgres pod preserves every row | Evidence | Artfever | #54 | `k8s/base/postgres.yaml` | DEMO | `docs/evidence/` | Not started |
 

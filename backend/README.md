@@ -22,6 +22,10 @@ DATABASE_URL=postgresql+psycopg://user:password@postgres:5432/civicpulse alembic
 alembic downgrade base
 ```
 
+## Seed demo complaints
+
+After migrating, set `DATABASE_URL` and run `python -m app.seed` from `backend/`. It inserts 30 synthetic complaints across all six categories and three priorities. Running the command again reports zero new complaints because each row has a fixed UUID and the repository uses `ON CONFLICT (id) DO NOTHING`.
+
 ## OpenAPI
 
 ```
