@@ -110,7 +110,7 @@ Repeat for each issue. Codex does all of it under your login; you read the diff 
    Refs #16
    Assisted-by: OpenAI Codex
    ```
-   `Assisted-by:` is this team's disclosure convention for Contributor B (Contributor A uses `Co-Authored-By: Claude …`).
+   `Assisted-by:` is Contributor B's disclosure trailer. The rule and the reason (why it differs from Contributor A's `Co-Authored-By: Claude …`) are defined once, in `docs/TEAM_CONTRIBUTION.md`, working agreement item 3.
 8. **Push:** `git push -u origin feature/<issue-number>-<slug>`
 9. **Pull request into `dev`.** Copy `.github/pull_request_template.md` into `pr.md`, fill every section, then:
 
