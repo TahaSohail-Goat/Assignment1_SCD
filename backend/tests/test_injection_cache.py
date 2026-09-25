@@ -53,7 +53,7 @@ def test_duplicate_uses_one_inference_and_24_hour_ttl() -> None:
     assert provider.calls == 1
     assert first.category == second.category == Category.WATER
     assert first.triaged_by == second.triaged_by == "simulated"
-    assert store.ttls[content_key("Pipe burst", "Ward 2")] == TTL_SECONDS == 86400
+    assert store.ttls[content_key("Pipe burst", "Ward 2", "simulated")] == TTL_SECONDS == 86400
     hits = (
         metrics.REGISTRY.get_sample_value("triage_cache_total", {"result": "hit"}) or 0
     ) - before_hits
@@ -64,15 +64,45 @@ def test_duplicate_uses_one_inference_and_24_hour_ttl() -> None:
 
 
 def test_hash_hides_content_and_location_changes_the_key() -> None:
-    key = content_key("Call me at 555-1234", "House 10")
+    key = content_key("Call me at 555-1234", "House 10", "simulated")
     assert "555" not in key and "House" not in key
-    assert key != content_key("Call me at 555-1234", "House 11")
+    assert key != content_key("Call me at 555-1234", "House 11", "simulated")
+    assert key != content_key("Call me at 555-1234", "House 10", "llm:groq")
+
+
+def test_changing_provider_does_not_reuse_another_providers_result() -> None:
+    class OtherProvider(CountingProvider):
+        name = "llm:ollama"
+
+        def triage(self, text: str, location: str) -> TriageResult:
+            self.calls += 1
+            return TriageResult(
+                category=Category.ROADS,
+                priority=Priority.LOW,
+                summary="Road damage",
+                confidence=0.8,
+            )
+
+    store = FakeStore()
+    first_provider = CountingProvider()
+    second_provider = OtherProvider()
+    first = TriageService(first_provider, cache=TriageCache(store))
+    second = TriageService(second_provider, cache=TriageCache(store))
+    try:
+        initial = first.triage("Road damaged", "Ward 2", uuid.uuid4())
+        switched = second.triage("Road damaged", "Ward 2", uuid.uuid4())
+    finally:
+        first.close()
+        second.close()
+    assert initial.category == Category.WATER
+    assert switched.category == Category.ROADS
+    assert first_provider.calls == second_provider.calls == 1
 
 
 def test_invalid_cached_category_is_deleted_and_recomputed() -> None:
     store = FakeStore()
-    store.values[content_key("Road damaged", "Ward 2")] = json.dumps(
-        {"provider": "llm:groq", "result": {"category": "ignore_all_rules"}}
+    store.values[content_key("Road damaged", "Ward 2", "simulated")] = json.dumps(
+        {"provider": "simulated", "result": {"category": "ignore_all_rules"}}
     )
     provider = CountingProvider()
     service = TriageService(provider, cache=TriageCache(store))

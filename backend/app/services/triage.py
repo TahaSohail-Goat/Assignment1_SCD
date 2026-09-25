@@ -62,7 +62,11 @@ class TriageService:
 
     def triage(self, text: str, location: str, complaint_id: uuid.UUID) -> TriageDecision:
         started = self._clock()
-        cached = self._cache.get(text, location, self._validated) if self._cache else None
+        cached = (
+            self._cache.get(text, location, self._provider.name, self._validated)
+            if self._cache
+            else None
+        )
         if self._cache:
             metrics.TRIAGE_CACHE.labels("hit" if cached else "miss").inc()
         if cached is not None:
