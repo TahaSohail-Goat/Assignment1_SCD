@@ -389,7 +389,7 @@ Each deduction is a **guard**: the repository must never enter that state. See [
 | ASG-SUB-004 | §5.8 p26 | Demo video link (unlisted) | Evidence | Artfever | #55 | video | DEMO | link | Not started |
 | ASG-SUB-005 | §5.8 p26 | `git shortlog -sn` output, pasted | Evidence | TahaSohail-Goat | #56 | terminal | MEAS | output | Not started |
 | ASG-SUB-006 | §5.8 p26 | `kubectl get hpa -w` capture and replicas-vs-load chart | Evidence | TahaSohail-Goat | #56 | `docs/evidence/` | DOC | files | Not started |
-| ASG-SUB-007 | §5.8 p26 | Run `python scripts/check_submission.py` from the repository root before submitting (a lint, not a grader) | Mandatory | TahaSohail-Goat | #56 | `scripts/check_submission.py` | CI | output | Not started (optional; we write it: `SUBMISSION.md`) |
+| ASG-SUB-007 | §5.8 p26 | Run `python scripts/check_submission.py` from the repository root before submitting (a lint, not a grader) | Mandatory | TahaSohail-Goat | #56 | `scripts/check_submission.py` | CI | output | Script written (P12-S02, #56); final run and its output recorded at submission |
 | ASG-SUB-008 | §5.3 p24 | Late submissions are not accepted and there is no retake (course policy); no deadline date is given | Policy | TBD | TBD | — | — | — | Info (deadline: `SUBMISSION.md`) |
 | ASG-SUB-009 | §5.4 p24 | Viva: individual, 10 minutes each, repository open, including questions on the partner's code | Policy | TBD | TBD | — | — | — | Info |
 | ASG-SUB-010 | §5.4 p25 | Individual mark = team mark × viva factor: 1.0 explains any part; 0.75 solid on own work / shaky on partner's; 0.5 describes what but not why, cannot modify live; 0.0 cannot explain the submission | Policy | TBD | TBD | — | — | — | Info |
