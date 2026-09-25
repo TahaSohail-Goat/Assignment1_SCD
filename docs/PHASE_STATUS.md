@@ -1,11 +1,11 @@
 # Phase Status
 
-Snapshot of 2026-09-25. Team target: everything done by Sunday 27 Sep 2026 (the Google Classroom deadline is "next Tuesday"; see [`SUBMISSION.md`](SUBMISSION.md)).
+Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (the Google Classroom deadline is "next Tuesday"; see [`SUBMISSION.md`](SUBMISSION.md)).
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
-| 00 | Assignment Baseline & Governance | #1 (sub-issues #2–#8 closed; open: #10, #58, #59) | `feature/58-…` · `feature/59-…` | #9 and #11 merged; #61 open into `dev` | Nearly done: #61 merges, then Phases 00–01 go to `main` together |
-| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/<n>-<slug>` per issue | #19 and #20 merged; #57 open; #14, #16, #17 in progress | In progress: `TahaSohail-Goat` finishes Phases 00–01 (owner decision), `Artfever` reviews |
+| 00 | Assignment Baseline & Governance | #1 (all issues #2–#8, #10, #58, #59 closed) | `feature/58-ai-session-protocol` · `feature/59-record-instructor-answers` | #9, #11, #60 and #61 merged into `dev` | **Complete**; the `dev` → `main` integration PR carries it to `main` |
+| 01 | Requirements Engineering | #12 (sub-issues #13–#18) | `feature/<n>-<slug>` per issue | #19, #20, #57 and the packages #14, #16, #17 merged | **Complete** on `dev`; on `main` with the same integration PR |
 | 02 | Architecture & Repository Structure | #21 (packages #32, #33) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever, TahaSohail-Goat |
 | 03 | Frontend | #22 (packages #34, #35, #36) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: Artfever |
 | 04 | Backend & Domain Layer | #23 (packages #37, #38, #39) | `feature/<n>-<slug>` per package | — | Not started — issues created; owners: TahaSohail-Goat |
