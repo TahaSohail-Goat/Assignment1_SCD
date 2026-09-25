@@ -104,6 +104,9 @@ spec:
             - name: TRIAGE_PROVIDER
               valueFrom:
                 configMapKeyRef: { name: civicpulse-config, key: TRIAGE_PROVIDER }
+            - name: TRUST_FORWARDED_FOR
+              valueFrom:
+                configMapKeyRef: { name: civicpulse-config, key: TRUST_FORWARDED_FOR }
             - name: GROQ_API_KEY
               valueFrom:
                 secretKeyRef: { name: civicpulse-secrets, key: GROQ_API_KEY }
