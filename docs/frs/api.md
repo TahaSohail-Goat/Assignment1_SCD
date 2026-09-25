@@ -32,19 +32,20 @@ Cross-cutting: FR-036 (all nine to contract) and FR-037 (end-to-end flow). Where
   3. Triage runs **synchronously**: content-hash cache lookup, else the selected provider with a 10 s timeout and one jittered retry on timeout/429/5xx, then validation of the provider output against `TriageResult` (`ASG-AI-010…016`).
   4. The complaint is persisted with a server-generated UUID, status `open`, `triaged_by`, `ai_summary`, `triage_latency_ms` and UTC timestamps (`ASG-DATA-005…015`).
   5. The stats cache is invalidated (`ASG-CACHE-005`).
-  6. The API answers **201** with the stored complaint, which includes the category, priority, AI summary and producing provider that the Submit view must show (`ASG-FR-006`).
+  6. The API answers **201**. The body carries what the Submit view must show: the category, priority, AI summary and the producing provider (`ASG-FR-006`, §2.1 p4). The rest of the body, and how the client learns the new complaint's id, are not specified (DQ-API-05).
 - **Alternate / failure flows:**
   - Invalid input → FR-021 (400).
   - Limit exceeded → FR-022 (429).
   - Provider raises, times out, is rate-limited (429), returns 5xx or returns malformed output → `RuleBasedTriage` decides, `triaged_by = "rules:fallback"`, one WARNING is logged (`ASG-NFR-011`), and the answer is **still 201** — the user never sees a 500 because a third party failed (`ASG-AI-015`).
   - The same text was triaged before → the cached result is used and the provider is not called (`ASG-AI-016`); the complaint is still stored as its own row.
-- **Postcondition:** Exactly one new row exists with `status = open`; the next `GET /api/stats` includes it; the response fields equal the stored values.
+- **Postcondition:** Exactly one new row exists with `status = open`; the next `GET /api/stats` includes it; every field the response does carry equals the stored value.
 - **Acceptance criteria:**
   - AC-1: A valid body → 201, and the body carries the category, priority, AI summary and the producing provider (what §2.1 p4 says the Submit view shows). The other fields of the body, including how the client learns the new complaint's id, are DQ-API-05.
   - AC-2: The stored row has `status = open` and `created_at`/`updated_at` in UTC.
   - AC-3: With a provider that **always raises**, the request → 201 and `triaged_by == "rules:fallback"` (the test the assignment says to write "if you write no other", `ASG-AI-022`).
   - AC-4: After a successful POST, the next stats read is a cache MISS and counts the new complaint (`ASG-CACHE-005`).
   - AC-5: Posting the same text twice creates two rows and calls the provider once (`ASG-AI-016`).
+  - AC-6: A client that has just created a complaint can retrieve **that** complaint afterwards — the CI integration job is "POST a complaint, GET it back, assert the category" (§3.4 p17, `ASG-CICD-010`). The mechanism by which the client learns the id (a body field, a header, or the list) is DQ-API-05.
 - **Test mapping:** `IT` create valid; `IT` always-raising provider → 201 + `rules:fallback`; `IT` duplicate text → one provider call, two rows; `IT` POST then stats → MISS with new count.
 - **Evidence mapping:** pytest report (CI artifact); curl/`http` capture of one 201 in `docs/evidence/`; matrix row `ASG-FR-020`.
 
@@ -103,9 +104,9 @@ Cross-cutting: FR-036 (all nine to contract) and FR-037 (end-to-end flow). Where
 - **Alternate / failure flows:** An id that is not a valid UUID → not specified (DQ-API-06).
 - **Postcondition:** No state changes.
 - **Acceptance criteria:**
-  - AC-1: An id returned by FR-020 → 200 and the same values.
+  - AC-1: The id of an existing complaint (for example one just created through FR-020 and identified as decided in DQ-API-05, or found in the list of FR-024) → 200 and the stored values.
   - AC-2: A well-formed id that does not exist → 404.
-- **Test mapping:** `IT` create then get; `IT` unknown id → 404.
+- **Test mapping:** `IT` create then get (id obtained as decided in DQ-API-05); `IT` unknown id → 404.
 - **Evidence mapping:** pytest report; matrix row `ASG-FR-023`.
 
 ### ASG-FR-024 — Filter the complaint list
@@ -370,7 +371,7 @@ The assignment leaves these details open. They are **not decided here**; Phase 0
 | DQ-API-02 | Status code for validation errors | Says **400** | FastAPI/Pydantic answer **422** by default, so this must be remapped deliberately — for the body **and** for query parameters and path ids? |
 | DQ-API-03 | Pagination: defaults, first page number, response envelope, sort order (the `created_at` index suggests newest first, but the assignment does not say), what `total` counts, behaviour for `page_size` > 100 (reject or clamp) | `page`, `page_size` ≤ 100, "return total" | The frontend pagination controls and the tests depend on it |
 | DQ-API-04 | Filter parameter names, combination semantics, handling of an invalid enum value | Filter by category, priority, status | The Dashboard applies all three together |
-| DQ-API-05 | Request and response field names (the contact field, fields in the 201 body, the PATCH body) | Column names in §2.3; the Submit view shows category, priority, AI summary, provider | The typed client and every test depend on exact names |
+| DQ-API-05 | Request and response field names (the contact field, fields in the 201 body, the PATCH body) and **how the client learns the new complaint's id** (a body field, a `Location` header, or via the list) | Column names in §2.3; the Submit view shows category, priority, AI summary, provider; the CI job does "POST a complaint, GET it back" (§3.4 p17), so the id must be obtainable | The typed client, the Submit view's follow-up and every test depend on exact names and on the id |
 | DQ-API-06 | Non-UUID id in `/api/complaints/{id}` | 200 / 404 only | 404 vs 400 |
 | DQ-API-07 | Shape of the stats body; whether a status change must invalidate the stats cache | "Aggregate counts by category and priority"; "Invalidate on write" | Counts by category/priority do not change when only a status changes |
 | DQ-API-08 | Source of "the last 20 triage outcomes" and its shape | "which provider is active, and the last 20 triage outcomes (provider, latency ms, fallback y/n)" | With ≥ 2 replicas an in-memory list per pod would be inconsistent; the data may instead be derived from stored complaints |
