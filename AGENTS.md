@@ -126,8 +126,8 @@ Report:
 ## 11. One Phase at a Time
 Owner decision (2026-09-25): **completely finish one phase before starting another.**
 
-A phase is complete only when every issue of the phase is closed, every PR of the phase is merged into `dev` with a substantive review from the other contributor (one historical exception, PR #9 of Phase 00, is recorded in `docs/AI_SESSIONS.md` section 2), the phase gate in `docs/phases/PHASE-NN-*.md` is checked with evidence, the phase's `dev` → `main` integration PR (merge commit, one approval) is merged, and `docs/PHASE_STATUS.md` says Complete.
+A phase is complete only when, in this order: every issue of the phase has its acceptance boxes ticked and is named in the integration PR's `Closes` line; every PR of the phase is merged into `dev` with a substantive review from the other contributor (one historical exception, PR #9 of Phase 00, is recorded in `docs/AI_SESSIONS.md` section 2); the phase gate in `docs/phases/PHASE-NN-*.md` is checked with evidence; the phase row in `docs/PHASE_STATUS.md` says Complete on `dev`, set by a status PR merged before the integration PR is opened; and the phase's `dev` → `main` integration PR (merge commit, one approval) is merged. A phase is complete **on `main`**: the row counts only once `git show origin/main:docs/PHASE_STATUS.md` shows it, and the next phase starts only then.
 
-Until then, do **not** create branches, commits, PRs or issue edits for a later phase. Allowed while a phase is open: work inside it, answering reviews, reading, and planning that the phase's own prompt requires. If a step would need a later phase or an unmerged dependency, stop and say so.
+Until phase N is complete on `main`, do **not** create branches, commits, PRs or issue edits for a later phase. Allowed while a phase is open: work inside it, answering reviews, reading, and planning that the phase's own prompt requires. If a step would need a later phase or an unmerged dependency, stop and say so.
 
 The definitions of parallel work, handoffs and solo phases, the phase-start and phase-close checklists and the prompt library are in `docs/AI_SESSIONS.md`.

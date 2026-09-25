@@ -125,7 +125,7 @@ Routine: `gh pr checkout <n>` → `gh pr diff <n>` → line comments in GitHub's
 
 ## 10. Phase gate and integration
 
-When every sub-issue of a phase is merged into `dev`: one contributor opens `gh pr create --base main --head dev` and the other approves; merge with `gh pr merge <n> --merge` (**merge commit only** — `main` allows nothing else). Never use `--delete-branch` on this PR. The body lists `Closes #a, #b, …` so the issues close. Then update `docs/PHASE_STATUS.md` (Contributor A owns it during Phase 01).
+When every PR of a phase is merged into `dev`, follow `docs/AI_SESSIONS.md` sections 6 and 7.7 in order. First a status PR into `dev` sets the phase row in `docs/PHASE_STATUS.md` to Complete. Then one contributor opens `gh pr create --base main --head dev` and the other approves its final head; merge with `gh pr merge <n> --merge` (**merge commit only** — `main` allows nothing else). Never use `--delete-branch` on this PR. The body lists `Closes #a, #b, …` so the issues close. Finally check `git show origin/main:docs/PHASE_STATUS.md`: the phase is Complete only when its row says so on `main`. Contributor A owns `docs/PHASE_STATUS.md` during Phase 01.
 
 ## 11. What your AI session must never do
 

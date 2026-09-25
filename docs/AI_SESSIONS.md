@@ -16,17 +16,19 @@ Read this after `AGENTS.md` at the start of every session. It is written for **b
 
 ## 2. Rule 1 — one phase at a time
 
-A phase N is **complete** only when **all** of these hold:
+A phase N is **Complete** when its row in `docs/PHASE_STATUS.md` says **Complete** on `main`. That happens when the phase's integration PR merges, and only once all of these hold:
 
-1. every issue of the phase (parent and sub-issues) is closed;
+1. every issue of the phase (parent and sub-issues) has every acceptance box ticked and is named in the integration PR's `Closes #…` line, so that the merge closes it;
 2. every pull request of the phase is merged into `dev` with a substantive review from the other contributor;
 3. the phase gate in `docs/phases/PHASE-NN-*.md` is checked and its evidence exists;
-4. the phase's `dev` → `main` integration PR (merge commit, one approval) is merged;
-5. `docs/PHASE_STATUS.md` says **Complete**: a small status PR into `dev`, opened after the integration PR has merged, changes the phase row. That PR is bookkeeping, not a package of the phase, and still needs the other contributor's approval.
+4. the phase row in `docs/PHASE_STATUS.md` says **Complete** on `dev`, set by a status PR into `dev` (approved by the other contributor) that is merged **before** the integration PR is opened, so the integration PR carries it to `main`;
+5. the phase's `dev` → `main` integration PR (merge commit, one approval, given on its final head) is merged.
 
-**Historical exception (Phase 00 only, PR #9).** The baseline PR #9 was merged into `main` on 2026-09-24, before the `dev` branch existed and before the second contributor was a repository collaborator (B-010). It has no `dev` step and no partner review, so condition 2 cannot hold for it; `docs/PHASE_STATUS.md` records it as "merged to `main`, no partner review", and it is neither redone nor rewritten. For Phase 00, condition 2 therefore covers every other Phase 00 pull request (#11, #60, #61). No other phase has an exception.
+Conditions 1–4 are checked before the integration PR is opened. Condition 5 is the merge itself, and it is what closes the issues and puts the Complete row on `main`. A row that says Complete on `dev` is **not** yet complete: it counts only once it is on `main`. The check is `git show origin/main:docs/PHASE_STATUS.md`, whose row for the phase must have a Status beginning with **Complete**. The order of the steps is the phase-close checklist in section 6.
 
-**Nothing for phase N+1 starts before that**: no branch, no commit, no PR, no edits to its issues. Allowed while phase N is open: work *inside* phase N; answering reviews; reading; and planning that phase N's own prompt requires (Phase 01, for example, is the phase that creates the issue tree for the later phases).
+**Historical exception (Phase 00 only, PR #9).** The baseline PR #9 was merged into `main` on 2026-09-24, before the `dev` branch existed and before the second contributor was a repository collaborator (B-010). It has no `dev` step and no partner review, so condition 2 cannot hold for it; `docs/PHASE_STATUS.md` records it as merged to `main` with no `dev` step and no partner review, and it is neither redone nor rewritten. For Phase 00, condition 2 therefore covers every other Phase 00 pull request into `dev` (#11, #60, #61 and the status PR). No other phase has an exception.
+
+**Nothing for phase N+1 starts before phase N is Complete on `main`**: no branch, no commit, no PR, no edits to its issues. Allowed while phase N is open: work *inside* phase N; answering reviews; reading; and planning that phase N's own prompt requires (Phase 01, for example, is the phase that creates the issue tree for the later phases).
 
 If a plan mistake for a later phase is found, correcting it is allowed, is done in the current phase's PR, and is recorded there.
 
@@ -50,7 +52,7 @@ Waiting is not idle time: the waiting session reviews, answers questions or stan
 
 | Phase | Mode | Claude Code (Taha) | Codex (Artfever) | Handoffs |
 |---|---|---|---|---|
-| **00 close-out** | HANDOFF chain | opens the PRs for #58 and #59, then the `dev` → `main` integration PR; merges after approvals | reviews and approves each | every PR is a handoff; Taha (human) sends the instructor message of #59 |
+| **00 close-out** | HANDOFF chain | answers the reviews on #60 (issue #58) and #61 (issue #59); then opens the status PR and the `dev` → `main` integration PR; merges after approvals | reviews and approves each | every PR is a handoff; Phase 01 starts only when `main` shows Phase 00 Complete |
 | **01 remaining** | PARALLEL, then handoff | merge chain: #19 → #20 → #57 (rebase, resolve the AI-USAGE row conflict, re-approval each); reviews Codex's PRs | writes **#16** and **#17** while Claude runs the merge chain; then **#14** after #20 has merged; re-reviews #19/#20/#57 heads | Codex approves each final head; Claude reviews #16, #17, #14; integration PR at the end |
 | **02** | PARALLEL, then handoff | #33 API design | #32 architecture document | Codex confirms in #33 that the shapes work for the frontend; Claude reviews #32 |
 | **03** | SOLO (Codex) | reviews | #34 → #35, #36 | one review per PR |
@@ -100,24 +102,24 @@ Then read the two status files. `dev` says which phase is being worked on and wh
 ## 6. Checklists
 
 **Phase start** (before the first branch of phase N):
-- [ ] phase N-1 is Complete (Rule 1, all five conditions)
+- [ ] phase N-1 is Complete **on `main`**: `git show origin/main:docs/PHASE_STATUS.md` shows its row with a Status beginning **Complete** (Rule 1, section 2)
 - [ ] the phase prompt `docs/phases/PHASE-NN-*.md` and the phase parent issue are read
 - [ ] the tools this phase needs are installed on the machine of every contributor who has a package (`docs/ENVIRONMENT_PREREQUISITES.md`: Docker and Compose from Phase 08, kubectl / kind or k3d / k6 from Phase 09)
 - [ ] each package's dependencies (section 4) have merged
 
-**Phase close** (before saying "complete"):
-- [ ] all sub-issues and the parent are ready to close; every acceptance box is ticked
-- [ ] every PR merged into `dev` with a substantive review (Phase 00: PR #9 is the recorded exception, section 2); no open PR of the phase
-- [ ] the phase gate is checked and its evidence committed
-- [ ] the traceability rows of the phase are updated (`Status`, `Evidence`)
-- [ ] `docs/AI-USAGE.md` has a row for each PR
-- [ ] the integration PR `dev` → `main` is opened (its body lists `Closes #a, #b, …`), approved by the other contributor, merged with a **merge commit**
-- [ ] each contributor gave the other the walkthrough of their largest package (`docs/TEAM_CONTRIBUTION.md`, explain-back)
-- [ ] `docs/PHASE_STATUS.md` says Complete; the next phase's parent issue may now be started
+**Phase close** (in this order; each step needs the one before it):
+1. [ ] every acceptance box of the parent and sub-issues is ticked; they stay open until the integration PR merges (its `Closes` line closes them)
+2. [ ] every PR of the phase is merged into `dev` with a substantive review (Phase 00: PR #9 is the recorded exception, section 2); no PR of the phase is open except the two below
+3. [ ] the phase gate is checked and its evidence committed; the traceability rows of the phase are updated (`Status`, `Evidence`); `docs/AI-USAGE.md` has a row for each PR
+4. [ ] each contributor who owned a package in the phase gave the other the walkthrough of their largest one (`docs/TEAM_CONTRIBUTION.md`, explain-back); a phase without packages, such as Phase 00, has no walkthrough
+5. [ ] the **status PR** into `dev` is approved and merged (prompt 7.7, first block): the phase row says Complete, and "Next permitted phase" names the next phase and says it starts only when `main` shows this phase Complete
+6. [ ] the **integration PR** `dev` → `main` is opened (its body lists `Closes #a, #b, …`), approved by the other contributor on its final head, and merged with a **merge commit** (prompt 7.7, second and third blocks); nothing else is merged into `dev` while it is open, because a push to `dev` dismisses the approval
+7. [ ] verified on `main`: `git fetch origin --prune`, then `git show origin/main:docs/PHASE_STATUS.md` shows the phase row Complete, and the parent and sub-issues are closed
+8. [ ] only now may the next phase's parent issue be started
 
 ## 7. Prompt library
 
-Paste one block as the first message of a step. Replace the placeholders: `<ME>` = your GitHub user (`TahaSohail-Goat` or `Artfever`), `<OTHER>` = the other one, `<N>` = issue or PR number, `<PHASE>` = phase number, `<TRAILER>` = your trailer from section 1.
+Paste one block as the first message of a step. Replace the placeholders: `<ME>` = your GitHub user (`TahaSohail-Goat` or `Artfever`), `<OTHER>` = the other one, `<N>` = issue or PR number, `<PHASE>` = phase number, `<parent>` = the phase's parent issue number, `<TRAILER>` = your trailer from section 1.
 
 **Go-ahead gate.** *Strict* (default for Contributor B's session until Artfever relaxes it): show the human the diff or exact text and wait for "go" before **every** `git push`, `gh pr create`, `gh pr review`, `gh pr merge`, force-push, branch deletion, issue creation or settings change. *Standard* (Contributor A's session): wait for "go" before reviews, approvals, merges, force-pushes, branch deletions, issue/label creation and settings changes; pushes to your own feature branch and opening your own PR are allowed after the self-checks. In both, **approving a PR is the human's decision, never the AI's**.
 
@@ -176,10 +178,14 @@ Step: address the review on PR #<N> as <ME>. Read every comment (gh pr view <N> 
 Step: merge PR #<N> as <ME> (the author). Verify, and show me the result of each check: the approval is on the CURRENT head (review commit == head SHA); reviewDecision APPROVED; mergeStateStatus CLEAN; no unresolved threads; base is dev; the branch is up to date with dev. Wait for my "go". Then gh pr merge <N> --rebase (or --merge). NEVER --squash. Delete the feature branch only after confirming its tree equals dev. Update the issue with the merged PR link. End with NEXT.
 ```
 
-### 7.7 OPEN, then REVIEW and MERGE, the phase integration PR
+### 7.7 CLOSE a phase: status PR, integration PR, review and merge
 
 ```text
-Step: open the phase <PHASE> integration PR as <ME>. Preconditions (stop if any fails): every PR of the phase is merged into dev; phase-close checklist (docs/AI_SESSIONS.md section 6) is done except the merge to main. gh pr create --base main --head dev --title "chore(phase-<PHASE>): promote phase <PHASE> to main" with a body that lists what the phase delivered, the validation evidence, the phase gate quote, and "Closes #<parent>, #<sub1>, #<sub2>, …". Reviewer <OTHER>. Do not merge. NEXT: ask <OTHER> to review with the second prompt below.
+Step: open the phase <PHASE> status PR as <ME>. Preconditions (stop if any fails): every PR of the phase is merged into dev; every acceptance box of the phase's issues is ticked; the phase gate in docs/phases/PHASE-<PHASE>-*.md is checked and its evidence is committed; items 1-4 of the phase-close checklist (docs/AI_SESSIONS.md section 6) are done. git fetch origin --prune, then git switch dev, then git pull --ff-only, then git switch -c feature/<parent>-phase-<PHASE>-status. Change only docs/PHASE_STATUS.md and my row in docs/AI-USAGE.md: the phase row's Status becomes "**Complete** (on `main` from the merge of the phase's integration PR)" and lists the phase's PRs; "Next permitted phase" names the next phase and says it starts only when `main` shows phase <PHASE> Complete. Open the PR into dev (reviewer <OTHER>, "Related issue: #<parent>"). Do not merge. NEXT: ask <OTHER> to review with prompt 7.2; after the approval the author merges with 7.6.
+```
+
+```text
+Step: open the phase <PHASE> integration PR as <ME>. Preconditions (stop if any fails): the status PR is merged into dev, so the phase row already says Complete on dev; items 1-5 of the phase-close checklist (docs/AI_SESSIONS.md section 6) are done. gh pr create --base main --head dev --title "chore(phase-<PHASE>): promote phase <PHASE> to main" with a body that lists what the phase delivered, the validation evidence, the phase gate quote, and "Closes #<parent>, #<sub1>, #<sub2>, …". Reviewer <OTHER>. Do not merge, and do not merge anything else into dev while this PR is open (a push to dev dismisses the approval). NEXT: ask <OTHER> to review with the next prompt.
 ```
 
 ```text
@@ -188,9 +194,9 @@ Reviewer (read-only until the human says "post it"):
 1. gh pr view <N> --json baseRefName,headRefName,commits,mergeStateStatus,reviewDecision and gh pr diff <N> --name-only. Base must be main, head dev.
 2. The PR may carry only work that was already reviewed. git fetch origin --prune; git log --format=%s origin/main..origin/dev lists what it carries. Every subject must appear in a PR merged into dev: for each number from gh pr list --state merged --base dev --limit 200 --json number --jq '.[].number', run gh pr view <n> --json commits --jq '.commits[].messageHeadline'. Rebase-merging changes SHAs but not subjects; gh cuts long subjects with an ellipsis, so compare the first 60 characters. A commit with no source PR is a finding.
 3. git log --no-merges --oneline origin/dev..origin/main must print nothing (main holds no work that dev lacks).
-4. The body says "Closes #..." for every issue of the phase; the gate evidence named in docs/phases/PHASE-<PHASE>-*.md exists; the required status checks are green (none exist before Phase 10: say so).
+4. The body says "Closes #..." for every issue of the phase; the diff includes the status PR's change (the phase row in docs/PHASE_STATUS.md says Complete and "Next permitted phase" names the next phase); the gate evidence named in docs/phases/PHASE-<PHASE>-*.md exists; the required status checks are green (none exist before Phase 10: say so).
 Draft the review with the six-point standard (7.2), including one "why" question, and wait for "post it".
-Author, after the approval, show the human the result of each check: base is main and head is dev; the approval's commit equals the current head SHA (gh pr view <N> --json reviews,headRefOid); reviewDecision APPROVED; mergeStateStatus CLEAN; no unresolved review threads; required checks green when they exist. The 7.6 conditions "base is dev" and "up to date with dev" do not apply here. Wait for "go", then gh pr merge <N> --merge (MERGE COMMIT ONLY; never --rebase or --squash on main; never --delete-branch, the head is dev). Then confirm that the parent and sub-issues are closed and open the small status PR into dev that sets the phase row of docs/PHASE_STATUS.md to Complete; the phase is Complete when the other contributor has approved it and it is merged.
+Author, after the approval, show the human the result of each check: base is main and head is dev; the approval's commit equals the current head SHA (gh pr view <N> --json reviews,headRefOid); reviewDecision APPROVED; mergeStateStatus CLEAN; no unresolved review threads; required checks green when they exist. The 7.6 conditions "base is dev" and "up to date with dev" do not apply here. Wait for "go", then gh pr merge <N> --merge (MERGE COMMIT ONLY; never --rebase or --squash on main; never --delete-branch, the head is dev). Then verify on main: git fetch origin --prune, then git show origin/main:docs/PHASE_STATUS.md must show the phase row with a Status beginning Complete, and gh issue view <parent> --json state must say CLOSED (check each sub-issue the same way). Only then say that the phase is Complete and that the next phase may start; if the row is not on main, stop: the phase is not Complete.
 ```
 
 ### 7.8 HOLD
