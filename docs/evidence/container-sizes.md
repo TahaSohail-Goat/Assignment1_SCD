@@ -27,22 +27,23 @@ The `.dockerignore` removes the virtual environment, bytecode caches, tests and 
 - The builder stage (pip, wheel caches, build tools) is **not** in the final image: only the virtual
   environment is copied across.
 
-## Frontend (ASG-DEVOPS-009, -010, -012)
+## Frontend (ASG-DEVOPS-009, -010, -012, -017)
 
-The first CI measurement on commit `947141e` is from
-<https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36194376193>.
-The job completed successfully and checked that the runtime lacks Node, `node_modules` and source.
-The security scan on that run failed due to fixable packages in the nginx base image; a rebuild
-with Alpine security updates is pending, so the final runtime size must be checked again.
+The final CI measurement for commit `2936f8a` is from
+<https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36194643433>.
+The job completed successfully and checked that the runtime lacks Node, `node_modules` and
+source. Both image scans passed. The runtime is 60.1 MB, essentially the assignment's ~60 MB
+guide; it grew from 48.4 MB on the first run because the pinned nginx base needed Alpine
+security updates. No size reduction is claimed beyond the measured value.
 
-| Measurement | First CI run |
+| Measurement | Final CI run |
 |---|---:|
 | Build context without `frontend/.dockerignore` | 105.95 MB |
-| Build context with `frontend/.dockerignore` | 160.01 kB |
+| Build context with `frontend/.dockerignore` | 160.17 kB |
 | Node builder stage image | 288 MB |
-| nginx runtime image | 48.4 MB |
+| nginx runtime image | 60.1 MB |
 
-The `integration` job also captures the actual output of
-`docker compose exec -T frontend ping -c 1 -W 2 database`; a failed name lookup is required.
-That job was skipped because the backend test job failed its timeout assertion in the first run.
-Its output and the video demonstration remain pending.
+The same CI run's `integration` job executed
+`docker compose exec -T frontend ping -c 1 -W 2 database` and captured
+`ping: bad address 'database'`. The step required a name-lookup failure and passed.
+The video demonstration remains pending. Docker is unavailable on Artfever's local machine.
