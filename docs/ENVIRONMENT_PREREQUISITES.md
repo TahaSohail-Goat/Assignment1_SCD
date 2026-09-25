@@ -154,6 +154,7 @@ Paste the outputs into the PR of the phase that first needs them (Phase 08 for D
 - Line endings: `.gitattributes` forces LF; do not override it with editor settings that write CRLF into Dockerfiles or shell scripts.
 - Use Git Bash (or WSL) for the POSIX scripts in the assignment (`vpa-up.sh`, curl loops); PowerShell for `winget`/`gh`.
 - Keep the repository on `C:` (not on a network or synced drive) so bind mounts and file watchers behave.
+- In Windows PowerShell 5.1 the execution policy can block `npm` (it runs `npm.ps1`); `npm.cmd` runs the same tool. Observed on Artfever's machine, where `npm --version` fails and `npm.cmd --version` prints 11.16.0. Use `npm.cmd` in that shell, or let the owner of the machine change the policy for their own user; nobody changes another person's machine.
 
 ## 8. Install plan per machine (issue #59)
 
@@ -172,6 +173,18 @@ Each contributor installs on **their own machine** (an AI session may propose th
 
 **State per machine**
 - **Taha (`TahaSohail-Goat`)** — scanned 2026-09-25: git ✅, `gh` ✅, Python 3.13.2 (add 3.12 before #37), Node 24.13.0 (add 22 before reviewing frontend PRs), Docker ❌, kubectl ❌, kind/k3d ❌, k6 ❌. Windows 11, 15.8 GB RAM: use the `.wslconfig` suggestion in §4.1.
-- **Artfever (`Artfever`)** — not yet recorded. His session's preflight (`git --version`, `gh --version`, `python --version`, `node --version`, `docker --version`) fills this in; paste the result into the description of his first package PR (#34).
+- **Artfever (`Artfever`)** — reported 2026-09-25 by his own Windows PowerShell 5.1 session, in his review of PR #61 (raw output given there; not re-run by Taha's session). These are inventory results, not a request to install the later-phase tools now. Not reported yet: the Windows version, RAM, and virtualization / WSL 2 status, which §4.1 needs before Docker Desktop (Phase 08).
+
+| Tool | Reported by his session | Verdict, and what to do by when |
+|---|---|---|
+| Git | 2.54.0.windows.1 | ✅ |
+| `gh` | 2.101.0 | ✅ |
+| Python | 3.14.6; `py -3.12 --version` → no matching runtime | ⚠️ differs from `python:3.12-slim` (B-020). Add 3.12 side by side (§5) before running the backend tests of Phase 04 (recommended) and before #41 (Phase 05, required) |
+| Node.js | v24.18.0 | ⚠️ differs from `node:22-alpine` (B-020). Add Node 22 side by side (§5) before #34 (Phase 03, required) |
+| npm | `npm --version` fails: `npm.ps1` is blocked by the PowerShell execution policy; `npm.cmd --version` works and prints 11.16.0 | ⚠️ run `npm.cmd` in that shell, or change the execution policy for his own user; that is his decision and is not made here (§7) |
+| Docker / Compose | `docker`: command not found | ❌ before Phase 08 (#48), §4.1 |
+| kubectl | command not found | ❌ before Phase 09, §4.2 |
+| kind, k3d | command not found | ❌ before Phase 09; the same one as Taha's, chosen in #49, §4.3 |
+| k6 | command not found | ❌ before #50 (Phase 09), §4.5 |
 
 **Phase-start rule:** a package is not started until the tools it needs are installed and verified on the machine of the person who owns it (`docs/AI_SESSIONS.md`, phase-start checklist).
