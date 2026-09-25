@@ -187,4 +187,4 @@ Each contributor installs on **their own machine** (an AI session may propose th
 | kind, k3d | command not found | ❌ before Phase 09; the same one as Taha's, chosen in #49, §4.3 |
 | k6 | command not found | ❌ before #50 (Phase 09), §4.5 |
 
-**Phase-start rule:** a package is not started until the tools it needs are installed and verified on the machine of the person who owns it (`docs/AI_SESSIONS.md`, phase-start checklist).
+**Phase-start rule:** a package is not started until the tools it needs are installed and verified on the machine of the person who owns it.
