@@ -120,8 +120,9 @@ export default function Dashboard() {
                   <h3>{item.category} · {item.priority}</h3>
                   <p>{item.text}</p>
                   <p>{item.location} · {new Date(item.created_at).toLocaleString()}</p>
-                  <label>Status for complaint {item.id}
-                    <select value={item.status} disabled={updating === item.id}
+                  <label>Status
+                    <select aria-label={`Status for complaint at ${item.location}: ${item.text}`}
+                      value={item.status} disabled={updating === item.id}
                       onChange={(event) => void changeStatus(item.id, event.target.value as Status)}>
                       {statuses.map((choice) => (
                         <option key={choice} value={choice}>{choice.replace('_', ' ')}</option>

@@ -12,6 +12,7 @@ Standard library only (Python 3.9+), so it runs on a fresh clone. Exit code 0 wh
 
 from __future__ import annotations
 
+import argparse
 import re
 import subprocess
 import sys
@@ -129,12 +130,12 @@ def check_secrets() -> None:  # ASG-DED-001, -20
         ", ".join(sorted(set(history))),
     )
     if (ROOT / ".git").exists():
-        leaked = git("log", "--all", "--oneline", "-G", SECRET_CONTENT.pattern, "--", ".",
-                     ":(exclude)scripts/check_submission.py", ":(exclude)*.md",
-                     ":(exclude)backend/tests")
+        # Inspect every tracked path, including deleted documentation and tests.
+        # Print only commit IDs: commit subjects themselves may contain secrets.
+        leaked = git("log", "--all", "--format=%H", "-G", SECRET_CONTENT.pattern, "--", ".")
         record(
             FAIL if leaked.strip() else PASS,
-            "DED-001 no credential pattern in Git history (code, config)",
+            "DED-001 no credential pattern in Git history (all tracked paths)",
             leaked.strip().replace("\n", "; ")[:300],
         )
     ignore = read(".gitignore").splitlines()
@@ -318,6 +319,12 @@ def check_direct_commits() -> None:  # ASG-DED-010, -5
 
 
 def check_documents() -> None:
+    checklist = read("docs/FINAL_SUBMISSION_CHECKLIST.md")
+    expected = set(re.findall(r"^\| (ASG-[A-Z0-9]+-\d+) \|", read("docs/ASSIGNMENT_TRACEABILITY.md"), re.M))
+    checked = re.findall(r"^\| (ASG-[A-Z0-9]+-\d+) \| (PASS|FAIL|BLOCKED) \|", checklist, re.M)
+    complete = bool(expected) and {key for key, _ in checked} == expected and len(checked) == len(expected)
+    record(PASS if complete else FAIL, "final checklist covers every requirement ID",
+           "coverage only; held and unverified items must remain BLOCKED")
     readme = read("README.md")
     record(PASS if len(readme) > 1500 else FAIL, "README exists and is not a stub")
     template_markers = ("Answer the assignment's eight questions", "Populate from implemented")
@@ -338,11 +345,33 @@ def check_documents() -> None:
     record(PASS if usage.count("| 2026-") >= 10 else WARN, "AI-USAGE has entries for both contributors")
 
 
-def check_authorship() -> None:
-    out = git("shortlog", "-sn", "--all", "--no-merges")
-    authors = [line.split("\t", 1)[1] for line in out.splitlines() if "\t" in line]
-    record(PASS if len(authors) >= 2 else WARN, "both contributors have commits",
-           "; ".join(out.strip().splitlines()[:4]))
+def check_authorship(ref: str = "HEAD") -> None:
+    # Resolve once; never count unrelated or unmerged branches through --all.
+    # User input is only a lookup key, never a subprocess argument. Accept named
+    # refs, HEAD and full reachable commit IDs rather than arbitrary Git expressions.
+    refs = {"HEAD": git("rev-parse", "HEAD").strip()}
+    for line in git("for-each-ref", "--format=%(refname:short) %(objectname)").splitlines():
+        name, oid = line.split(" ", 1)
+        refs[name] = oid
+    for oid in git("log", "--all", "--format=%H").splitlines():
+        refs[oid] = oid
+    revision = refs.get(ref, "")
+    if not revision:
+        record(FAIL, "GH-008 contribution share", f"cannot resolve ref: {ref}")
+        return
+    out = git("shortlog", "-sn", revision)
+    counts = {}
+    for line in out.splitlines():
+        count, name = line.strip().split("\t", 1)
+        counts[name] = int(count)
+    total = sum(counts.values())
+    partners = ("Artfever", "Taha Sohail")
+    ok = total > 0 and all(counts.get(name, 0) * 100 >= total * 35 for name in partners)
+    detail = f"{ref} ({revision[:12]}): " + "; ".join(
+        f"{name} {counts.get(name, 0)}/{total} ({counts.get(name, 0) / total:.1%})"
+        for name in partners
+    ) if total else f"{ref}: no authors found"
+    record(PASS if ok else FAIL, "GH-008 each partner has at least 35%", detail)
 
 
 def check_placeholders() -> None:
@@ -356,20 +385,24 @@ def check_placeholders() -> None:
 
 
 def main() -> int:
-    strict = "--strict" in sys.argv
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--strict", action="store_true", help="warnings also fail")
+    parser.add_argument("--ref", default="HEAD", help="contribution snapshot (default: HEAD)")
+    args = parser.parse_args()
     if not (ROOT / ".git").exists():
         print("Run this from a git checkout of the repository.")
         return 2
     for check in (check_layout, check_secrets, check_k8s_secrets, check_pinned_images, check_localhost,
                   check_compose_prod, check_k8s_services, check_workflows, check_deploy_reference,
-                  check_direct_commits, check_documents, check_authorship, check_placeholders):
+                  check_direct_commits, check_documents, check_placeholders):
         check()
+    check_authorship(args.ref)
     width = max(len(name) for _, name, _ in results)
     for status, name, detail in results:
         print(f"{status:<4}  {name:<{width}}  {detail}".rstrip())
     counts = {s: sum(1 for r in results if r[0] == s) for s in (PASS, WARN, FAIL)}
     print(f"\n{counts[PASS]} passed, {counts[WARN]} warnings, {counts[FAIL]} failed")
-    failed = counts[FAIL] > 0 or (strict and counts[WARN] > 0)
+    failed = counts[FAIL] > 0 or (args.strict and counts[WARN] > 0)
     print("NOT ready to submit." if failed else "Mechanical checks clean. This is a lint, not a grade.")
     return 1 if failed else 0
 

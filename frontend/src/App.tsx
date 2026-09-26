@@ -46,10 +46,10 @@ export default function App() {
         </div>
         <div className="header-actions">
         <nav aria-label="Main navigation">
-          <button type="button" aria-current={view === 'submit' ? 'page' : undefined}
-            onClick={() => setView('submit')}>Submit</button>
           <button type="button" aria-current={view === 'dashboard' ? 'page' : undefined}
             onClick={() => setView('dashboard')}>Dashboard</button>
+          <button type="button" aria-current={view === 'submit' ? 'page' : undefined}
+            onClick={() => setView('submit')}>Submit</button>
           <button type="button" aria-current={view === 'stats' ? 'page' : undefined}
             onClick={() => setView('stats')}>Stats</button>
         </nav>
