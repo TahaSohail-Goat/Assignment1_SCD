@@ -141,7 +141,10 @@ class LLMTriage:
                 },
                 "stream": False,
             },
-            {"Authorization": f"Bearer {self._api_key}"},
+            {
+                "Authorization": f"Bearer {self._api_key}",
+                "User-Agent": "CivicPulse/1.0",
+            },
             self._opener,
         )
         choices = response.get("choices")

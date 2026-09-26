@@ -165,7 +165,8 @@ services:
     profiles: [offline]
     restart: "no"
     entrypoint: ["/bin/sh", "-c"]
-    command: 'ollama serve & for i in $$(seq 1 60); do ollama list >/dev/null 2>&1 && break; sleep 1; done; ollama pull "$${OLLAMA_MODEL}"'
+    command:
+      - 'ollama serve & for i in $$(seq 1 60); do ollama list >/dev/null 2>&1 && break; sleep 1; done; ollama pull "$${OLLAMA_MODEL}"'
     environment:
       OLLAMA_HOST: 127.0.0.1:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma3:1b}

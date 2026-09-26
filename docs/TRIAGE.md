@@ -16,6 +16,21 @@ This file exists because assignment §5.7 names `docs/TRIAGE.md` without definin
 
 ## Cache measurement, 2026-09-25
 
-`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 289 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; a real Redis 7 workload hit rate remains to be measured in Compose.
+`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 289 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; this original test did not measure a real Redis workload. The later [real Redis capture](evidence/final-audit-cache.json) from #109 measured one miss, one hit, one actual rules-provider call and an 86,400-second TTL in Compose (also 50% over that isolated two-request interval). Neither interval represents production traffic.
 
-The hosted-versus-offline comparison and a deployment privacy check are pending live services. Record exact commands, dates, input sets and outputs here when available.
+## Live provider comparison, 2026-09-26 (#112)
+
+The [comparison report](evidence/provider-comparison-README.md) records exact commands,
+source revisions, fixtures, model identity, resource limits, all outputs and failures.
+Each provider received the same 12 synthetic complaints twice without the Redis cache.
+Groq returned 24/24 valid responses (median 663 ms); Ollama returned 22/24 (median
+18,299.5 ms including retries). Category agreement among valid responses was 24/24
+and 11/22 respectively; priority agreement was 20/24 and 15/22. These are small-set
+experiment judgments, not a general accuracy claim or an assignment-defined priority rule.
+
+Artfever confirmed ZDR before hosted requests. Only synthetic text/location was sent
+to Groq, and no credentials were captured. Ollama's serving container was attached
+only to the inspected internal network, with model downloads handled by the separate
+one-shot edge container. Real POST/GET/metadata checks retained both model and fallback
+outcomes. After testing, the backend was restored to rules and the model unloaded from
+RAM; the downloaded volume remains available. The required video is still pending.
