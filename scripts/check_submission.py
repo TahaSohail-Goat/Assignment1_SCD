@@ -330,7 +330,7 @@ def check_documents() -> None:
     record(PASS if len(adrs) >= 4 else FAIL, "ADRs 0001-0004 exist", f"found {len(adrs)}")
     evidence = [f for f in FILES if f.startswith("docs/evidence/")]
     wanted = {"protection": "ruleset", "conflict": "conflict", "blocked merge": "ci-red",
-              "hpa -w": "hpa", "scaling chart": "chart"}
+              "hpa -w": "hpa", "scaling chart": "comparison"}
     missing = [k for k, v in wanted.items() if not any(v in Path(f).name.lower() for f in evidence)]
     record(FAIL if missing else PASS, "docs/evidence has the captures of 5.7",
            "missing: " + ", ".join(missing) if missing else f"{len(evidence)} files")
