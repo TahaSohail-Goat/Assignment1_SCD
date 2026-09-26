@@ -55,6 +55,12 @@ def test_share_uses_selected_ref_not_unmerged_branch(tmp_path):
     assert checker.results[-1][0] == checker.PASS
     checker.check_authorship("missing-ref")
     assert checker.results[-1][0] == checker.FAIL
+    checker.check_authorship("--output=unexpected-file")
+    assert checker.results[-1][0] == checker.FAIL
+    assert not (tmp_path / "unexpected-file").exists()
+    branch = git(tmp_path, "branch", "--show-current")
+    checker.check_authorship(branch)
+    assert checker.results[-1][0] == checker.PASS
 
 
 @pytest.mark.parametrize("path", ["docs/removed.md", "backend/tests/removed.py"])
