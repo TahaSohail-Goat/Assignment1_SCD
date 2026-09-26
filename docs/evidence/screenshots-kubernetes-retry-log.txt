@@ -1,0 +1,64 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260926141415
+Username: MSI\msi
+RunAs User: MSI\msi
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
+$readmeText = Get-Content README.md -Raw -Encoding UTF8
+$blocks = [regex]::Matches($readmeText, '(?s)```powershell\r?\n(.*?)```')
+$kubeBlock = @($blocks | Where-Object { $_.Groups[1].Value.Contains('function Run') })
+Start-Transcript -Path docs/evidence/screenshots-kubernetes-retry-log.txt
+& ([scriptblock]::Create($kubeBlock[0].Groups[1].Value))
+Stop-Transcript
+Process ID: 15940
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is docs/evidence/screenshots-kubernetes-retry-log.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PS>TerminatingError(): "Command failed: kubectl"
+>> TerminatingError(): "Command failed: kubectl"
+>> TerminatingError(): "Command failed: kubectl"
+>> TerminatingError(): "Command failed: kubectl"
+>> TerminatingError(): "Command failed: kubectl"
+Command failed: kubectl
+At line:7 char:36
++         if ($LASTEXITCODE -ne 0) { throw "Command failed: $command" }
++                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Command failed: kubectl:String) [], RuntimeException
+    + FullyQualifiedErrorId : Command failed: kubectl
+
+PS>$global:?
+False
+**********************
+Windows PowerShell transcript end
+End time: 20260926141430
+**********************

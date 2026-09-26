@@ -47,12 +47,12 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-GEN-002 | header p1; §5.1 p23 | Duration stated as "2 Weeks" but §5.1 says four weeks; no deadline date given | Advisory | TBD | TBD | — | DOC | — | Info (deadline: `SUBMISSION.md`) |
 | ASG-GEN-003 | header p1; §4 p19 | Total marks stated as 150; rubric sums to 175 | Advisory | TBD | TBD | — | DOC | `docs/RUBRIC.md` | Info (rubric left to the TA: `SUBMISSION.md`) |
 | ASG-GEN-004 | §1.2 p2 | Product may be renamed; the contracts in §2 must be kept — they are what gets tested | Constraint | TBD | TBD | — | INS | — | Info |
-| ASG-GEN-005 | §1.2 p2 | Whole system runs as five cooperating containers on a laptop with one command | Mandatory | Artfever | #55 | `compose.yaml` | DEMO | `docs/evidence/` | Not started |
-| ASG-GEN-006 | §1.2 p2 | System also runs as a scaled, probed, auto-scaling workload on a Kubernetes cluster in CI | Mandatory | Artfever | #55 | `k8s/`, `.github/workflows/cd.yml` | CI | CI run link | Not started |
-| ASG-GEN-007 | §1.4 p3 | A stranger clones the repository and, with one command, has the whole system running with seeded data | Mandatory | Artfever | #55 | `README.md`, `compose.yaml` | DEMO | clean-clone log | Not started |
-| ASG-GEN-008 | §1.4 p3 | A second command puts the system on a Kubernetes cluster | Mandatory | Artfever | #55 | `k8s/`, `README.md` | DEMO | `docs/evidence/` | Not started |
-| ASG-GEN-009 | §1.4 p3 | A push to main tests it, builds signed and scanned images, deploys them, and can be undone in thirty seconds | Mandatory | Artfever | #55 | `.github/workflows/cd.yml` | CI, DEMO | CI run, rollback capture | Not started (signing not required: `SUBMISSION.md`) |
-| ASG-GEN-010 | §1.4 p3 | Every claim in the README can be demonstrated | Mandatory | Artfever | #55 | `README.md` | INS | — | Not started |
+| ASG-GEN-005 | §1.2 p2 | Whole system runs as five cooperating containers on a laptop with one command | Mandatory | Artfever | #55 | `compose.yaml` | DEMO | `docs/evidence/screenshots-clean-clone-log.txt` | Partial (#55): default four running services + migration verified; optional fifth Ollama not run |
+| ASG-GEN-006 | §1.2 p2 | System also runs as a scaled, probed, auto-scaling workload on a Kubernetes cluster in CI | Mandatory | Artfever | #55 | `k8s/`, `.github/workflows/cd.yml` | CI | CD run 36230267941; `docs/evidence/k8s-load-README.md` | Verified: CD deployment and separate local HPA experiment |
+| ASG-GEN-007 | §1.4 p3 | A stranger clones the repository and, with one command, has the whole system running with seeded data | Mandatory | Artfever | #55 | `README.md`, `compose.yaml` | DEMO | `docs/evidence/screenshots-clean-clone-log.txt` | Verified locally (#55; review pending) |
+| ASG-GEN-008 | §1.4 p3 | A second command puts the system on a Kubernetes cluster | Mandatory | Artfever | #55 | `k8s/`, `README.md` | DEMO | `docs/evidence/screenshots-kubernetes-output.txt` | Verified locally (#55; review pending) |
+| ASG-GEN-009 | §1.4 p3 | A push to main tests it, builds signed and scanned images, deploys them, and can be undone in thirty seconds | Mandatory | Artfever | #55 | `.github/workflows/cd.yml` | CI, DEMO | CD run 36230267941; `docs/evidence/k8s-rollback-index.md` | Verified within recorded local rollback limits; signing waived in SUBMISSION.md |
+| ASG-GEN-010 | §1.4 p3 | Every claim in the README can be demonstrated | Mandatory | Artfever | #55 | `README.md` | INS | `docs/evidence/screenshots-README.md`; linked source/evidence | README checked (#55; partner review pending); remaining claims labelled pending |
 | ASG-GEN-011 | §5.1 p23 | Applicable configuration is "as written, teams of 2" (5 merged PRs, 35% commit floor); teams-of-3 and split-assignment variants do not apply | Constraint | TBD | TBD | — | DOC | — | Info |
 | ASG-GEN-012 | §5.1 p23 | Priority order if behind: F (AI) > C (backend) > I (CI/CD) > H (Kubernetes); never skip the fallback test | Advisory | TBD | TBD | — | — | — | Info |
 | ASG-GEN-013 | §1.3 p2 | Frontend must be an origin that is not localhost and needs CORS/build-step/runtime-config handling | Advisory | TBD | TBD | — | INS | — | Info |
@@ -319,21 +319,21 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| ASG-DOC-001 | §4 J p22 | `README.md`: problem statement | Mandatory | Artfever | #55 | `README.md` | DOC | — | Not started |
-| ASG-DOC-002 | §4 J p22 | `README.md`: badges | Mandatory | Artfever | #55 | `README.md` | DOC | — | Not started |
-| ASG-DOC-003 | §4 J p22 | `README.md`: Mermaid architecture diagram | Mandatory | Artfever | #55 | `README.md` | DOC | — | Not started |
-| ASG-DOC-004 | §4 J p22 | `README.md`: working one-command quickstart | Mandatory | Artfever | #55 | `README.md` | DEMO | clean-clone run | Not started |
-| ASG-DOC-005 | §4 J p22 | `README.md`: API table | Mandatory | Artfever | #55 | `README.md` | DOC | — | Not started |
-| ASG-DOC-006 | §4 J p22 | `README.md`: screenshots | Mandatory | Artfever | #55 | `README.md`, `docs/evidence/` | DOC | — | Not started |
-| ASG-DOC-007 | §2.2 p5 | If Flask is used, the README says so | Mandatory | Artfever | #55 | `README.md` | DOC | — | Not started |
+| ASG-DOC-001 | §4 J p22 | `README.md`: problem statement | Mandatory | Artfever | #55 | `README.md` | DOC | `README.md` introduction | Written (#55; review pending) |
+| ASG-DOC-002 | §4 J p22 | `README.md`: badges | Mandatory | Artfever | #55 | `README.md` | DOC | `README.md` CI/CD badges | Written (#55; review pending) |
+| ASG-DOC-003 | §4 J p22 | `README.md`: Mermaid architecture diagram | Mandatory | Artfever | #55 | `README.md` | DOC | `README.md` Mermaid; `docs/ARCHITECTURE.md` | Written (#55; review pending) |
+| ASG-DOC-004 | §4 J p22 | `README.md`: working one-command quickstart | Mandatory | Artfever | #55 | `README.md` | DEMO | `docs/evidence/screenshots-clean-clone-log.txt` | Verified locally (#55; review pending) |
+| ASG-DOC-005 | §4 J p22 | `README.md`: API table | Mandatory | Artfever | #55 | `README.md` | DOC | `README.md`; running OpenAPI comparison (nine pairs) | Verified locally (#55; review pending) |
+| ASG-DOC-006 | §4 J p22 | `README.md`: screenshots | Mandatory | Artfever | #55 | `README.md`, `docs/evidence/` | DOC | `docs/evidence/screenshots-{submit,dashboard,stats}.png` | Captured and visually checked (#55; review pending) |
+| ASG-DOC-007 | §2.2 p5 | If Flask is used, the README says so | Mandatory | Artfever | #55 | `README.md` | DOC | `README.md`; `backend/app/main.py` | Info: FastAPI used; Flask condition does not apply |
 | ASG-DOC-008 | §4 J p22 | ADR 0001: provider interface | Mandatory | Artfever | #46 | `docs/adr/0001-provider-interface.md` | DOC | `docs/adr/0001-provider-interface.md` | Implemented (#46) |
 | ASG-DOC-009 | §2.1 p4; §4 J p22 | ADR 0002: frontend runtime config (states the `/config.js` vs nginx-proxy choice) | Mandatory | Artfever | #34 | `docs/adr/0002-frontend-runtime-config.md` | DOC | — | Skeleton |
 | ASG-DOC-010 | §4 J p22 | ADR 0003: deploy-by-SHA | Mandatory | Artfever | #52 | `docs/adr/0003-deploy-by-sha.md` | DOC | `docs/evidence/cd-local-rollback.txt`; Actions run pending | Implemented; local checks/rehearsal; main CD and video evidence pending |
 | ASG-DOC-011 | §4 J p22 | ADR 0004: PII / data governance | Mandatory | Artfever | #46 | `docs/adr/0004-pii-and-data-governance.md` | DOC | `docs/adr/0004-pii-and-data-governance.md` | Implemented (#46) |
 | ASG-DOC-012 | §3.3 p14 | ADR for the choice of Helm — only if Helm replaces Kustomize | Recommended | TBD | TBD | `docs/adr/` | DOC | — | Info |
 | ASG-DOC-013 | §4 J p22 | `docs/RUNBOOK.md`: how to deploy, roll back, read logs, and what to do when triage starts failing | Mandatory | TahaSohail-Goat | #53 | `docs/RUNBOOK.md` | DOC | — | Skeleton |
-| ASG-DOC-014 | §4 J p22 | Demo video ≤ 5 minutes with both partners speaking | Mandatory | Artfever | #55 | video link | DEMO | link | Not started |
-| ASG-DOC-015 | §4 J p22 | Video covers: clean clone → running system; AI triage; fallback; network isolation failing; HPA scaling; rollback | Mandatory | Artfever | #55 | video | DEMO | link | Not started |
+| ASG-DOC-014 | §4 J p22 | Demo video ≤ 5 minutes with both partners speaking | Mandatory | Artfever | #55 | video link | DEMO | `README.md` recording plan only | Pending: both partners must record <=5-minute video |
+| ASG-DOC-015 | §4 J p22 | Video covers: clean clone → running system; AI triage; fallback; network isolation failing; HPA scaling; rollback | Mandatory | Artfever | #55 | video | DEMO | `README.md` recording plan only | Pending: actual video and demonstration coverage |
 | ASG-DOC-016 | §4 J p22; §5.2 p23 | `docs/ENGINEERING-NOTES.md` answers all eight questions with references to the team's own files and lines (generic answers score zero) | Mandatory | Artfever | #54 | `docs/ENGINEERING-NOTES.md` | DOC | `docs/ENGINEERING-NOTES.md` | Written with source/line references; >1-hour duration confirmed by Artfever; partner review pending |
 | ASG-DOC-017 | §5.2 p23 | EN-Q1: three laptop-vs-CI differences and the exact Dockerfile/manifest line freezing each | Evidence | Artfever | #54 | notes | DOC | `docs/ENGINEERING-NOTES.md` | Written with source/line references; review pending |
 | ASG-DOC-018 | §5.2 p23 | EN-Q2: position on the CI/CD maturity ladder (Lecture 03, slide 32); justify the rung; name the next rung and what it buys | Evidence | Artfever | #54 | notes | DOC | `docs/ENGINEERING-NOTES.md` | Written with source/line references; review pending |
@@ -386,7 +386,7 @@ Each deduction is a **guard**: the repository must never enter that state. See [
 | ASG-SUB-001 | §5.8 p26 | GitHub repository URL — public, or private with both instructors added | Mandatory | TahaSohail-Goat | #56 | repo | INS | URL | Info (repo is public) |
 | ASG-SUB-002 | §5.8 p26 | Link to a successful `cd.yml` run that tested, published and deployed | Evidence | TahaSohail-Goat | #56 | Actions | DEMO | link | Not started |
 | ASG-SUB-003 | §5.8 p26 | Link to both images in GHCR, showing SHA tags | Evidence | TahaSohail-Goat | #56 | GHCR | DEMO | link | Not started |
-| ASG-SUB-004 | §5.8 p26 | Demo video link (unlisted) | Evidence | Artfever | #55 | video | DEMO | link | Not started |
+| ASG-SUB-004 | §5.8 p26 | Demo video link (unlisted) | Evidence | Artfever | #55 | video | DEMO | No video link yet | Pending: record and upload unlisted video |
 | ASG-SUB-005 | §5.8 p26 | `git shortlog -sn` output, pasted | Evidence | TahaSohail-Goat | #56 | terminal | MEAS | output | Not started |
 | ASG-SUB-006 | §5.8 p26 | `kubectl get hpa -w` capture and replicas-vs-load chart | Evidence | TahaSohail-Goat | #56 | `docs/evidence/` | DOC | files | Not started |
 | ASG-SUB-007 | §5.8 p26 | Run `python scripts/check_submission.py` from the repository root before submitting (a lint, not a grader) | Mandatory | TahaSohail-Goat | #56 | `scripts/check_submission.py` | CI | output | Script written (P12-S02, #56); final run and its output recorded at submission |
@@ -420,7 +420,7 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 | ASG-REPO-016 | §5.7 | `scripts/check_submission.py` | Mandatory | TahaSohail-Goat | #56 | INS | Not started (optional; we write it: `SUBMISSION.md`) |
 | ASG-REPO-017 | §5.7 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Mandatory | TahaSohail-Goat | #51 | INS | Partial (P10-S01, #51: ci.yml) |
 | ASG-REPO-018 | §5.7 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Mandatory | TahaSohail-Goat | #47 | INS, `backend/tests/test_container_files.py` | Partial (P08-S01, #47: compose.yaml, .env.example; compose.prod.yaml in #48) |
-| ASG-REPO-019 | §5.7 | `README.md`, `LICENSE` | Mandatory | Artfever | #55 | INS | `README.md` placeholder; `LICENSE` not decided |
+| ASG-REPO-019 | §5.7 | `README.md`, `LICENSE` | Mandatory | Artfever | #55 | INS | `README.md` written and locally verified (#55; review pending); `LICENSE` still not decided |
 
 ---
 
