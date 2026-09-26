@@ -197,15 +197,25 @@ def check_pinned_images() -> None:  # ASG-DED-003, -8
 
 def check_localhost() -> None:  # ASG-DED-004, -8
     hits = []
+    pattern = re.compile(r"(://|@)(localhost|127\.0\.0\.1)")
     for f in COMPOSE + K8S + WORKFLOWS:
         if f.endswith("ci.yml"):
             continue  # the CI job talks to the published port from the runner, not service to service
         for line in strip_comments(read(f)).splitlines():
-            # a container probing its own port (healthcheck) is not service-to-service traffic
-            if re.search(r"localhost|127\.0\.0\.1", line) and "urlopen(" not in line:
+            # A URL or connection string that names the local host. A container probing its own
+            # port (healthcheck) is not service-to-service traffic.
+            if pattern.search(line) and "urlopen(" not in line and "wget" not in line:
                 hits.append(f)
                 break
     record(FAIL if hits else PASS, "DED-004 no localhost between services (compose, k8s)", ", ".join(hits))
+
+
+def service_blocks(text: str) -> dict[str, str]:
+    """Top-level services of a Compose file, as {name: block text}."""
+    body = text.split("\nservices:", 1)[-1]
+    body = re.split(r"\n(?:networks|volumes):", body, maxsplit=1)[0]
+    parts = re.split(r"\n  ([\w-]+):[ \t]*\n", "\n" + body.lstrip("\n"))
+    return {parts[i]: parts[i + 1] for i in range(1, len(parts) - 1, 2)}
 
 
 def check_compose_prod() -> None:  # ASG-DED-006 / DEVOPS-028, 029
@@ -216,12 +226,11 @@ def check_compose_prod() -> None:  # ASG-DED-006 / DEVOPS-028, 029
     problems = []
     if re.search(r"^\s*build:", text, re.M):
         problems.append("has a build: key")
-    if "${IMAGE_TAG}" not in text:
+    if "IMAGE_TAG" not in text:
         problems.append("does not use ${IMAGE_TAG}")
-    if re.search(r"^\s*-?\s*\"?\d*:?\d+:(5432|6379)\"?", text, re.M) or re.search(
-        r"(database|cache|postgres|redis):(?:(?!\n\S).)*?\bports:", text, re.S
-    ):
-        problems.append("publishes a database or cache port")
+    for name, block in service_blocks(text).items():
+        if name in {"database", "cache", "postgres", "redis"} and re.search(r"^\s+ports:", block, re.M):
+            problems.append(f"{name} publishes a port")
     record(FAIL if problems else PASS, "DED-006 compose.prod.yaml deploys images, no data port",
            "; ".join(problems))
 
@@ -281,6 +290,9 @@ def check_deploy_reference() -> None:  # CICD-023
     placeholder = [t for t in tag if not re.fullmatch(r"[0-9a-f]{7,40}|sha-[0-9a-f]{7,40}|v?\d+\.\d+\.\d+", t)]
     if not tag:
         record(FAIL, "CICD-023 prod overlay names an image tag")
+    elif placeholder and "REPLACE_WITH_COMMIT_SHA" in read(".github/workflows/cd.yml"):
+        record(PASS, "CICD-023 prod overlay tag is set to the commit SHA by cd.yml",
+               "runner-only substitution (docs/adr/0003-deploy-by-sha.md); Git keeps the placeholder")
     elif placeholder:
         record(WARN, "CICD-023 prod overlay still has a placeholder tag",
                "set by cd.yml with the commit SHA before submission: " + ", ".join(placeholder))

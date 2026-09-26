@@ -71,9 +71,17 @@ docker compose run --rm migrate alembic upgrade head
 The application never creates or alters a table: only Alembic does. To go back one step:
 `docker compose run --rm migrate alembic downgrade -1`.
 
-## 6. Seed
+## 6. Seed (checked in CI)
 
-Pending: `python -m app.seed` arrives with issue #41 and is wired into Compose afterwards.
+The `migrate` service runs `alembic upgrade head` and then `python -m app.seed`, so a fresh
+`docker compose up` already has 30 synthetic complaints (Urdu-influenced English, all six
+categories and three priorities). Fixed ids and `ON CONFLICT DO NOTHING` make every later `up` add
+nothing. To run it by hand:
+
+```
+docker compose run --rm migrate python -m app.seed      # prints: Seed complete: 0 new complaints; 30 defined
+curl -fsS "http://localhost:8000/api/complaints?page_size=1"
+```
 
 ## 7. Cache inspection (checked in CI)
 
