@@ -16,7 +16,7 @@ This file exists because assignment §5.7 names `docs/TRIAGE.md` without definin
 
 ## Cache measurement, 2026-09-25
 
-`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 289 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; a real Redis 7 workload hit rate remains to be measured in Compose.
+`backend/.venv/Scripts/pytest.exe -m "not integration" -q` passed 289 tests with 32 database tests deselected. In `test_duplicate_uses_one_inference_and_24_hour_ttl`, two sequential calls with the same synthetic text and location produced one cache miss, one hit, one provider call and a stored TTL of 86,400 seconds. The observed hit rate for that two-request in-memory run was **1 / (1 + 1) = 50%**. This measures the test interval only; this original test did not measure a real Redis workload. The later [real Redis capture](evidence/final-audit-cache.json) from #109 measured one miss, one hit, one actual rules-provider call and an 86,400-second TTL in Compose (also 50% over that isolated two-request interval). Neither interval represents production traffic.
 
 ## Live provider comparison, 2026-09-26 (#112)
 
