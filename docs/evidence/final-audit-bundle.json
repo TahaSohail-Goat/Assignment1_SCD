@@ -1,0 +1,11 @@
+{
+  "source": "running Compose frontend built from e15766d; same application tree as dev 39fca0c",
+  "scope": "recognized credential patterns only; not proof against arbitrary secrets",
+  "assets": [
+    {
+      "asset": "/assets/index-qud10zTR.js",
+      "sha256": "531176897f0c7ef03df242357320ab4d8023967a728eff1e23fbed6492bb94b5",
+      "credential_pattern_match": false
+    }
+  ]
+}
