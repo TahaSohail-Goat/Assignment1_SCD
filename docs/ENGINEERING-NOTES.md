@@ -1,17 +1,130 @@
 # Engineering Notes
 
-Answer the assignment's eight questions with references to your own repository files and line numbers.
+Issue #54; ASG-DOC-016..024, ASG-DATA-023. Source references below are file-and-line
+references to integration commit `9134c7f`; later edits may move the lines.
+Lecture slides are not a submission dependency: see `docs/SUBMISSION.md:99`, which records
+that the instructor allowed Q2/Q4 to be answered from this project.
 
-1. Three laptop/CI differences and exact freezing lines.
-2. CI/CD maturity ladder position and justification.
-3. Exact build-once-deploy-many line and failure without it.
-4. Meaning of "correct" for probabilistic triage and how CI stays deterministic.
-5. Measured HPA lag and where the time went.
-6. Why VPA is Off and how HPA/VPA can conflict.
-7. Where the hosted-LLM calling service can live despite `internal: true`, and how the architecture resolves it.
-8. One significant failure, initial mistaken belief, and exact diagnostic evidence.
+## 1. Three laptop/CI differences and how we freeze them
 
-Generic answers receive no credit; reference real files and lines.
+| Difference | Exact repository line | Effect and limit |
+|---|---|---|
+| Windows laptop with Python 3.14 versus Linux CI with Python 3.12 | `backend/Dockerfile:5` and `:19`: `FROM python:3.12.14-slim-bookworm` | Both image stages use the same Python patch and Debian userland. This does not make Windows-native tests identical to container tests. |
+| Host Node 24 versus the frontend build's Node 22 | `frontend/Dockerfile:3`: `FROM node:22.23.3-alpine3.24`; `:7`: `RUN npm ci` | Pins build runtime and installs the lockfile dependency graph. Host npm state does not enter the runtime image. |
+| Whatever database version is installed locally versus the cluster database | `k8s/base/postgres.yaml:48`: `image: postgres:16.10-alpine` | The cluster uses PostgreSQL 16.10. The PVC persists its data separately from container replacement. |
+
+These are version tags, not a claim that upstream tags can never move. The new project shell
+also provides Node 22/Python 3.12 locally, but the container definitions remain the shared baseline.
+
+## 2. Our CI/CD maturity and the next step
+
+Demonstrated today: continuous integration with automated lint/type checks, tests, image scans,
+manifest validation and Compose integration (`.github/workflows/ci.yml:35` onward). Reviewed
+feature changes reach dev through PRs. Continuous delivery/deployment automation is implemented:
+`.github/workflows/cd.yml:13` calls the full CI suite, `:17` gates publishing on it, and `:76` gates the disposable
+Kubernetes deployment on publishing. A successful main-branch CD run is still needed before
+claiming that end-to-end delivery has been demonstrated; local rehearsal does not prove GHCR.
+
+The next demonstrated rung is automated delivery of a tested, identifiable artifact to the
+cluster, with rollout and ingress checks. Beyond this assignment's ephemeral runner, a persistent
+staging/production environment with observable promotion and recovery would provide ongoing
+service operation. We do not claim unattended production operation from a cluster deleted at
+job completion. The exact lecture taxonomy is not needed under the recorded instructor answer.
+
+## 3. Build once, deploy the same bytes
+
+`.github/workflows/cd.yml:116` pulls the backend **by the build job's digest**; `:117` gives those
+bytes the source-SHA tag, and `:120` loads that existing image into kind. The deployment job has
+no image build step. This binds the deployment to the published output instead of rebuilding
+from a tag whose dependencies or base image could change. CI also builds verification images;
+we do not claim the pipeline performs only one build in total.
+
+For the frontend, `frontend/nginx.conf:27` proxies `/api/` to `http://backend:8000`. It keeps
+browser requests relative to the current origin, so deploying the same frontend image to a
+new host does not bake a different backend URL into its JavaScript. Without that choice the
+image could work locally while sending a deployed browser to a laptop-specific address.
+
+## 4. Correctness of probabilistic triage
+
+Correctness means a validated category/priority/one-line summary within the domain contract,
+a bounded failure path and durable complaint handling; it does not mean identical prose from
+a live model on every call. `backend/app/services/triage.py:115` revalidates provider results;
+`:108` bounds a call with a timeout; `:96` limits retry; `:79` uses validated rules fallback.
+The service records who triaged the complaint and does not let arbitrary model fields bypass
+its schema. Schema validity alone does not establish semantic quality: the hosted/offline
+comparison below is still pending.
+
+CI's backend job sets `TRIAGE_PROVIDER: simulated` (`.github/workflows/ci.yml:82`), while its
+Compose integration selects rules (`:317`, locate the `TRIAGE_PROVIDER=rules` substitution).
+Remote-provider tests use controlled HTTP replies (`backend/tests/test_remote_triage.py:56`),
+and service tests exercise timeout/malformed/retry/fallback behavior without a live quota or
+network response. Therefore changing hosted output does not make the correctness gate random.
+
+## 5. Measured HPA lag
+
+The configured load begins rising at 20 seconds; the baseline first samples desired replicas
+of 3 at 52.53 seconds and a third Ready backend at 57.77 seconds, about **38 seconds** of
+capacity lag. HPA's current-replica field reaches 3 at 68.26 seconds, about **48 seconds** after
+the load step, with a five-second sampling interval and roughly one-second startup uncertainty.
+Metrics collection, the HPA control loop, pod creation and readiness contribute to the lag;
+this capture does not isolate their individual durations. Faster collection/control loops
+could reduce part of the delay at a control-plane cost, while adequate minimum replicas avoid
+relying on reactive scaling for immediate demand.
+
+Sources: `docs/evidence/k8s-load-baseline50/samples.jsonl`, `hpa-watch.txt`, and the chart in
+[evidence/k8s-load-README.md](evidence/k8s-load-README.md). Both complete runs made 9,559
+requests with zero failed requests/dropped iterations. The adjusted run's desired count
+stayed at 2 after applying the recorded VPA Target, 182m/250Mi; this is denominator behavior,
+not evidence of a latency improvement.
+
+## 6. Why VPA is Off
+
+`k8s/base/vpa.yaml:13` sets `updateMode: "Off"`; `k8s/base/hpa.yaml:20` targets CPU utilization of
+60 percent. CPU utilization is usage divided by requested CPU. If VPA automatically raises
+that denominator, HPA may remove replicas; each remaining pod then takes more work, and VPA
+may raise requests again. Off keeps recommendations observable while a reviewed request
+change controls the denominator and HPA controls replica count. Our baseline and adjusted
+captures demonstrate the denominator effect; they do not demonstrate an actual oscillation.
+The baseline VPA's broad upper bound is a short-window recommendation, not production capacity.
+
+## 7. Hosted-model caller placement
+
+`compose.yaml:96` attaches the backend to **edge and internal**. The database (`:18`) and Redis
+(`:38`) are internal-only, while the frontend (`:121`) is edge-only. `:186` marks internal as
+`internal: true`. The backend therefore reaches database/cache by service DNS and can use
+edge egress for a hosted LLM; the data services themselves do not need Internet access.
+The real frontend isolation test failed to resolve `database`, as expected. Ollama's serving
+container stays internal-only (`:143`), with a separate edge-only one-shot model downloader
+(`:172`) sharing the model volume. No database port is published in production Compose.
+
+## 8. A failure that cost more than an hour ? confirmation pending
+
+The existing captures prove a failed 300-request/s port-forward experiment, but its metadata
+runs from 06:01:45 to 06:03:07 UTC on 2026-09-26, not over an hour. It would be false to present
+that capture alone as satisfying this question. See `evidence/k8s-load-initial/metadata.json`
+and the unedited compressed log `k6.txt.gz` for its actual failure.
+
+**Still required from a contributor:** the real incident, approximate start/end or other
+support for >1 hour, the initial mistaken belief, and the exact diagnostic command/log.
+No first-person student recollection or elapsed duration is invented here. ASG-DOC-024 and
+completion of all eight answers remain blocked on this factual input.
+
+## Data, cache and persistence decisions collected from earlier packages
+
+- Migration `backend/alembic/versions/0001_create_complaints.py:90` creates `(status, priority)`
+  for the combined filter (or the leading status column). `:91` creates `created_at` for
+  newest-first retrieval. These support the queries in `docs/DATA_MODEL.md:44`; the optimizer
+  may still choose a sequential scan on a small table. No unmeasured speedup is claimed.
+- `backend/app/services/stats.py:30` sets the 30-second TTL; `:62` provides invalidation after
+  complaint commit. Invalidation makes ordinary writes visible promptly; TTL bounds stale
+  entries after a missed invalidation or a reader/writer race. Deleting before commit could
+  allow a reader to refill from the old database state.
+- [PostgreSQL pod replacement](evidence/k8s-pg-persistence.txt): 30 rows before and after,
+  identical full-row ordered fingerprint; new pod UID, same PVC UID. This tests pod
+  replacement, not deletion of the PVC or a backup/restore disaster.
+- [Rollback evidence index](evidence/k8s-rollback-index.md) and
+  [zero-downtime evidence index](evidence/k8s-zero-downtime-index.md) identify the original
+  captures without treating copied files as additional experiments. Required video is pending.
 
 ## Hosted provider evidence (issue #45, 2026-09-25)
 
