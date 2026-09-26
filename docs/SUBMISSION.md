@@ -120,6 +120,6 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 
 ## Current owner holds (2026-09-26)
 
-Video and the live Groq/Ollama quality/latency comparison are on hold until the end; neither is claimed complete. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `c5f5e38`, run 36235766515. Dashboard #103, owner-task cleanup #105 and theme #106 are on dev awaiting promotion. Keep #55, #56 and #31 open.
+Video remains on hold. Artfever resumed the live Groq/Ollama quality/latency comparison in #112; it is not yet claimed complete. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `db720f3`, [run 36245642750](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36245642750), successful through image/SBOM publication and the ephemeral Kubernetes ingress smoke test. PR #111 promoted the reviewed application and audit changes to main. Keep #55, #56 and #31 open.
 
-Audit evidence after #108: [final-audit-index.md](evidence/final-audit-index.md). Current dev contribution floor passes; historical commit-prefix exceptions remain disclosed. Promotion has not yet occurred.
+Audit evidence after #108: [final-audit-index.md](evidence/final-audit-index.md). At main `db720f3`, Artfever has 83/194 commits (42.8%) and Taha 111/194 (57.2%); both meet the contribution floor. Historical commit-prefix exceptions remain disclosed. Refresh the counts on the final submission revision.
