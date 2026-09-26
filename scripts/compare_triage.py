@@ -16,6 +16,7 @@ import sys
 import time
 import uuid
 from datetime import UTC, datetime
+from urllib.error import HTTPError
 from urllib.request import urlopen
 
 from app.providers.triage.llm import GROQ_MODEL, LLMTriage
@@ -143,14 +144,24 @@ def main():
     headers = []
 
     def observe_open(request, **kwargs):
-        response = urlopen(request, **kwargs)
-        headers.append(
-            {
-                key: response.headers[key]
-                for key in SAFE_HEADERS
-                if key in response.headers
-            }
-        )
+        def capture(response):
+            headers.append(
+                {
+                    "http_status": response.status,
+                    **{
+                        key: response.headers[key]
+                        for key in SAFE_HEADERS
+                        if key in response.headers
+                    },
+                }
+            )
+
+        try:
+            response = urlopen(request, **kwargs)
+        except HTTPError as error:
+            capture(error)
+            raise
+        capture(response)
         return response
 
     if args.provider == "groq":
