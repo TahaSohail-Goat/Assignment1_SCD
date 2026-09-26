@@ -319,6 +319,12 @@ def check_direct_commits() -> None:  # ASG-DED-010, -5
 
 
 def check_documents() -> None:
+    checklist = read("docs/FINAL_SUBMISSION_CHECKLIST.md")
+    expected = set(re.findall(r"^\| (ASG-[A-Z0-9]+-\d+) \|", read("docs/ASSIGNMENT_TRACEABILITY.md"), re.M))
+    checked = re.findall(r"^\| (ASG-[A-Z0-9]+-\d+) \| (PASS|FAIL|BLOCKED) \|", checklist, re.M)
+    complete = bool(expected) and {key for key, _ in checked} == expected and len(checked) == len(expected)
+    record(PASS if complete else FAIL, "final checklist covers every requirement ID",
+           "coverage only; held and unverified items must remain BLOCKED")
     readme = read("README.md")
     record(PASS if len(readme) > 1500 else FAIL, "README exists and is not a stub")
     template_markers = ("Answer the assignment's eight questions", "Populate from implemented")
