@@ -29,6 +29,7 @@ export default function Dashboard() {
     const version = ++requestVersion.current
     setLoading(true)
     setFailure('')
+    setResult(null)
     try {
       const nextResult = await listComplaints({
         page,
@@ -37,7 +38,14 @@ export default function Dashboard() {
         priority: priority || undefined,
         status: status || undefined,
       }, controller.signal)
-      if (version === requestVersion.current) setResult(nextResult)
+      if (version === requestVersion.current) {
+        const lastPage = Math.max(1, Math.ceil(nextResult.total / pageSize))
+        if (page > lastPage) {
+          setPage(lastPage)
+        } else {
+          setResult(nextResult)
+        }
+      }
     } catch (error) {
       if (!controller.signal.aborted && version === requestVersion.current)
         setFailure(error instanceof Error ? error.message : 'Could not load complaints.')
@@ -96,7 +104,12 @@ export default function Dashboard() {
         </label>
       </div>
       {loading && <p role="status">Loading complaints…</p>}
-      {failure && <p role="alert">{failure}</p>}
+      {failure && (
+        <div>
+          <p role="alert">{failure}</p>
+          <button type="button" onClick={() => void load()}>Retry loading complaints</button>
+        </div>
+      )}
       {result && (
         <>
           <p>{result.total} complaints · Page {page} of {totalPages}</p>

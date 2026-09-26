@@ -147,6 +147,59 @@ it('ignores an older list response after the operator changes a filter', async (
   expect(screen.queryByText(complaint.text)).toBeNull()
 })
 
+it('hides previous filter results while loading and retries a failed filter without resetting it', async () => {
+  let failFiltered!: (reason: Error) => void
+  const filtered = new Promise<Response>((_, reject) => { failFiltered = reject })
+  const fetchMock = vi.fn()
+    .mockResolvedValueOnce(reply(200, { items: [complaint], total: 1, page: 1, page_size: 20 }))
+    .mockReturnValueOnce(filtered)
+    .mockResolvedValueOnce(reply(200, { items: [{ ...complaint, text: 'Water complaint', category: 'water' }],
+      total: 1, page: 1, page_size: 20 }))
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Dashboard />)
+  await screen.findByText(complaint.text)
+  fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'water' } })
+  expect(screen.getByRole('status').textContent).toContain('Loading')
+  expect(screen.queryByText(complaint.text)).toBeNull()
+  await act(async () => { failFiltered(new Error('Network unavailable')) })
+  expect(screen.getByRole('alert').textContent).toContain('Network unavailable')
+  expect(screen.queryByText(complaint.text)).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Retry loading complaints' }))
+  await screen.findByText('Water complaint')
+  expect((screen.getByLabelText('Category') as HTMLSelectElement).value).toBe('water')
+  expect(String(fetchMock.mock.lastCall?.[0])).toContain('category=water')
+  expect(screen.queryByRole('alert')).toBeNull()
+})
+
+it('returns to the last valid filtered page when a status update removes its final row', async () => {
+  const lastRow = { ...complaint, id: '00000000-0000-4000-8000-000000000002', text: 'Last open complaint' }
+  let updated = false
+  const fetchMock = vi.fn(async (path: string, init?: RequestInit) => {
+    if (init?.method === 'PATCH') {
+      updated = true
+      return reply(200, { ...lastRow, status: 'in_progress' })
+    }
+    const requested = new URL(path, 'http://localhost')
+    const page = Number(requested.searchParams.get('page'))
+    return reply(200, { items: page === 2 ? (updated ? [] : [lastRow]) : [complaint],
+      total: updated ? 20 : 21, page, page_size: 20 })
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Dashboard />)
+  await screen.findByText(complaint.text)
+  fireEvent.change(screen.getByLabelText('Status'), { target: { value: 'open' } })
+  await screen.findByText(complaint.text)
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  await screen.findByText(lastRow.text)
+  fireEvent.change(screen.getByLabelText(`Status for complaint ${lastRow.id}`), { target: { value: 'in_progress' } })
+  await screen.findByText('20 complaints · Page 1 of 1')
+  expect(screen.getByText(complaint.text)).toBeTruthy()
+  expect(screen.queryByText('No complaints match these filters.')).toBeNull()
+  expect((screen.getByRole('button', { name: 'Next' }) as HTMLButtonElement).disabled).toBe(true)
+  expect(String(fetchMock.mock.lastCall?.[0])).toContain('page=1')
+  expect(String(fetchMock.mock.lastCall?.[0])).toContain('status=open')
+})
+
 it.each(['HIT', 'MISS', null] as const)('shows the X-Cache state %s from the response', async (cache) => {
   vi.stubGlobal('fetch', vi.fn(async () => reply(200, {
     total: 5, by_category: { water: 3, roads: 2 }, by_priority: { high: 1, normal: 4 },
