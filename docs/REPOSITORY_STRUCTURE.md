@@ -1,53 +1,30 @@
 # Repository Structure
 
-Source of truth: assignment §5.7 (p25–26), requirement IDs `ASG-REPO-001…019`. Phase 00 created the **directory skeleton only** (`.gitkeep` placeholders); no application code exists yet. Phase 02 re-verifies this structure against the assignment before implementation begins.
+Current inventory at dev `a4cd0b9`, verified 2026-09-26 using `git ls-files` and the 54-path layout check in `scripts/check_submission.py`. The repository root is the assignment layout root (section 5.7). All 19 layout requirements have their files. Presence does not prove runtime behavior; see the final checklist for verification limits.
 
-## Layout
+| Requirement | Paths | Inventory |
+|---|---|---|
+| ASG-REPO-001 | `backend/app/{routes,services,repositories,providers}/` | Present; Implemented |
+| ASG-REPO-002 | `backend/app/providers/triage/{base,llm,ollama,rules,simulated,factory}.py` | Present; Implemented |
+| ASG-REPO-003 | `backend/alembic/versions/` | Present; Implemented (P05-S01, #40) |
+| ASG-REPO-004 | `backend/tests/` | Present; Implemented (P04-S03, #39) |
+| ASG-REPO-005 | `backend/Dockerfile`, `backend/.dockerignore`, `backend/pyproject.toml` | Present; Implemented (#47) |
+| ASG-REPO-006 | `frontend/src/{components,pages,api}/` | Present; Implemented (#34-#36) |
+| ASG-REPO-007 | `frontend/tests/` | Present; Implemented (#36) |
+| ASG-REPO-008 | `frontend/Dockerfile`, `frontend/.dockerignore`, `frontend/nginx.conf`, `frontend/package.json` | Present; Implemented (#48) |
+| ASG-REPO-009 | `k8s/base/{namespace,backend,frontend,postgres,redis,ingress,configmap,secret}.yaml` | Present; Implemented (P09-S01, #49) |
+| ASG-REPO-010 | `k8s/base/{hpa,vpa,pdb}.yaml`, `k8s/base/kustomization.yaml` | Present; Implemented (#49, #50) |
+| ASG-REPO-011 | `k8s/overlays/{dev,prod}/kustomization.yaml` | Present; Implemented (P09-S01, #49) |
+| ASG-REPO-012 | `load/k6-script.js` | Present; Implemented: `load/k6-script.js`; two real captures in `docs/evidence/k8s-load-README.md` |
+| ASG-REPO-013 | `docs/{ENGINEERING-NOTES,RUNBOOK,AI-USAGE,TRIAGE}.md` | Present; Implemented (#54, #55): all four documents are written |
+| ASG-REPO-014 | `docs/adr/0001-provider-interface.md` … `0004-pii-and-data-governance.md` | Present; Implemented: ADRs 0001-0004 |
+| ASG-REPO-015 | `docs/evidence/` | Present; Implemented |
+| ASG-REPO-016 | `scripts/check_submission.py` | Present; Implemented (#56) |
+| ASG-REPO-017 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Present; Implemented (#51, #52) |
+| ASG-REPO-018 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Present; Implemented (#47, #48) |
+| ASG-REPO-019 | `README.md`, `LICENSE` | Present; Implemented: `README.md` written (#55, #100), `LICENSE` is MIT (#99) |
 
-The repository root **is** the layout root (the source calls it `civicpulse/`; the product may be renamed — ASG-GEN-004). Legend: ✅ exists now · 📁 placeholder directory (`.gitkeep`) · ⏳ created by the phase shown.
-
-```
-.
-├── backend/                                   ASG-REPO-001…005
-│   ├── app/
-│   │   ├── routes/                            📁  Phase 04   HTTP only
-│   │   ├── services/                          📁  Phase 04   business rules, state machine, stats
-│   │   ├── repositories/                      📁  Phase 05   all SQL, nowhere else
-│   │   └── providers/
-│   │       └── triage/                        📁  Phase 07   base · llm · ollama · rules · simulated · factory (.py)
-│   ├── alembic/versions/                      📁  Phase 05   migrations only, no startup DDL
-│   ├── tests/                                 📁  Phase 04+
-│   └── Dockerfile · .dockerignore · pyproject.toml         ⏳ Phase 04 / 08
-├── frontend/                                  ASG-REPO-006…008
-│   ├── src/{components,pages,api}/            📁  Phase 03
-│   ├── tests/                                 📁  Phase 03
-│   └── Dockerfile · .dockerignore · nginx.conf · package.json   ⏳ Phase 03 / 08
-├── k8s/                                       ASG-REPO-009…011
-│   ├── base/                                  📁  Phase 09   namespace, backend, frontend, postgres, redis,
-│   │                                                         ingress, configmap, secret, hpa, vpa, pdb, kustomization
-│   └── overlays/{dev,prod}/                   📁  Phase 09   kustomization.yaml each
-├── load/                                      📁  Phase 09   k6-script.js  (ASG-REPO-012)
-├── scripts/                                   📁  Phase 12   check_submission.py (planned in #56)  (ASG-REPO-016)
-├── docs/                                      ASG-REPO-013…015
-│   ├── ENGINEERING-NOTES.md · RUNBOOK.md · AI-USAGE.md          ✅ stubs (final content Phase 11–12)
-│   ├── TRIAGE.md                              ⏳ purpose unspecified (decide in #46)
-│   ├── adr/0001…0004-*.md                     ✅ stubs (the four ADRs the rubric requires)
-│   ├── evidence/                              ✅  ruleset JSON exports (Phase 00); screenshots, captures, charts (Phase 11)
-│   └── …governance documents (see DOCUMENT_INDEX.md)           ✅
-├── docx/                                      ✅ authoritative assignment source + transcription
-│   ├── ASSIGNMENT_SOURCE.pdf                  ✅ unchanged, SHA-256 in EXTRACTION_NOTES.md
-│   ├── ASSIGNMENT.md · EXTRACTION_NOTES.md    ✅ Phase 00
-│   └── assets/architecture-diagram.png        ✅ extracted from PDF page 3
-├── .github/
-│   ├── workflows/                             📁  Phase 10   ci.yml · cd.yml · release.yml  (ASG-REPO-017)
-│   ├── ISSUE_TEMPLATE/                        ✅ Phase 00
-│   └── pull_request_template.md               ✅ Phase 00
-├── compose.yaml · compose.prod.yaml · .env.example              ⏳ Phase 08  (ASG-REPO-018)
-├── .gitignore · .gitattributes                ✅ Phase 00
-├── README.md                                  ✅ placeholder; real README Phase 12   (ASG-REPO-019)
-├── LICENSE                                    ⏳ type not specified (decide in #55)
-├── CLAUDE.md · AGENTS.md · PROMPT.md · START_HERE.md            ✅ governance / execution framework
-```
+Additional implementation files include `scripts/k8s-up.sh`, `.github/workflows/k8s-quickstart.yml`, frontend theme tests, and this audit's `docs/FINAL_SUBMISSION_CHECKLIST.md`. The first two support the verified second deployment command; theme is an optional enhancement. `docx/` preserves the assignment source; governance documents record collaboration and decisions.
 
 ## Decisions recorded in Phase 00
 
@@ -67,31 +44,3 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 - Files the assignment lists (§5.7) must live at exactly those paths.
 - The four prompt/governance files at the root (`CLAUDE.md`, `AGENTS.md`, `PROMPT.md`, `START_HERE.md`) are kept for the duration of development. Phase 12 decides whether they stay in the submitted repository; they are also AI-usage evidence (ASG-DOC-025).
 - Nothing outside the §5.7 layout and `docs/`/`docx/` governance additions is added without a recorded reason.
-
-## Phase 02 audit against assignment §5.7
-
-Checked the tracked tree at `dev` commit `ca5dc93` with `git ls-files` and compared it with the literal paths in §5.7 (PDF pp25–26). A `.gitkeep` means the directory exists in Git, **not** that its required implementation exists. The repository root is the assignment's `civicpulse/` layout root. The extra `docx/` source and governance documents are documented Phase 00 additions, not substitutes for assignment paths.
-
-| Requirement | Present at this audit | Deviation and migration step | Owning package |
-|---|---|---|---|
-| `ASG-REPO-001` | `backend/app/{routes,services,repositories,providers}/` tracked as placeholders | Replace `.gitkeep` as the first real modules land; keep SQL in repositories. | #37–#40 |
-| `ASG-REPO-002` | `backend/app/providers/triage/` placeholder | Add `base`, `llm`, `ollama`, `rules`, `simulated`, `factory` modules. | #44–#46 |
-| `ASG-REPO-003` | `backend/alembic/versions/` placeholder | Add Alembic configuration and versioned migrations; no startup DDL. | #40 |
-| `ASG-REPO-004` | `backend/tests/` placeholder | Add the deterministic backend suite. | #39 |
-| `ASG-REPO-005` | Backend Dockerfile, `.dockerignore`, `pyproject.toml` absent | Add package configuration with the backend scaffold, then the image files. | #37, #47 |
-| `ASG-REPO-006` | `frontend/src/{components,pages,api}/` placeholders | Replace placeholders with the typed client, pages and components. | #34–#36 |
-| `ASG-REPO-007` | `frontend/tests/` placeholder | Add component tests. | #36 |
-| `ASG-REPO-008` | Frontend Dockerfile, `.dockerignore`, `nginx.conf`, `package.json` absent | Add the package with the scaffold and the image/proxy files in DevOps. | #34, #48 |
-| `ASG-REPO-009` | `k8s/base/` placeholder | Add namespace, backend, frontend, postgres, redis, ingress, configmap and secret-placeholder manifests. | #49 |
-| `ASG-REPO-010` | `k8s/base/` placeholder | Add HPA, VPA, PDB and base kustomization. | #49, #50 |
-| `ASG-REPO-011` | `k8s/overlays/{dev,prod}/` placeholders | Add each `kustomization.yaml`. | #49 |
-| `ASG-REPO-012` | `load/` placeholder | Add `k6-script.js`. | #50 |
-| `ASG-REPO-013` | `ENGINEERING-NOTES.md`, `RUNBOOK.md`, `AI-USAGE.md` exist; `TRIAGE.md` absent | Complete the existing documents and create `TRIAGE.md` once its purpose is decided. | #46, #53, #54 |
-| `ASG-REPO-014` | Four ADR files exist as stubs | Fill ADRs 0001–0004 with actual decisions and evidence in their owning packages. | #34, #46, #52 |
-| `ASG-REPO-015` | `docs/evidence/` contains ruleset JSON exports | Add the assignment's screenshots, captures and charts when the events can be demonstrated. | #53–#56 |
-| `ASG-REPO-016` | `scripts/` placeholder; `check_submission.py` absent | Write and run the script before submission. The instructor reportedly said it is optional to write; the team chose to do it. | #56 |
-| `ASG-REPO-017` | `.github/workflows/` placeholder | Add `ci.yml`, `cd.yml`, `release.yml`. | #51, #52 |
-| `ASG-REPO-018` | `.gitignore` exists; Compose files and `.env.example` absent | Add `compose.yaml`, `compose.prod.yaml` and the safe example environment file. | #47, #48 |
-| `ASG-REPO-019` | `README.md` exists as a placeholder; `LICENSE` absent | Complete the clean-clone README and choose a license with both contributors. | #55 |
-
-The missing files are scheduled work, not evidence that a feature already exists. The four ADR stubs and empty directories must not be counted as implemented behavior. The current issue owns this audit; the implementing issues own the actual files and their traceability status updates.
