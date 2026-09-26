@@ -21,11 +21,20 @@ def load_checker(root):
 
 
 def git(root, *args, author="Artfever"):
-    env = dict(os.environ, GIT_AUTHOR_NAME=author, GIT_COMMITTER_NAME=author,
-               GIT_AUTHOR_EMAIL="fixture@example.invalid", GIT_COMMITTER_EMAIL="fixture@example.invalid")
+    env = dict(
+        os.environ,
+        GIT_AUTHOR_NAME=author,
+        GIT_COMMITTER_NAME=author,
+        GIT_AUTHOR_EMAIL="fixture@example.invalid",
+        GIT_COMMITTER_EMAIL="fixture@example.invalid",
+    )
     return subprocess.run(  # noqa: S603
-        [shutil.which("git"), "-c", "commit.gpgsign=false", *args], cwd=root, env=env,
-        check=True, capture_output=True, text=True,
+        [shutil.which("git"), "-c", "commit.gpgsign=false", *args],
+        cwd=root,
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
     ).stdout.strip()
 
 
