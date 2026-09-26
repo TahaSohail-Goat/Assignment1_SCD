@@ -42,9 +42,10 @@ jobs:
           kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80 > /dev/null 2>&1 &
           forward_pid=$!
           trap 'kill "$forward_pid"' EXIT
+          curl -fsS --retry 30 --retry-delay 2 --retry-connrefused --retry-all-errors             -H 'Host: civicpulse.local' http://127.0.0.1:8080/api/stats -o /tmp/stats.json
           codes=""
           for i in $(seq 14); do
-            code="$(curl -s --retry 10 --retry-connrefused -o /dev/null -w '%{http_code}' -X POST \
+            code="$(curl -s --max-time 15 -o /tmp/response.txt -w '%{http_code}' -X POST \
               -H 'Host: civicpulse.local' -H 'Content-Type: application/json' \
               -d '{"text":"The tap in our lane has no water.","location":"Lane 3"}' \
               http://127.0.0.1:8080/api/complaints)"
