@@ -69,6 +69,7 @@ def test_groq_requests_strict_schema_delimits_untrusted_text_and_validates() -> 
     assert timeout == 10.0
     assert request.full_url == "https://api.groq.com/openai/v1/chat/completions"
     assert request.get_header("Authorization") == "Bearer example-only"
+    assert request.get_header("User-agent") == "CivicPulse/1.0"
     payload = json.loads(request.data or b"")
     assert payload["response_format"]["json_schema"]["strict"] is True
     assert payload["response_format"]["json_schema"]["schema"] == RESULT_SCHEMA

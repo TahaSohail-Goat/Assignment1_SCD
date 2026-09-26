@@ -1,0 +1,95 @@
+{
+    "model":  {
+                  "version":  {
+                                  "version":  "0.34.0"
+                              },
+                  "tags":  {
+                               "models":  [
+                                              {
+                                                  "name":  "gemma3:1b",
+                                                  "model":  "gemma3:1b",
+                                                  "modified_at":  "2026-09-26T17:06:16.21733383Z",
+                                                  "size":  815319791,
+                                                  "digest":  "8648f39daa8fbf5b18c7b4e6a8fb4990c692751d49917417b8842ca5758e7ffc",
+                                                  "details":  {
+                                                                  "parent_model":  "",
+                                                                  "format":  "gguf",
+                                                                  "family":  "gemma3",
+                                                                  "families":  [
+                                                                                   "gemma3"
+                                                                               ],
+                                                                  "parameter_size":  "999.89M",
+                                                                  "quantization_level":  "Q4_K_M"
+                                                              },
+                                                  "capabilities":  [
+                                                                       "completion"
+                                                                   ]
+                                              }
+                                          ]
+                           },
+                  "ps":  {
+                             "models":  [
+                                            {
+                                                "name":  "gemma3:1b",
+                                                "model":  "gemma3:1b",
+                                                "size":  880541695,
+                                                "digest":  "8648f39daa8fbf5b18c7b4e6a8fb4990c692751d49917417b8842ca5758e7ffc",
+                                                "details":  {
+                                                                "parent_model":  "",
+                                                                "format":  "gguf",
+                                                                "family":  "gemma3",
+                                                                "families":  [
+                                                                                 "gemma3"
+                                                                             ],
+                                                                "parameter_size":  "999.89M",
+                                                                "quantization_level":  "Q4_K_M"
+                                                            },
+                                                "expires_at":  "2026-09-26T17:12:20.812562889Z",
+                                                "size_vram":  0,
+                                                "context_length":  4096
+                                            }
+                                        ]
+                         }
+              },
+    "captured_at":  "2026-09-26T17:08:00.3645611Z",
+    "memory_peak_bytes":  1062825984,
+    "downloader_exit_code":  0,
+    "hardware":  {
+                     "ollama_cpu_limit":  2,
+                     "docker_vm_memory_bytes":  12418957312,
+                     "docker_version":  "29.8.0",
+                     "cpu":  "11th Gen Intel(R) Core(TM) i7-11800H @ 2.30GHz",
+                     "application_source":  "fb4384d02540e06ba61c6cbfa1e4e125eae31d47",
+                     "captured_at":  "2026-09-26T16:49:04.3709976Z",
+                     "ram_gib":  23.77,
+                     "logical_processors":  16,
+                     "cores":  8,
+                     "ollama_memory_limit":  "3GiB",
+                     "gpu_passthrough":  false,
+                     "compose_version":  "5.5.1",
+                     "background_clusters":  "Both existing project kind control-plane containers stopped for measurement; not deleted."
+                 },
+    "internal_network_is_internal":  true,
+    "ollama_networks":  [
+                            "civicpulse_internal"
+                        ],
+    "image_digests":  {
+                          "value":  [
+                                        "ollama/ollama@sha256:684d8674b4315fa18f4f0e973a118ec2652ed96f67563277839985175858e0ba"
+                                    ],
+                          "Count":  1
+                      },
+    "memory_after_run":  {
+                             "BlockIO":  "41kB / 0B",
+                             "CPUPerc":  "0.02%",
+                             "Container":  "civicpulse-ollama-1",
+                             "ID":  "0701ead32624",
+                             "MemPerc":  "31.88%",
+                             "MemUsage":  "979.2MiB / 3GiB",
+                             "Name":  "civicpulse-ollama-1",
+                             "NetIO":  "81kB / 38.5kB",
+                             "PIDs":  "36"
+                         },
+    "memory_note":  "cgroup memory.peak is lifetime charged memory, including page cache; docker stats is a working-set snapshot after the run.",
+    "zdr_confirmation":  "Artfever confirmed ZDR is enabled in this conversation before the first hosted request, 2026-09-26."
+}

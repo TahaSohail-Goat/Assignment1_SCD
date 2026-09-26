@@ -233,3 +233,16 @@ def test_production_compose_uses_only_images_and_keeps_data_ports_private() -> N
         assert "build" not in service
     for name in ("backend", "frontend", "migrate"):
         assert "${IMAGE_TAG:" in services[name]["image"]
+
+
+@pytest.mark.parametrize("filename", ["compose.yaml", "compose.prod.yaml"])
+def test_model_downloader_passes_the_whole_script_to_shell_c(filename: str) -> None:
+    service = yaml.safe_load((REPOSITORY / filename).read_text())["services"]["ollama-pull"]
+    assert service["entrypoint"] == ["/bin/sh", "-c"]
+    # Compose shell-splits a scalar command; sh -c would execute only its first word.
+    # A single argv element must preserve the readiness loop AND model download.
+    command = service["command"]
+    assert isinstance(command, list) and len(command) == 1
+    assert "ollama serve &" in command[0]
+    assert "ollama list" in command[0]
+    assert 'ollama pull "$${OLLAMA_MODEL}"' in command[0]

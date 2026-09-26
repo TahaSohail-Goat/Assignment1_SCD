@@ -46,4 +46,8 @@ security updates. No size reduction is claimed beyond the measured value.
 The same CI run's `integration` job executed
 `docker compose exec -T frontend ping -c 1 -W 2 database` and captured
 `ping: bad address 'database'`. The step required a name-lookup failure and passed.
-The video demonstration remains pending. Docker is unavailable on Artfever's local machine.
+The video demonstration remains pending. Docker was unavailable on Artfever's machine
+at this original capture. Update (2026-09-26): Docker 29.8.0 and Compose 5.5.1 now
+run locally; see the separate [live provider comparison](provider-comparison-README.md)
+and [environment capture](provider-comparison-environment.json). The image/context sizes
+above remain the historical CI measurements, not newly measured local sizes.
