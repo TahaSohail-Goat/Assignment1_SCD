@@ -67,3 +67,21 @@ def test_history_scan_detects_deleted_secret_in_documentation_and_tests(tmp_path
     history = [row for row in checker.results if "all tracked paths" in row[1]]
     assert history[0][0] == checker.FAIL
     assert marker not in str(checker.results)
+
+
+def test_checklist_requires_unique_status_for_every_requirement(tmp_path):
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "ASSIGNMENT_TRACEABILITY.md").write_text("| ASG-K8S-005 | requirement |\n")
+    checker = load_checker(tmp_path)
+    checker.check_documents()
+    assert checker.results[0][0] == checker.FAIL
+    checklist = docs / "FINAL_SUBMISSION_CHECKLIST.md"
+    checklist.write_text("| ASG-K8S-005 | BLOCKED | waiting |\n")
+    checker.results.clear()
+    checker.check_documents()
+    assert checker.results[0][0] == checker.PASS  # completeness is not readiness
+    checklist.write_text("| ASG-K8S-005 | PASS | done |\n" * 2)
+    checker.results.clear()
+    checker.check_documents()
+    assert checker.results[0][0] == checker.FAIL
