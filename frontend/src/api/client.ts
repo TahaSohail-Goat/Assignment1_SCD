@@ -22,6 +22,7 @@ export class ApiError extends Error {
   constructor(
     readonly status: number,
     readonly body: ApiErrorBody | null,
+    readonly retryAfter: string | null = null,
   ) {
     super(body?.error.message ?? `Request failed (${status})`)
     this.name = 'ApiError'
@@ -36,7 +37,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<{ data: T; 
   const body: unknown = await response.json().catch(() => null)
   if (!response.ok) {
     const errorBody = isApiErrorBody(body) ? body : null
-    throw new ApiError(response.status, errorBody)
+    throw new ApiError(response.status, errorBody, response.headers.get('Retry-After'))
   }
   return { data: body as T, response }
 }
@@ -61,13 +62,13 @@ export async function getComplaint(id: string): Promise<Complaint> {
   return (await request<Complaint>(`/api/complaints/${encodeURIComponent(id)}`)).data
 }
 
-export async function listComplaints(filters: ComplaintFilters = {}): Promise<ComplaintPage> {
+export async function listComplaints(filters: ComplaintFilters = {}, signal?: AbortSignal): Promise<ComplaintPage> {
   const params = new URLSearchParams()
   for (const [key, value] of Object.entries(filters)) {
     if (value !== undefined) params.set(key, String(value))
   }
   const query = params.size ? `?${params}` : ''
-  return (await request<ComplaintPage>(`/api/complaints${query}`)).data
+  return (await request<ComplaintPage>(`/api/complaints${query}`, { signal })).data
 }
 
 export async function updateStatus(id: string, status: Status): Promise<Complaint> {

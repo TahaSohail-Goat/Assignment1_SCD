@@ -57,7 +57,10 @@ export default function Submit() {
     } catch (error) {
       if (error instanceof ApiError) {
         setErrors(serverFieldErrors(error))
-        setFailure(error.message)
+        const retryAfter = error.retryAfter?.trim()
+        setFailure(error.status === 429 && retryAfter && /^\d+$/.test(retryAfter)
+          ? `${error.message} Retry after ${retryAfter} seconds.`
+          : error.message)
       } else {
         setFailure('Could not reach the service. Please try again.')
       }

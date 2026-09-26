@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import Dashboard from './pages/Dashboard'
+import Stats from './pages/Stats'
 import Submit from './pages/Submit'
+import ErrorBoundary from './components/ErrorBoundary'
 import './app.css'
 
 type View = 'submit' | 'dashboard' | 'stats'
@@ -23,11 +25,11 @@ export default function App() {
             onClick={() => setView('stats')}>Stats</button>
         </nav>
       </header>
-      <main>
+      <main><ErrorBoundary>
         {view === 'submit' && <Submit />}
         {view === 'dashboard' && <Dashboard />}
-        {view === 'stats' && <section><h2>Stats</h2><p>Aggregate statistics will appear here.</p></section>}
-      </main>
+        {view === 'stats' && <Stats />}
+      </ErrorBoundary></main>
     </div>
   )
 }
