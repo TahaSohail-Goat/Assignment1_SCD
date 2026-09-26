@@ -37,6 +37,9 @@ complaints and waits for healthy services. Existing `.env` values are preserved.
 }
 ```
 
+On macOS or Linux the same start is `cp .env.example .env && docker compose up -d --build --wait` (this is
+exactly what the `integration` job of [`ci.yml`](.github/workflows/ci.yml) runs on a clean runner on every pull request).
+
 Open **http://localhost:8080**; API docs are at **http://localhost:8000/docs**.
 Default triage is deterministic `rules`: no key or model download is required. The default
 stack has four running services plus the completed migration/seed container. Optional
@@ -153,6 +156,12 @@ context in kubeconfig. The insecure kubelet TLS flag is for disposable kind only
 **Off** (recommendations); HPA controls 2–10 backend replicas. Metrics need time to appear.
 This is a fresh-deployment recipe; local `:dev` tags are not a production release strategy.
 
+On macOS or Linux (or Git Bash) `bash scripts/k8s-up.sh` does all of the above, uses local port 8090 by default
+(`INGRESS_PORT`; it fails at once if the port is taken and checks that its smoke request appears in the Ingress
+controller log), and is proven on a clean runner by the [`k8s-quickstart`](.github/workflows/k8s-quickstart.yml)
+workflow, which also checks the shared rate limit across both backend replicas and that deleting the database pod
+keeps every row.
+
 In another terminal, expose the Ingress:
 
 ```powershell
@@ -245,9 +254,7 @@ Use real output in this recording plan:
 | 4:30–5:00 | Both | CI/CD gates and real contribution totals |
 
 Before final submission: record/upload the video, finish the live hosted-versus-Ollama
-comparison in [AI.md](docs/AI.md), merge the proposed MIT LICENSE in
-[PR #99](https://github.com/TahaSohail-Goat/Assignment1_SCD/pull/99) after review, and
-complete Taha's final audit/release package (#56). Recheck the 35% minimum contribution share on the final branch; current
+comparison in [AI.md](docs/AI.md), complete Taha's final audit/release package (#56; the MIT [`LICENSE`](LICENSE) is in). Recheck the 35% minimum contribution share on the final branch; current
 main does not meet it. Only genuine authored work counts. The speaking split above follows
 [the team agreement](docs/TEAM_CONTRIBUTION.md). A passing build alone does not complete these items.
 
@@ -259,4 +266,4 @@ main does not meet it. Only genuine authored work counts. The speaking split abo
 
 Read [AGENTS.md](AGENTS.md). Work through assigned issue → `feature/<n>-<slug>` from `dev`
 → partner-reviewed PR into `dev` → merge-commit promotion to protected `main`.
-The MIT LICENSE is proposed in #99 and is not present on this branch yet.
+Licensed under the [MIT License](LICENSE).

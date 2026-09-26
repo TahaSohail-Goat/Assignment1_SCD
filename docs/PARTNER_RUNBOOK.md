@@ -121,7 +121,7 @@ Repeat for each issue. Codex does all of it under your login; you read the diff 
      --assignee "@me" --reviewer TahaSohail-Goat
    ```
    The body says `Related issue: #<n>` (not `Closes`; issues close through the `dev` → `main` PR). Add your AI-USAGE row in this same PR.
-10. **Handle the review.** Answer every comment, push fixes, resolve threads. A new push dismisses earlier approvals (the ruleset does that on purpose).
+10. **Handle the review.** Answer every comment and push fixes. A new push no longer dismisses an approval.
 11. **Merge after approval:** `gh pr merge <n> --rebase` (or `--merge`). **Never `--squash`** (it is disabled and would erase per-author commit counts). Then delete your branch: `git push origin --delete feature/<n>-<slug>` and `git branch -d feature/<n>-<slug>`.
 12. **Repeat** from step 1 for the next issue. Post a short comment on the issue with the merged PR link.
 
@@ -166,7 +166,7 @@ When every sub-issue of a phase is merged into `dev`: one contributor opens `gh 
 | `gh: command not found` after install | Open a new terminal (PATH is read at start). |
 | Push to `dev`/`main` rejected | Expected — open a PR from a `feature/*` branch. |
 | PR shows *Review required* | The other contributor must approve; authors cannot approve their own PR. |
-| Approval disappeared | You pushed after it (stale approvals are dismissed); ask for a re-review. |
+| The merge is blocked although nobody objects | A review that requested changes stays until its author approves or dismisses it: ask for a re-review. |
 | Commit message split or a commit "did not match any file" | Quoting broke `-m`; use `git commit -F msg.txt`. |
 | CRLF warnings | The repo's `.gitattributes` forces LF; do not override it in your editor. |
 | `gh auth status` shows the wrong account | Stop. `gh auth switch` to `Artfever` or log in again **before** any write. |
@@ -183,7 +183,7 @@ REPOSITORY
 https://github.com/TahaSohail-Goat/Assignment1_SCD (clone it into the current folder if it is not already there: gh repo clone TahaSohail-Goat/Assignment1_SCD). The source of truth is docx/ASSIGNMENT.md, a faithful transcription of docx/ASSIGNMENT_SOURCE.pdf. Never invent a requirement, number, endpoint or field. If the assignment does not say something, write it down as an open question instead.
 
 CURRENT STATE (2026-09-25; check it, it may have moved)
-- Branches: main (protected) <- dev (protected) <- feature/<issue-number>-<slug>. No direct commits or pushes to main or dev. Every change is a pull request with base dev. Squash merge is disabled (use rebase or merge commit). A PR needs one approval from the OTHER contributor; authors cannot approve their own PR.
+- Branches: main (protected) <- dev (protected) <- feature/<issue-number>-<slug>. No direct commits or pushes to main or dev. Every change is a pull request with base dev. Squash merge is disabled (use rebase or merge commit). A PR into `main` needs one approval from the OTHER contributor; authors cannot approve their own PR. A PR into `dev` needs no approval, but ask for the review.
 - Open PRs waiting for MY review: #11 (branch model, protection, docs/PARTNER_RUNBOOK.md), #19 (PRD), #20 (FR index + entry template + API catalog).
 - My Phase 01 issues, in this order: #16 NFR catalog, #17 use cases, #14 frontend FR catalog. I start them only after PR #11 is merged into dev. Read each issue's acceptance criteria with: gh issue view <n>
 

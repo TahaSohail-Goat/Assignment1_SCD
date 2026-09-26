@@ -2,7 +2,7 @@
 # CivicPulse backend image (ASG-DEVOPS-001..007). Build context: backend/  (docker build backend)
 
 # ---- builder: installs the pinned dependencies into a virtual environment --------------------
-FROM python:3.12.14-slim-bookworm AS builder
+FROM python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e AS builder
 
 ENV PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -16,7 +16,7 @@ COPY requirements.txt ./
 RUN pip install -r requirements.txt
 
 # ---- runtime: the venv and the source, no build tools, not root ----------------------------------
-FROM python:3.12.14-slim-bookworm AS runtime
+FROM python:3.12.14-slim-bookworm@sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e AS runtime
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
