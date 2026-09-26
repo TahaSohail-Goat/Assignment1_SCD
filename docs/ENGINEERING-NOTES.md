@@ -58,7 +58,8 @@ a live model on every call. `backend/app/services/triage.py:115` revalidates pro
 `:108` bounds a call with a timeout; `:96` limits retry; `:79` uses validated rules fallback.
 The service records who triaged the complaint and does not let arbitrary model fields bypass
 its schema. Schema validity alone does not establish semantic quality: the hosted/offline
-comparison below is still pending.
+comparison below records real category errors and unsupported summary details despite
+schema-valid results.
 
 CI's backend job sets `TRIAGE_PROVIDER: simulated` (`.github/workflows/ci.yml:82`), while its
 Compose integration selects rules (`:317`, locate the `TRIAGE_PROVIDER=rules` substitution).
@@ -169,9 +170,39 @@ all troubleshooting work. No exact start/end time is claimed.
 
 ## Hosted provider evidence (issue #45, 2026-09-25)
 
-The chosen Groq model is `openai/gpt-oss-20b` in `backend/app/providers/triage/llm.py`. Groq's [rate-limit table](https://console.groq.com/docs/rate-limits) listed 30 requests/minute, 1,000 requests/day, 8,000 tokens/minute and 200,000 tokens/day on its free plan when checked on 2026-09-25. Its [structured-output guide](https://console.groq.com/docs/structured-outputs) lists this model for strict JSON-schema output. These are published limits, not a measurement against an Artfever account; a live quota check and hosted call are still pending. `docs/AI.md` records the data-control and Ollama sources as well.
+The chosen Groq model is `openai/gpt-oss-20b` in `backend/app/providers/triage/llm.py`. Groq's [rate-limit table](https://console.groq.com/docs/rate-limits), rechecked on 2026-09-26, lists 30 requests/minute, 1,000 requests/day, 8,000 tokens/minute and 200,000 tokens/day on its free plan. Its [structured-output guide](https://console.groq.com/docs/structured-outputs) lists this model for strict JSON-schema output. Live successful response headers in #112 reported 1,000 requests/day and 8,000 tokens/minute; the other two limits are published, not independently exhausted or verified. Artfever confirmed ZDR before hosted calls. `docs/AI.md` records the data-control and Ollama sources as well.
 
-The offline model is `gemma3:1b` in `backend/app/providers/triage/ollama.py`. No hosted-versus-Ollama latency or quality comparison has been run. When both services are available, use the same synthetic complaint set, record each category/priority and elapsed time, and report the actual values here.
+### Live comparison (2026-09-26, issue #112)
+
+The [reproducible report and raw responses](evidence/provider-comparison-README.md)
+record two rounds of 12 identical synthetic complaints, no Redis cache, and the
+unchanged production timeout/retry/fallback policy. Expected labels were fixed
+before running; they are experiment judgments, not an assignment-defined priority
+policy. The report retains the initial calls separately and discloses all failures.
+
+| Measure | Groq `openai/gpt-oss-20b` | Ollama `gemma3:1b` |
+|---|---:|---:|
+| Valid model responses / requests | 24/24 | 22/24 |
+| Category matches / valid responses | 24/24 | 11/22 |
+| Priority matches / valid responses | 20/24 | 15/22 |
+| Median service latency, including retries | 663 ms | 18,299.5 ms |
+| Rules fallbacks | 0 | 2 |
+
+Ollama ran CPU-only with a two-core / 3 GiB cap; actual memory was about 1 GiB.
+The initial 17,709 ms call required a retry. Most later calls also needed the retry;
+the ten-second cap applies to each attempt, so two attempts can take about twenty
+seconds. The much smaller offline model used no hosted key or external inference
+route, but misclassified electrical complaints and sometimes invented summary
+details such as an underground testing zone. Groq's category agreement was higher,
+but its four priority disagreements show that JSON schema does not define urgency.
+Neither these 24 observations nor assistant-authored labels establish general accuracy.
+
+Execution also exposed two real integration defects: Compose split the downloader
+shell script, leaving the model volume empty, and this connection rejected Groq's
+default urllib user-agent with 403. Both are fixed with regressions; the rejected
+requests are retained separately and excluded from model-quality conclusions.
+Actual API POST/GET/metadata checks demonstrate `llm:groq`, `llm:ollama` and a safe
+persisted `rules:fallback` outcome. The demo video remains pending.
 ## Redis volume decision (issue #43)
 
 `compose.yaml` enables Redis AOF and mounts `redisdata` at `/data`. The stats and triage cache values can be rebuilt, but rebuilding them immediately after a restart adds database and provider load. The rate-limit counters matter more: losing them grants each caller a fresh allowance and can produce a burst against the hosted model. AOF with `appendfsync everysec` preserves recent counters across ordinary restarts, with up to roughly one second of acknowledged writes still at risk on a crash. The counter implementation and exact admission behavior are documented in `docs/CACHE.md` Job 2.
