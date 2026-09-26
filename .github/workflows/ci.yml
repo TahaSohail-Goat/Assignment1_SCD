@@ -388,6 +388,8 @@ jobs:
           docker compose logs --tail 50 backend | grep -F '"request_id": "runbook-check"'             || docker compose logs --tail 50 backend | grep -F 'runbook-check'
           docker compose run --rm migrate alembic current
           docker compose run --rm migrate alembic upgrade head
+          docker compose run --rm migrate python -m app.seed | tee /tmp/seed.txt
+          grep -q '0 new complaints; 30 defined' /tmp/seed.txt
           curl -fsS -X POST "$API/api/complaints" -H 'Content-Type: application/json'             -d '{"text":"Garbage has not been collected from our street for a week.","location":"Ward 4"}' > /dev/null
           curl -si "$API/api/stats" | grep -i '^x-cache'
           docker compose exec -T cache redis-cli TTL stats:v1
