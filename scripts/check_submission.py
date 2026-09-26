@@ -130,12 +130,12 @@ def check_secrets() -> None:  # ASG-DED-001, -20
         ", ".join(sorted(set(history))),
     )
     if (ROOT / ".git").exists():
-        leaked = git("log", "--all", "--oneline", "-G", SECRET_CONTENT.pattern, "--", ".",
-                     ":(exclude)scripts/check_submission.py", ":(exclude)*.md",
-                     ":(exclude)backend/tests")
+        # Inspect every tracked path, including deleted documentation and tests.
+        # Print only commit IDs: commit subjects themselves may contain secrets.
+        leaked = git("log", "--all", "--format=%H", "-G", SECRET_CONTENT.pattern, "--", ".")
         record(
             FAIL if leaked.strip() else PASS,
-            "DED-001 no credential pattern in Git history (code, config)",
+            "DED-001 no credential pattern in Git history (all tracked paths)",
             leaked.strip().replace("\n", "; ")[:300],
         )
     ignore = read(".gitignore").splitlines()
