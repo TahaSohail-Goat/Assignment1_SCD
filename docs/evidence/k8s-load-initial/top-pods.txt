@@ -1,0 +1,11 @@
+NAME                       CPU(cores)   MEMORY(bytes)   
+backend-8667958cc5-5rcr2   3m           76Mi            
+backend-8667958cc5-8xgm7   3m           65Mi            
+backend-8667958cc5-bsfgl   2m           65Mi            
+backend-8667958cc5-lnwhb   3m           65Mi            
+backend-8667958cc5-mjw57   2m           84Mi            
+backend-8667958cc5-vrxlj   2m           65Mi            
+cache-68bcf6cffd-frkl4     7m           4Mi             
+database-0                 5m           59Mi            
+frontend-b985b4cd6-rm5qm   1m           2Mi             
+frontend-b985b4cd6-s5jzd   1m           3Mi             

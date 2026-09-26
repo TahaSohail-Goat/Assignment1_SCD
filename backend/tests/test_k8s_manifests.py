@@ -38,6 +38,30 @@ def _containers(workload: dict[str, Any]) -> list[dict[str, Any]]:
     return [*spec.get("initContainers", []), *spec["containers"]]
 
 
+def test_backend_hpa_uses_assignment_cpu_target_and_stabilization_windows() -> None:
+    hpa = _one("HorizontalPodAutoscaler", "backend-hpa")
+    assert hpa["apiVersion"] == "autoscaling/v2"
+    spec = hpa["spec"]
+    assert spec["scaleTargetRef"] == {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "backend",
+    }
+    assert (spec["minReplicas"], spec["maxReplicas"]) == (2, 10)
+    assert spec["metrics"][0]["resource"] == {
+        "name": "cpu",
+        "target": {"type": "Utilization", "averageUtilization": 60},
+    }
+    assert spec["behavior"]["scaleDown"]["stabilizationWindowSeconds"] == 300
+    assert spec["behavior"]["scaleUp"]["stabilizationWindowSeconds"] == 0
+
+
+def test_vpa_recommends_without_automatically_changing_hpa_cpu_denominator() -> None:
+    vpa = _one("VerticalPodAutoscaler", "backend-vpa")
+    assert vpa["spec"]["targetRef"]["name"] == "backend"
+    assert vpa["spec"]["updatePolicy"]["updateMode"] == "Off"
+
+
 def test_everything_lives_in_the_civicpulse_namespace() -> None:
     namespaced = [o for o in OBJECTS if o["kind"] != "Namespace"]
 

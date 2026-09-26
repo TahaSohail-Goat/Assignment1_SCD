@@ -1,0 +1,14 @@
+{
+  "started_utc": "2026-09-26T06:06:22.633209+00:00",
+  "rate": "50",
+  "hold": "180s",
+  "context": "kind-civicpulse",
+  "base_url": "http://frontend",
+  "k6_image": "grafana/k6:2.2.0",
+  "source_commit": "b442e8d6b68e6a3af778f4eda48be3c6641a3da1",
+  "workload_sha256": "2dfd13bd88829bc82492ba3049d9321aa9cec841831510ef27cedcf66b0a4866",
+  "rollout_image": "civicpulse-backend:rollout-b442e8d",
+  "k6_exit_code": 0,
+  "finished_utc": "2026-09-26T06:10:18.809210+00:00",
+  "raw_k6_sha256": "c690317e2e4a5fb8426f1510a1892cae151f72c1705e934d5a2e77c350779240"
+}

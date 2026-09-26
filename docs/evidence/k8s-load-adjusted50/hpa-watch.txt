@@ -1,0 +1,17 @@
+NAME          REFERENCE            TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+backend-hpa   Deployment/backend   cpu: <unknown>/60%   2         10        2          31s
+backend-hpa   Deployment/backend   cpu: 2%/60%          2         10        2          35s
+backend-hpa   Deployment/backend   cpu: 4%/60%          2         10        2          50s
+backend-hpa   Deployment/backend   cpu: 12%/60%         2         10        2          65s
+backend-hpa   Deployment/backend   cpu: 40%/60%         2         10        2          80s
+backend-hpa   Deployment/backend   cpu: 41%/60%         2         10        2          95s
+backend-hpa   Deployment/backend   cpu: 46%/60%         2         10        2          110s
+backend-hpa   Deployment/backend   cpu: <unknown>/60%   2         10        2          2m5s
+backend-hpa   Deployment/backend   cpu: 41%/60%         2         10        2          2m20s
+backend-hpa   Deployment/backend   cpu: 44%/60%         2         10        2          2m35s
+backend-hpa   Deployment/backend   cpu: 42%/60%         2         10        2          2m50s
+backend-hpa   Deployment/backend   cpu: 45%/60%         2         10        2          3m5s
+backend-hpa   Deployment/backend   cpu: 52%/60%         2         10        2          3m20s
+backend-hpa   Deployment/backend   cpu: 53%/60%         2         10        2          3m35s
+backend-hpa   Deployment/backend   cpu: 46%/60%         2         10        2          3m50s
+backend-hpa   Deployment/backend   cpu: 42%/60%         2         10        2          4m5s
