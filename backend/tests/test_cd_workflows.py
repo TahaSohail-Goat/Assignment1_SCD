@@ -51,3 +51,16 @@ def test_production_compose_pulls_the_same_registry_namespace() -> None:
         image = compose["services"][service]["image"]
         assert image.startswith("ghcr.io/tahasohail-goat/civicpulse-")
         assert "${IMAGE_TAG:?" in image
+
+
+def test_ingress_readiness_does_not_depend_on_a_garbage_collected_job() -> None:
+    workflow = yaml.safe_load((ROOT / ".github/workflows/cd.yml").read_text())
+    steps = workflow["jobs"]["deploy-k8s"]["steps"]
+    install = next(
+        s["run"] for s in steps if s.get("name") == "Install ingress and autoscaling prerequisites"
+    )
+    # The pinned upstream manifests set ttlSecondsAfterFinished=0. Its persistent
+    # webhook CA configuration is observable even after the admission Job disappears.
+    assert "wait --for=condition=complete job/ingress-nginx-admission-patch" not in install
+    assert "wait --for=jsonpath='{.webhooks[0].clientConfig.caBundle}'" in install
+    assert "validatingwebhookconfiguration/ingress-nginx-admission" in install
