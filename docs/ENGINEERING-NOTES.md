@@ -136,8 +136,9 @@ kubectl wait --for=jsonpath='{.webhooks[0].clientConfig.caBundle}' validatingweb
 On the local kind cluster the setup Job was absent while this replacement wait succeeded.
 `backend/tests/test_cd_workflows.py` adds a regression check against returning to the old
 Job wait. Taha approved the fix, all ten CI checks passed, and it was merged into dev.
-Promotion PR #98 must reach main before CD can run the corrected workflow; rerunning the
-old SHA would preserve the failure. The lesson is to test persistent readiness state, rather
+Promotion PR #98 is merged as main commit `8074879`. The corrected
+[CD run 36230267941](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941)
+is being checked; rerunning the old SHA would preserve the failure. The lesson is to test persistent readiness state, rather
 than assuming a short-lived installer object survives long enough to inspect.
 
 **Duration limit.** The diagnostic record supports this failure and its correction, but does
