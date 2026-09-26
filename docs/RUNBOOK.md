@@ -96,16 +96,49 @@ docker compose exec cache redis-cli CONFIG GET appendonly
 `TTL` shows the seconds left; `-2` means the key is absent. If Redis is down the API still answers
 (stats come from PostgreSQL as a `MISS`).
 
-## 8. Rate-limit diagnosis
+## 8. Rate-limit diagnosis (checked in CI)
 
-Pending: the limiter arrives with issue #43.
+`POST /api/complaints` is limited per client address (10 requests per 60 seconds by default;
+`RATE_LIMIT_REQUESTS`, `RATE_LIMIT_WINDOW_SECONDS`). The counter lives in Redis, so every backend
+replica shares it. A blocked caller gets `429` with a `Retry-After` header before the body is even
+validated; `GET` requests are never limited.
 
-## 9. LLM failure diagnosis
+```
+for i in $(seq 12); do curl -s -o /dev/null -w '%{http_code} ' -X POST http://localhost:8000/api/complaints \
+  -H 'Content-Type: application/json' -d '{"text":"The tap in our lane has no water.","location":"Lane 3"}'; done
+curl -si -X POST http://localhost:8000/api/complaints -H 'Content-Type: application/json' -d '{}' | grep -i -E '^HTTP|^retry-after'
+docker compose exec cache redis-cli --scan --pattern 'rate:*'
+curl -s http://localhost:8000/metrics | grep rate_limited
+```
 
-Pending: the hosted and Ollama providers arrive with issue #45 and the orchestration log fields are
-in `docs/AI.md`. What holds now: a provider failure never fails a request; the complaint is stored
-with `triaged_by="rules:fallback"` and one WARNING carries `complaint_id`, `provider`,
-`error_class`.
+The first calls answer `201`, later ones `429`; the keys are hashes of the address plus the window
+number, and they expire on their own. If everybody is limited at once, the proxy address is being
+counted instead of the client's: check `TRUST_FORWARDED_FOR` (it must be `true` behind the nginx
+frontend or the Ingress, and the proxy must overwrite `X-Forwarded-For`). If Redis is down the limiter
+lets requests through and logs one warning: it fails open on purpose.
+
+## 9. LLM failure diagnosis (checked in CI)
+
+A provider failure never fails a request. The complaint is stored with `triaged_by="rules:fallback"`
+and exactly one WARNING carries `complaint_id`, `provider` and `error_class`. To see it happen with the
+real Compose stack, point the backend at the hosted provider with a key that cannot work:
+
+```
+TRIAGE_PROVIDER=llm GROQ_API_KEY=not-a-real-key docker compose up -d backend
+curl -s -X POST http://localhost:8000/api/complaints -H 'Content-Type: application/json' \
+  -d '{"text":"The street light on our lane has been out for a week.","location":"Lane 3"}'
+docker compose logs --tail 20 backend | grep -i fallback
+curl -s http://localhost:8000/api/meta/providers
+```
+
+The response is `201` with `"triaged_by": "rules:fallback"`, the log line names the provider and the
+error class (`ProviderRequestError` for a rejected key, `ProviderTimeoutError`, `ProviderRateLimitedError`
+or `ProviderServerError` for the retryable failures, which are retried once with jitter first), and
+`/api/meta/providers` lists the outcome with `"fallback": true`. Reading the failure: a rejected key is
+never retried; repeated timeouts mean the provider or the network is slow (the call is cut at 10 s);
+`MalformedOutputError` means the model answered outside the schema, which is validated and refused.
+To switch providers, set `TRIAGE_PROVIDER` (`rules`, `simulated`, `llm`, `ollama`) and restart the
+backend; the offline path is `docker compose --profile offline up`. Details: `docs/TRIAGE.md`, `docs/AI.md`.
 
 ## 10. Compose deployment (checked in CI)
 
@@ -118,9 +151,27 @@ The stack has two networks: `edge` (published) and `internal` (`internal: true`,
 Only `backend` is on both; `database` and `cache` publish no port. Data survives
 `docker compose down` because it lives in the named volumes `pgdata` and `redisdata`.
 
-## 11–12. Kubernetes deployment, HPA and VPA
+## 11–12. Kubernetes deployment, HPA and VPA (checked in CI)
 
-Pending: written from the commands of issues #49, #50 and #52.
+Local cluster, one command (needs docker, kind and kubectl; the `k8s-quickstart` workflow runs it on a
+clean runner):
+
+```
+bash scripts/k8s-up.sh
+kubectl -n civicpulse get pods
+kubectl -n civicpulse get hpa
+kubectl -n civicpulse describe vpa backend-vpa
+kubectl -n civicpulse rollout status deployment/backend
+```
+
+The script creates the Secret out of band (a random password); nothing secret is in the manifests. To
+deploy the published images instead, `cd.yml` does the same against an ephemeral cluster with the image
+tag set to the commit SHA. **HPA:** `backend-hpa` scales the backend between 2 and 10 replicas on 60 %
+CPU; it needs the CPU *request* of the backend as its denominator (`k8s/base/backend.yaml`), and
+metrics-server must be running (`kubectl top pods -n civicpulse`). **VPA:** `backend-vpa` only
+recommends (`updateMode: "Off"`); read `Lower Bound`, `Target` and `Upper Bound` from `describe vpa`,
+change the requests in the manifest by hand and re-run the load test (`load/k6-script.js`, GET only:
+`POST` would measure the rate limiter). The measured run is in `docs/evidence/k8s-load-README.md`.
 
 ## 13. Rollback
 
@@ -161,7 +212,8 @@ Undo plus rollout verification and ingress smoke took **0.18 seconds**; restorin
 overlay took **0.94 seconds**. Both `/` and `/api/stats` returned 200 before and after each
 recovery. These timings apply to a rejected image rollout with healthy previous pods, not
 every possible outage. Images were built locally, tagged with the full `b442e8d` source SHA
-and loaded into kind; GHCR publishing and the successful main-branch CD run are still pending.
+and loaded into kind. Since then the main-branch CD run has published both images to GHCR by SHA and
+deployed those digests ([run 36230267941](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941)).
 The required video of both methods and explanations must still be recorded by the partners.
 
 ## 14. Incident response (Compose)

@@ -1,0 +1,74 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260926140358
+Username: MSI\msi
+RunAs User: MSI\msi
+Configuration Name: 
+Machine: MSI (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -Command try { [Console]::OutputEncoding=[System.Text.Encoding]::UTF8 } catch {}
+$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')
+$env:COMPOSE_PROJECT_NAME='civicpulse-readme55'
+$env:FRONTEND_PORT='18080'
+$env:BACKEND_PORT='18000'
+Start-Transcript -Path 'D:\University Work\Semester 5\SCD\Assignment 1\Assignment1_SCD\docs\evidence\screenshots-clean-clone-log.txt'
+git rev-parse HEAD
+docker compose ps -a
+docker compose logs migrate
+Invoke-RestMethod http://localhost:18000/ready | ConvertTo-Json
+Invoke-RestMethod 'http://localhost:18080/api/complaints?page_size=1' | ConvertTo-Json -Depth 4
+(Invoke-WebRequest -UseBasicParsing http://localhost:18080/api/stats).Headers['X-Cache']
+(Invoke-WebRequest -UseBasicParsing http://localhost:18080/api/stats).Headers['X-Cache']
+docker compose exec -T frontend ping -c 1 database
+if ($LASTEXITCODE -eq 0) { throw 'Unexpected database reachability' }
+docker compose run --rm migrate python -m app.seed
+Stop-Transcript
+Process ID: 21900
+PSVersion: 5.1.26100.9444
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9444
+BuildVersion: 10.0.26100.9444
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\University Work\Semester 5\SCD\Assignment 1\Assignment1_SCD\docs\evidence\screenshots-clean-clone-log.txt
+
+
+
+{
+    "status":  "ready",
+    "checks":  {
+                   "postgres":  "ok",
+                   "redis":  "ok"
+               }
+}
+{
+    "items":  [
+                  {
+                      "id":  "013038a4-3e5b-5b09-937f-f433c2e4cc6f",
+                      "text":  "Footpath tiles are uneven near the library, kindly repair them.",
+                      "location":  "Ward 1, Library Walk",
+                      "reporter_contact":  null,
+                      "category":  "roads",
+                      "priority":  "low",
+                      "status":  "open",
+                      "ai_summary":  null,
+                      "triaged_by":  "rules",
+                      "triage_latency_ms":  0,
+                      "created_at":  "2026-09-26T09:03:00.621365Z",
+                      "updated_at":  "2026-09-26T09:03:00.621365Z"
+                  }
+              ],
+    "total":  30,
+    "page":  1,
+    "page_size":  1
+}
+MISS
+HIT
+
+
+**********************
+Windows PowerShell transcript end
+End time: 20260926140409
+**********************

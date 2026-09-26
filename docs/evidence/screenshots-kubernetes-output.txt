@@ -1,0 +1,102 @@
+Captured UTC: 2026-09-26T09:17:28.174425+00:00
+Exit code: 0
+
+node/civicpulse-demo-control-plane not labeled
+namespace/ingress-nginx unchanged
+serviceaccount/ingress-nginx unchanged
+serviceaccount/ingress-nginx-admission unchanged
+role.rbac.authorization.k8s.io/ingress-nginx unchanged
+role.rbac.authorization.k8s.io/ingress-nginx-admission unchanged
+clusterrole.rbac.authorization.k8s.io/ingress-nginx unchanged
+clusterrole.rbac.authorization.k8s.io/ingress-nginx-admission unchanged
+rolebinding.rbac.authorization.k8s.io/ingress-nginx unchanged
+rolebinding.rbac.authorization.k8s.io/ingress-nginx-admission unchanged
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx unchanged
+clusterrolebinding.rbac.authorization.k8s.io/ingress-nginx-admission unchanged
+configmap/ingress-nginx-controller configured
+service/ingress-nginx-controller unchanged
+service/ingress-nginx-controller-admission unchanged
+deployment.apps/ingress-nginx-controller configured
+job.batch/ingress-nginx-admission-create created
+job.batch/ingress-nginx-admission-patch created
+ingressclass.networking.k8s.io/nginx unchanged
+validatingwebhookconfiguration.admissionregistration.k8s.io/ingress-nginx-admission configured
+serviceaccount/metrics-server unchanged
+clusterrole.rbac.authorization.k8s.io/system:aggregated-metrics-reader unchanged
+clusterrole.rbac.authorization.k8s.io/system:metrics-server unchanged
+rolebinding.rbac.authorization.k8s.io/metrics-server-auth-reader unchanged
+clusterrolebinding.rbac.authorization.k8s.io/metrics-server:system:auth-delegator unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:metrics-server unchanged
+service/metrics-server unchanged
+deployment.apps/metrics-server configured
+apiservice.apiregistration.k8s.io/v1beta1.metrics.k8s.io unchanged
+deployment.apps/metrics-server patched
+customresourcedefinition.apiextensions.k8s.io/verticalpodautoscalercheckpoints.autoscaling.k8s.io unchanged
+customresourcedefinition.apiextensions.k8s.io/verticalpodautoscalers.autoscaling.k8s.io unchanged
+clusterrole.rbac.authorization.k8s.io/system:metrics-reader unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-actor unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-status-actor unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-checkpoint-actor unchanged
+clusterrole.rbac.authorization.k8s.io/system:evictioner unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-updater-in-place unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-updater-in-place-binding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:metrics-reader unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-actor unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-status-actor unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-checkpoint-actor unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-target-reader unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-target-reader-binding unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-evictioner-binding unchanged
+serviceaccount/vpa-admission-controller unchanged
+serviceaccount/vpa-recommender unchanged
+serviceaccount/vpa-updater unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-admission-controller unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-admission-controller unchanged
+clusterrole.rbac.authorization.k8s.io/system:vpa-status-reader unchanged
+clusterrolebinding.rbac.authorization.k8s.io/system:vpa-status-reader-binding unchanged
+role.rbac.authorization.k8s.io/system:leader-locking-vpa-updater unchanged
+rolebinding.rbac.authorization.k8s.io/system:leader-locking-vpa-updater unchanged
+role.rbac.authorization.k8s.io/system:leader-locking-vpa-recommender unchanged
+rolebinding.rbac.authorization.k8s.io/system:leader-locking-vpa-recommender unchanged
+deployment.apps/vpa-recommender unchanged
+customresourcedefinition.apiextensions.k8s.io/verticalpodautoscalers.autoscaling.k8s.io condition met
+deployment "ingress-nginx-controller" successfully rolled out
+validatingwebhookconfiguration.admissionregistration.k8s.io/ingress-nginx-admission condition met
+deployment "metrics-server" successfully rolled out
+Image: "civicpulse-backend:dev" with ID "sha256:86af64fa995b10e01b34037791464010c1b65da28513d03a9df65880f2c1420f" not yet present on node "civicpulse-demo-control-plane", loading...
+Image: "civicpulse-frontend:dev" with ID "sha256:decc061dda201077ae7fef9478bc5fbdf602b569d81194df861fd588d0a034a2" not yet present on node "civicpulse-demo-control-plane", loading...
+namespace/civicpulse unchanged
+namespace/civicpulse unchanged
+configmap/civicpulse-config unchanged
+service/backend unchanged
+service/cache unchanged
+service/database unchanged
+service/frontend unchanged
+persistentvolumeclaim/cache-data unchanged
+deployment.apps/backend unchanged
+deployment.apps/cache unchanged
+deployment.apps/frontend unchanged
+statefulset.apps/database configured
+poddisruptionbudget.policy/backend configured
+verticalpodautoscaler.autoscaling.k8s.io/backend-vpa unchanged
+horizontalpodautoscaler.autoscaling/backend-hpa unchanged
+ingress.networking.k8s.io/civicpulse unchanged
+partitioned roll out complete: 1 new pods have been updated...
+deployment "cache" successfully rolled out
+deployment "backend" successfully rolled out
+deployment "frontend" successfully rolled out
+Defaulted container "backend" out of: backend, migrate (init)
+Seed complete: 0 new complaints; 30 defined
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/backend-8468c96dc-9sqxm     1/1     Running   0          5m10s
+pod/backend-8468c96dc-qdjjf     1/1     Running   0          5m10s
+pod/cache-68bcf6cffd-k8fdf      1/1     Running   0          5m10s
+pod/database-0                  1/1     Running   0          5m10s
+pod/frontend-6654db47c9-4xltx   1/1     Running   0          5m10s
+pod/frontend-6654db47c9-snkd4   1/1     Running   0          5m10s
+
+NAME                                              REFERENCE            TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/backend-hpa   Deployment/backend   cpu: 1%/60%   2         10        2          5m10s
+
+NAME                                                   MODE   CPU   MEM     PROVIDED   AGE
+verticalpodautoscaler.autoscaling.k8s.io/backend-vpa   Off    63m   250Mi   True       5m10s

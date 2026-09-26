@@ -28,6 +28,7 @@
 | `docs/EVIDENCE_PLAN.md` | Evidence required for rubric | QA/release |
 | `docs/TEAM_CONTRIBUTION.md` | Ownership and collaboration | Parallel work |
 | `docs/AI_SESSIONS.md` | Shared manual for both AI sessions: phase order, parallel vs handoff vs solo, phase-by-phase table, handoff protocol, checklists, paste-ready prompts | Start of **every** session, and at every handoff |
+| `docs/DEMO_SCRIPT.md` | Shot list for the demo video (at most five minutes, both partners speaking) | Before recording the video |
 | `docs/PARTNER_RUNBOOK.md` | Step-by-step routine for Contributor B's own AI session (tool install → login → PR → review → merge) | Contributor B, every session |
 | `docs/ENVIRONMENT_PREREQUISITES.md` | Detected tools, install steps for missing ones | Phase 00, onboarding, before Phases 08–09 |
 | `docs/RUNBOOK.md` | Operational procedures | Deployment/demo |

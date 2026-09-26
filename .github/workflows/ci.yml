@@ -291,7 +291,7 @@ jobs:
       - name: Install kubeconform
         if: steps.has_overlay.outputs.present == 'true'
         run: |
-          curl -sSfL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+          curl -sSfL --proto '=https' --tlsv1.2 "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
             | tar -xz -C /usr/local/bin kubeconform
           kubeconform -v
       # kubectl (preinstalled on the runner) embeds kustomize.
@@ -396,6 +396,43 @@ jobs:
           docker compose exec -T cache redis-cli TTL stats:v1
           docker compose exec -T cache redis-cli GET stats:v1
           docker compose ps
+      # RUNBOOK section 9: a provider that cannot work still gives a 201 and the rules fallback.
+      - name: RUNBOOK section 9, hosted provider with a bad key falls back
+        run: |
+          TRIAGE_PROVIDER=llm GROQ_API_KEY=not-a-real-key docker compose up -d backend
+          curl --silent --show-error --fail --retry 40 --retry-delay 3             --retry-connrefused --retry-all-errors "$API/ready"
+          created="$(curl -fsS -X POST "$API/api/complaints" -H 'Content-Type: application/json'             -d '{"text":"The street light on our lane has been out for a week.","location":"Lane 3"}')"
+          echo "$created"
+          echo "$created" | python3 -c '
+          import json, sys
+          assert json.load(sys.stdin)["triaged_by"] == "rules:fallback"
+          '
+          docker compose logs --tail 50 backend | grep '"message": "triage fallback"' | tee /tmp/fallback.txt
+          test "$(wc -l < /tmp/fallback.txt)" -eq 1
+          grep -q '"error_class"' /tmp/fallback.txt
+          curl -fsS "$API/api/meta/providers" -o /tmp/meta.json
+          python3 -c '
+          import json, sys
+          body = json.load(sys.stdin)
+          assert body["active_provider"] == "llm", body
+          assert body["recent"][0]["fallback"] is True, body
+          ' < /tmp/meta.json
+      # RUNBOOK section 8: the limiter answers 429 with Retry-After once the window is used up.
+      - name: RUNBOOK section 8, rate limit
+        run: |
+          docker compose up -d backend   # back to the default provider (rules): no external calls here
+          curl --silent --show-error --fail --retry 40 --retry-delay 3             --retry-connrefused --retry-all-errors "$API/ready"
+          codes=""
+          for i in $(seq 12); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$API/api/complaints"               -H 'Content-Type: application/json'               -d '{"text":"The tap in our lane has no water.","location":"Lane 3"}')"
+            codes="$codes $code"
+          done
+          echo "status codes:$codes"
+          echo "$codes" | grep -q 429
+          curl -si -X POST "$API/api/complaints" -H 'Content-Type: application/json' -d '{}' | tee /tmp/limited.txt | grep -iE '^HTTP|^retry-after'
+          grep -qi '^retry-after: [1-9]' /tmp/limited.txt
+          docker compose exec -T cache redis-cli --scan --pattern 'rate:*' | head -3
+          curl -fsS "$API/metrics" | grep '^rate_limited_total'
       - name: Compose state and backend log on failure
         if: failure()
         run: |
