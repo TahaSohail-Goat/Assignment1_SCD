@@ -245,8 +245,9 @@ Use real output in this recording plan:
 | 4:30–5:00 | Both | CI/CD gates and real contribution totals |
 
 Before final submission: record/upload the video, finish the live hosted-versus-Ollama
-comparison in [AI.md](docs/AI.md), agree on LICENSE, and complete Taha's final audit/release
-package (#56). Recheck the 35% minimum contribution share on the final branch; current
+comparison in [AI.md](docs/AI.md), merge the proposed MIT LICENSE in
+[PR #99](https://github.com/TahaSohail-Goat/Assignment1_SCD/pull/99) after review, and
+complete Taha's final audit/release package (#56). Recheck the 35% minimum contribution share on the final branch; current
 main does not meet it. Only genuine authored work counts. The speaking split above follows
 [the team agreement](docs/TEAM_CONTRIBUTION.md). A passing build alone does not complete these items.
 
@@ -258,4 +259,4 @@ main does not meet it. Only genuine authored work counts. The speaking split abo
 
 Read [AGENTS.md](AGENTS.md). Work through assigned issue → `feature/<n>-<slug>` from `dev`
 → partner-reviewed PR into `dev` → merge-commit promotion to protected `main`.
-No software license has been selected yet; none is implied here.
+The MIT LICENSE is proposed in #99 and is not present on this branch yet.
