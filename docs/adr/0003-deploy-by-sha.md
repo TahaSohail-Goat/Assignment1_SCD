@@ -1,8 +1,9 @@
 # ADR 0003 — Immutable Deployment Reference
 
 ## Status
-Proposed for partner review in #52; implementation and local rehearsal complete,
-successful main-branch CD run pending.
+Implemented and promoted to main. Main `db720f3` passed
+[CD run 36245642750](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36245642750),
+including GHCR image/SBOM publication and the ephemeral kind Ingress smoke test.
 
 ## Decision
 Publish both images with the full merged commit SHA and `latest`; deploy only the SHA tag.
@@ -39,8 +40,9 @@ its SHA to restore the declared configuration. Commands and measured local resul
 `docs/RUNBOOK.md` section 13 and `docs/evidence/cd-local-rollback.txt`.
 
 The local rehearsal loaded locally built images under full SHA names; it does not prove GHCR
-publication or successful Actions deployment. Those need a green `cd.yml` run after this PR
-is reviewed, merged into dev and promoted to main. Both-partner video evidence remains pending.
+publication or successful Actions deployment. The separate main-branch CD run linked above
+provides that evidence. Both-partner video evidence remains pending; the tag-triggered
+release workflow still needs an actual release run.
 
 ## References
 
