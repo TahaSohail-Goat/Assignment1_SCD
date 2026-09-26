@@ -1,0 +1,10 @@
+NAME                       CPU(cores)   MEMORY(bytes)   
+backend-8dcccc454-pjg7j    21m          66Mi            
+backend-8dcccc454-rgqvn    31m          66Mi            
+cache-68bcf6cffd-frkl4     8m           4Mi             
+database-0                 11m          41Mi            
+frontend-b985b4cd6-rm5qm   3m           4Mi             
+frontend-b985b4cd6-s5jzd   3m           3Mi             
+load-adjusted50            16m          43Mi            
+load-baseline              0m           1Mi             
+load-baseline50            0m           1Mi             

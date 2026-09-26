@@ -1,0 +1,8 @@
+seconds_since_start,completed_requests,requests_per_second
+0,90,9.0
+10,100,10.0
+20,1443,144.3
+30,2050,205.0
+40,2921,292.1
+50,2815,281.5
+60,425,42.5

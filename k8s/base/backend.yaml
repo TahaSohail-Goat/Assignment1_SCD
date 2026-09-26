@@ -138,5 +138,6 @@ spec:
             capabilities:
               drop: ["ALL"]
           resources:
-            requests: { cpu: 100m, memory: 128Mi }
+            # #50: target from the captured VPA recommendation (k8s-load-baseline50/vpa.txt).
+            requests: { cpu: 182m, memory: 250Mi }
             limits: { cpu: 500m, memory: 256Mi }

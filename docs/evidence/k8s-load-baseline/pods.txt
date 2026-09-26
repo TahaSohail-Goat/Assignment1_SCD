@@ -1,0 +1,13 @@
+NAME                       READY   STATUS    RESTARTS     AGE     IP            NODE                       NOMINATED NODE   READINESS GATES
+backend-8667958cc5-4cktw   1/1     Running   1 (6s ago)   59s     10.244.0.31   civicpulse-control-plane   <none>           <none>
+backend-8667958cc5-8fsnh   1/1     Running   0            11s     10.244.0.35   civicpulse-control-plane   <none>           <none>
+backend-8667958cc5-bfcww   1/1     Running   0            26s     10.244.0.33   civicpulse-control-plane   <none>           <none>
+backend-8667958cc5-gcdsr   1/1     Running   0            11s     10.244.0.36   civicpulse-control-plane   <none>           <none>
+backend-8667958cc5-pfdsl   1/1     Running   0            11s     10.244.0.34   civicpulse-control-plane   <none>           <none>
+backend-8667958cc5-wrxz5   1/1     Running   0            52s     10.244.0.32   civicpulse-control-plane   <none>           <none>
+backend-8667958cc5-xrntk   1/1     Running   0            11s     10.244.0.37   civicpulse-control-plane   <none>           <none>
+cache-68bcf6cffd-frkl4     1/1     Running   0            6m56s   10.244.0.14   civicpulse-control-plane   <none>           <none>
+database-0                 1/1     Running   0            6m56s   10.244.0.15   civicpulse-control-plane   <none>           <none>
+frontend-b985b4cd6-rm5qm   1/1     Running   0            4m25s   10.244.0.18   civicpulse-control-plane   <none>           <none>
+frontend-b985b4cd6-s5jzd   1/1     Running   0            4m28s   10.244.0.17   civicpulse-control-plane   <none>           <none>
+load-baseline              1/1     Running   0            78s     10.244.0.30   civicpulse-control-plane   <none>           <none>
