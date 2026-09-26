@@ -13,16 +13,15 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
 
-`git shortlog -sn origin/dev` at `a4cd0b9`, 2026-09-26 (includes merges, matching the rubric; refresh after audit PR and final promotion):
+`git shortlog -sn origin/dev` at `39fca0c`, 2026-09-26 (includes merges, matching the rubric; refresh after audit PR and final promotion):
 
 ```
 109	Taha Sohail
-47	Artfever
+70	Artfever
 ```
 
-The rubric asks for neither partner below 35 %. At this snapshot the second contributor is at 30.1 %, so
-the remaining genuine work (pull-request reviews, documentation, evidence and fixes) should be
-authored by them; artificial commits are not an option (`docs/TEAM_CONTRIBUTION.md`, rule 7).
+The rubric asks for neither partner below 35 %. At this snapshot Artfever has 70/179 = 39.1% and Taha has 109/179 = 60.9%; both pass.
+Recheck the final main revision. Only genuine authored work counts (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
 
@@ -122,3 +121,5 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 ## Current owner holds (2026-09-26)
 
 Video and the live Groq/Ollama quality/latency comparison are on hold until the end; neither is claimed complete. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `c5f5e38`, run 36235766515. Dashboard #103, owner-task cleanup #105 and theme #106 are on dev awaiting promotion. Keep #55, #56 and #31 open.
+
+Audit evidence after #108: [final-audit-index.md](evidence/final-audit-index.md). Current dev contribution floor passes; historical commit-prefix exceptions remain disclosed. Promotion has not yet occurred.
