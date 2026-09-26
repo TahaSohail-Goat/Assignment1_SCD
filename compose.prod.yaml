@@ -1,8 +1,5 @@
-# CivicPulse, development stack (ASG-DEVOPS-013..027).
-#   cp .env.example .env   (then change the password)
-#   docker compose up --build
-# Use --profile offline for the optional Ollama container and model preload.
-
+# Standalone production Compose file. Set IMAGE_TAG to a built, immutable commit SHA tag.
+# Use this file alone: docker compose -f compose.prod.yaml up -d
 name: civicpulse
 
 services:
@@ -24,14 +21,11 @@ services:
       start_period: 10s
     deploy:
       resources:
-        limits:
-          cpus: "1.0"
-          memory: 512M
+        limits: { cpus: "1.0", memory: 512M }
 
   cache:
     image: redis:7.4.11-alpine
     restart: unless-stopped
-    # AOF on: an acknowledged write survives a restart (ASG-CACHE-011).
     command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
     volumes:
       - redisdata:/data
@@ -43,17 +37,11 @@ services:
       retries: 10
     deploy:
       resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
+        limits: { cpus: "0.5", memory: 256M }
 
-  # One-shot: applies the migrations, then exits. The backend starts only after it succeeded, so
-  # the application itself never creates or alters a table (ASG-DED-014).
   migrate:
-    build:
-      context: ./backend
+    image: "civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
     restart: "no"
-    # Seed after migration. Fixed ids make each `up` idempotent (ASG-DATA-019..021).
     command: ["sh", "-c", "alembic upgrade head && python -m app.seed"]
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
@@ -63,14 +51,10 @@ services:
         condition: service_healthy
     deploy:
       resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
+        limits: { cpus: "0.5", memory: 256M }
 
   backend:
-    build:
-      context: ./backend
-    image: civicpulse-backend:dev
+    image: "civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
@@ -80,19 +64,7 @@ services:
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       OLLAMA_BASE_URL: http://ollama:11434
       OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma3:1b}
-      # The frontend proxy overwrites X-Forwarded-For. The published dev port is loopback-only.
       TRUST_FORWARDED_FOR: "true"
-    ports:
-      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
-    # Development only: the source is mounted so an edit reloads the server without a rebuild.
-    # compose.prod.yaml (issue #48) has no such mount: a deployed image must run exactly the code
-    # it was built from, not whatever is on the host.
-    volumes:
-      - ./backend/app:/app/app:ro
-    command:
-      ["uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--no-access-log", "--reload", "--reload-dir", "/app/app"]
-    # The only service on both networks: reachable from outside through edge, and it alone
-    # reaches the database and the cache through internal.
     networks: [edge, internal]
     depends_on:
       database:
@@ -109,14 +81,10 @@ services:
       start_period: 15s
     deploy:
       resources:
-        limits:
-          cpus: "1.0"
-          memory: 512M
+        limits: { cpus: "1.0", memory: 512M }
 
   frontend:
-    build:
-      context: ./frontend
-    image: civicpulse-frontend:dev
+    image: "civicpulse-frontend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
     restart: unless-stopped
     networks: [edge]
     ports:
@@ -132,9 +100,7 @@ services:
       start_period: 10s
     deploy:
       resources:
-        limits:
-          cpus: "0.5"
-          memory: 128M
+        limits: { cpus: "0.5", memory: 128M }
 
   ollama:
     image: ollama/ollama:0.34.0
@@ -154,12 +120,8 @@ services:
       start_period: 30s
     deploy:
       resources:
-        limits:
-          cpus: "2.0"
-          memory: 3G
+        limits: { cpus: "2.0", memory: 3G }
 
-  # Fetches the model over edge into the shared volume, then exits. The serving container remains
-  # on internal only, so no route from its network to the Internet is needed.
   ollama-pull:
     image: ollama/ollama:0.34.0
     profiles: [offline]
@@ -174,18 +136,16 @@ services:
       - ollama_models:/root/.ollama
     deploy:
       resources:
-        limits:
-          cpus: "2.0"
-          memory: 3G
+        limits: { cpus: "2.0", memory: 3G }
 
 networks:
   edge:
     driver: bridge
   internal:
     driver: bridge
-    internal: true # no route to the outside world: the database and the cache cannot be reached from it
+    internal: true
 
 volumes:
-  pgdata: # the complaints survive `docker compose down`; without it the data lives in the container layer
-  redisdata: # the AOF file: cached counters and rate-limit windows survive a cache restart
-  ollama_models: # the downloaded model weights (gigabytes); used by the ollama service of issue #48
+  pgdata:
+  redisdata:
+  ollama_models:

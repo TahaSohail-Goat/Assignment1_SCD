@@ -170,9 +170,12 @@ jobs:
   context-and-image-size:
     name: context-and-image-size
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
       # ASG-DEVOPS-010 and 012: numbers, not adjectives. The build context is what `docker build`
       # sends to the daemon; the second figure is the same directory without its .dockerignore.
       - name: Backend build context and image size
@@ -200,6 +203,29 @@ jobs:
             docker image ls civicpulse-backend:size --format '- image size: {{.Size}}'
             echo "- stage sizes:"
             docker history civicpulse-backend:size --format '  - {{.Size}}  {{.CreatedBy}}' | head -12
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Frontend build context and both image stage sizes
+        run: |
+          npm --prefix frontend ci --silent
+          printf 'FROM scratch\nCOPY . /ctx\n' > /tmp/Dockerfile.size
+          measure() {
+            docker build --no-cache --progress=plain -f /tmp/Dockerfile.size "$1" 2>&1 \
+              | grep -o 'transferring context: [0-9.]*[kMG]*B' | tail -1
+          }
+          with_ignore="$(measure frontend)"
+          rm -rf /tmp/frontend-noignore && cp -r frontend /tmp/frontend-noignore
+          rm /tmp/frontend-noignore/.dockerignore
+          without_ignore="$(measure /tmp/frontend-noignore)"
+          docker build --target builder -t civicpulse-frontend:builder frontend > /dev/null
+          docker build -t civicpulse-frontend:size frontend > /dev/null
+          {
+            echo "### Frontend"
+            echo "- build context with .dockerignore: ${with_ignore#transferring context: }"
+            echo "- build context without .dockerignore: ${without_ignore#transferring context: }"
+            docker image ls civicpulse-frontend:builder --format '- builder stage size: {{.Size}}'
+            docker image ls civicpulse-frontend:size --format '- runtime image size: {{.Size}}'
+            echo '- runtime image contents:'
+            docker run --rm --entrypoint sh civicpulse-frontend:size -c '! command -v node; test ! -d /app/node_modules; test ! -d /app/src'
           } | tee -a "$GITHUB_STEP_SUMMARY"
 
   scan:
@@ -329,6 +355,16 @@ jobs:
             docker compose port "$service" "$([ "$service" = database ] && echo 5432 || echo 6379)"               && { echo "$service publishes a port"; exit 1; } || echo "$service publishes no port"
           done
           docker compose exec -T backend python -c "import socket; socket.create_connection(('database', 5432), 2); socket.create_connection(('cache', 6379), 2); print('backend reaches database and cache')"
+      - name: Frontend cannot resolve database (ASG-DEVOPS-017)
+        run: |
+          if docker compose exec -T frontend ping -c 1 -W 2 database > /tmp/frontend-ping.txt 2>&1; then
+            cat /tmp/frontend-ping.txt
+            echo 'frontend unexpectedly reached database'
+            exit 1
+          fi
+          cat /tmp/frontend-ping.txt
+          grep -Eiq 'bad address|unknown host|Name or service not known' /tmp/frontend-ping.txt
+          curl -fsS http://127.0.0.1:8080/ > /dev/null
       - name: Redis append-only file is on, on the named volume
         run: |
           docker compose exec -T cache redis-cli CONFIG GET appendonly | tee /dev/stderr | grep -qx yes
