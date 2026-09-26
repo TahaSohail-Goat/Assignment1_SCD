@@ -100,17 +100,51 @@ The real frontend isolation test failed to resolve `database`, as expected. Olla
 container stays internal-only (`:143`), with a separate edge-only one-shot model downloader
 (`:172`) sharing the model volume. No database port is published in production Compose.
 
-## 8. A failure that cost more than an hour ? confirmation pending
+## 8. The failure: waiting for a setup Job that no longer exists
 
-The existing captures prove a failed 300-request/s port-forward experiment, but its metadata
-runs from 06:01:45 to 06:03:07 UTC on 2026-09-26, not over an hour. It would be false to present
-that capture alone as satisfying this question. See `evidence/k8s-load-initial/metadata.json`
-and the unedited compressed log `k6.txt.gz` for its actual failure.
+**Symptoms.** The [first real main CD run, 36228513110](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36228513110)
+passed every test job, published both GHCR images and emitted both Syft SBOMs. Its
+`deploy-k8s` job then failed before application deployment, even though the ingress
+controller had successfully rolled out. This is an actual project failure, not a simulated
+incident or a claim that publication proved deployment.
 
-**Still required from a contributor:** the real incident, approximate start/end or other
-support for >1 hour, the initial mistaken belief, and the exact diagnostic command/log.
-No first-person student recollection or elapsed duration is invented here. ASG-DOC-024 and
-completion of all eight answers remain blocked on this factual input.
+**Faulty assumption encoded in our implementation.** In source `34e8402`,
+`.github/workflows/cd.yml:112` waited for the completed `ingress-nginx-admission-patch` Job.
+That command assumed the Job would remain queryable after it finished. This describes the
+assumption in the AI-assisted implementation; it is not an invented personal recollection
+by either student.
+
+**Diagnostic evidence.** `gh run view 36228513110 --log-failed` showed, at
+`2026-09-26T08:05:26.2875334Z`:
+
+```text
+Error from server (NotFound): jobs.batch "ingress-nginx-admission-patch" not found
+```
+
+Inspection of the pinned [ingress-nginx v1.15.1 kind manifest](https://github.com/kubernetes/ingress-nginx/blob/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml#L632)
+showed `ttlSecondsAfterFinished: 0`: the completed admission Job is eligible for immediate
+deletion. Waiting on that temporary object races garbage collection. Controller availability
+alone had not made this extra Job lookup safe.
+
+**Correction and verification.** [PR #97](https://github.com/TahaSohail-Goat/Assignment1_SCD/pull/97)
+changes the wait to the lasting result of the Job:
+
+```text
+kubectl wait --for=jsonpath='{.webhooks[0].clientConfig.caBundle}' validatingwebhookconfiguration/ingress-nginx-admission --timeout=120s
+```
+
+On the local kind cluster the setup Job was absent while this replacement wait succeeded.
+`backend/tests/test_cd_workflows.py` adds a regression check against returning to the old
+Job wait. Taha approved the fix, all ten CI checks passed, and it was merged into dev.
+Promotion PR #98 must reach main before CD can run the corrected workflow; rerunning the
+old SHA would preserve the failure. The lesson is to test persistent readiness state, rather
+than assuming a short-lived installer object survives long enough to inspect.
+
+**Duration limit.** The diagnostic record supports this failure and its correction, but does
+not establish more than one hour of active troubleshooting. We therefore do not claim the
+assignment's >1-hour condition is met. ASG-DOC-024 remains partial unless a contributor can
+provide a genuine qualifying duration/incident; elapsed waiting between sessions is not
+silently counted as debugging time.
 
 ## Data, cache and persistence decisions collected from earlier packages
 
