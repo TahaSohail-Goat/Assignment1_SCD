@@ -254,8 +254,7 @@ Use real output in this recording plan:
 | 4:30–5:00 | Both | CI/CD gates and real contribution totals |
 
 Before final submission: record/upload the video, finish the live hosted-versus-Ollama
-comparison in [AI.md](docs/AI.md), complete Taha's final audit/release package (#56; the MIT [`LICENSE`](LICENSE) is in). Recheck the 35% minimum contribution share on the final branch; current
-main does not meet it. Only genuine authored work counts. The speaking split above follows
+comparison in [AI.md](docs/AI.md), complete the final audit/release package (#56; the MIT [`LICENSE`](LICENSE) is in). At main `db720f3`, `git shortlog -sn` records Artfever 83/194 (42.8%) and Taha 111/194 (57.2%): both meet the 35% minimum. Recheck on the final submission revision. Only genuine authored work counts. The speaking split above follows
 [the team agreement](docs/TEAM_CONTRIBUTION.md). A passing build alone does not complete these items.
 
 ## Project documents and contribution
