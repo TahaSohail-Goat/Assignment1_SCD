@@ -40,7 +40,7 @@ services:
         limits: { cpus: "0.5", memory: 256M }
 
   migrate:
-    image: "civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
+    image: "ghcr.io/tahasohail-goat/civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
     restart: "no"
     command: ["sh", "-c", "alembic upgrade head && python -m app.seed"]
     environment:
@@ -54,7 +54,7 @@ services:
         limits: { cpus: "0.5", memory: 256M }
 
   backend:
-    image: "civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
+    image: "ghcr.io/tahasohail-goat/civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
@@ -84,7 +84,7 @@ services:
         limits: { cpus: "1.0", memory: 512M }
 
   frontend:
-    image: "civicpulse-frontend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
+    image: "ghcr.io/tahasohail-goat/civicpulse-frontend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
     restart: unless-stopped
     networks: [edge]
     ports:

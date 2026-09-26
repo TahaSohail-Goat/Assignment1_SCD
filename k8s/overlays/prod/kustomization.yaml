@@ -1,7 +1,7 @@
 # Deployment: images are addressed by the immutable commit SHA, never by `latest`
 # (ASG-CICD-023, ASG-DED-008). The deploy job of cd.yml sets the tag with
-# `kustomize edit set image` and commits it, so `git show` answers "what is production running?"
-# with one value. Until then the placeholder below is not a pullable tag, on purpose.
+# runner-only substitution and records it in the deployment annotation/job summary;
+# that SHA is the one value passed to `git show`. No direct deployment commit is pushed. Until then the placeholder below is not a pullable tag, on purpose.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:

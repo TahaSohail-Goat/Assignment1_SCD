@@ -124,7 +124,45 @@ Pending: written from the commands of issues #49, #50 and #52.
 
 ## 13. Rollback
 
-Pending: issue #52 (`kubectl rollout undo` and re-applying the previous overlay).
+First select the intended cluster explicitly. The following commands target the local rehearsal
+cluster, not an arbitrary current context:
+
+```powershell
+kubectl --context kind-civicpulse -n civicpulse rollout history deployment/backend
+kubectl --context kind-civicpulse -n civicpulse rollout undo deployment/backend
+kubectl --context kind-civicpulse -n civicpulse rollout status deployment/backend --timeout=120s
+```
+
+Use this imperative reversal when the newest Deployment template is bad and the previous
+revision is known good. It does not undo schema migrations, Secret or ConfigMap changes.
+Confirm the application through the Ingress after the rollout.
+
+For an auditable declarative recovery, restore the **previous source checkout and its full
+image SHA**. Set `$previousSha` to the actual known-good deployment SHA (from its Actions summary).
+Use a new, unused worktree directory; do not overwrite an existing checkout:
+
+```powershell
+git worktree add --detach ..\civicpulse-rollback $previousSha
+$overlayPath = '..\civicpulse-rollback\k8s\overlays\prod\kustomization.yaml'
+$overlayText = [IO.File]::ReadAllText((Resolve-Path $overlayPath))
+[IO.File]::WriteAllText((Resolve-Path $overlayPath), $overlayText.Replace('REPLACE_WITH_COMMIT_SHA', $previousSha))
+kubectl --context kind-civicpulse apply -k ..\civicpulse-rollback\k8s\overlays\prod
+kubectl --context kind-civicpulse -n civicpulse rollout status deployment/backend --timeout=120s
+kubectl --context kind-civicpulse -n civicpulse rollout status deployment/frontend --timeout=120s
+```
+
+The existing namespace Secret and persistent database remain. Ensure the cluster can pull
+those SHA images (or load them into kind first, as CD does). Check migration compatibility
+before applying an older application to a newer schema; this procedure never drops data.
+
+Measured local rehearsal: [raw commands and output](evidence/cd-local-rollback.txt).
+An intentionally nonexistent backend image left the old healthy replicas serving traffic.
+Undo plus rollout verification and ingress smoke took **0.18 seconds**; restoring the prior
+overlay took **0.94 seconds**. Both `/` and `/api/stats` returned 200 before and after each
+recovery. These timings apply to a rejected image rollout with healthy previous pods, not
+every possible outage. Images were built locally, tagged with the full `b442e8d` source SHA
+and loaded into kind; GHCR publishing and the successful main-branch CD run are still pending.
+The required video of both methods and explanations must still be recorded by the partners.
 
 ## 14. Incident response (Compose)
 
