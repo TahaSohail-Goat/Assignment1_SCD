@@ -7,20 +7,20 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | # | Item | ID | Where it will come from |
 |---|---|---|---|
 | 1 | GitHub repository URL — public, or private with both instructors added | ASG-SUB-001 | Current repo `https://github.com/TahaSohail-Goat/Assignment1_SCD` is **public**. |
-| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36235766515 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
-| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, tags `34e8402fd08c371eb191558fb615bb6fcca4f2d7` and `8074879eb7067db84dab691c74dae420a078fb3f` plus `latest` |
+| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36245642750 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
+| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, deployed SHA tag `db720f3e7aa657216fbdd903b44ecdd28af45554` (see the successful CD run above); `latest` is mutable and is not the deployment reference |
 | 4 | Demo video link (unlisted) | ASG-SUB-004 | **Pending:** to be recorded by both contributors; script in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Link: _not yet_ |
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
 
-`git shortlog -sn origin/dev` at `39fca0c`, 2026-09-26 (includes merges, matching the rubric; refresh after audit PR and final promotion):
+`git shortlog -sn origin/main` at `db720f3`, 2026-09-26 (includes merges, matching the rubric; refresh after the next promotion):
 
 ```
-109	Taha Sohail
-70	Artfever
+111	Taha Sohail
+83	Artfever
 ```
 
-The rubric asks for neither partner below 35 %. At this snapshot Artfever has 70/179 = 39.1% and Taha has 109/179 = 60.9%; both pass.
+The rubric asks for neither partner below 35 %. At this snapshot Artfever has 83/194 = 42.8% and Taha has 111/194 = 57.2%; both pass.
 Recheck the final main revision. Only genuine authored work counts (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
