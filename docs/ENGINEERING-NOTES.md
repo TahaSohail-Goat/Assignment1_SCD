@@ -145,11 +145,10 @@ succeeded through deployment and the real ingress smoke test; rerunning the old 
 preserve the failure. The lesson is to test persistent readiness state, rather
 than assuming a short-lived installer object survives long enough to inspect.
 
-**Duration limit.** The diagnostic record supports this failure and its correction, but does
-not establish more than one hour of active troubleshooting. We therefore do not claim the
-assignment's >1-hour condition is met. ASG-DOC-024 remains partial unless a contributor can
-provide a genuine qualifying duration/incident; elapsed waiting between sessions is not
-silently counted as debugging time.
+**Duration.** On 2026-09-26, Artfever confirmed after checking that this incident took
+more than one hour of troubleshooting. This duration is contributor-confirmed; the linked
+CI logs establish the failure and successful correction, rather than independently timing
+all troubleshooting work. No exact start/end time is claimed.
 
 ## Data, cache and persistence decisions collected from earlier packages
 
