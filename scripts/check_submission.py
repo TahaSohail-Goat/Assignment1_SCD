@@ -347,7 +347,15 @@ def check_documents() -> None:
 
 def check_authorship(ref: str = "HEAD") -> None:
     # Resolve once; never count unrelated or unmerged branches through --all.
-    revision = git("rev-parse", "--verify", "--end-of-options", ref + "^{commit}").strip()
+    # User input is only a lookup key, never a subprocess argument. Accept named
+    # refs, HEAD and full reachable commit IDs rather than arbitrary Git expressions.
+    refs = {"HEAD": git("rev-parse", "HEAD").strip()}
+    for line in git("for-each-ref", "--format=%(refname:short) %(objectname)").splitlines():
+        name, oid = line.split(" ", 1)
+        refs[name] = oid
+    for oid in git("log", "--all", "--format=%H").splitlines():
+        refs[oid] = oid
+    revision = refs.get(ref, "")
     if not revision:
         record(FAIL, "GH-008 contribution share", f"cannot resolve ref: {ref}")
         return
