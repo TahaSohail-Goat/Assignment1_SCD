@@ -25,11 +25,14 @@ feature changes reach dev through PRs. Continuous delivery/deployment automation
 Kubernetes deployment on publishing. The [first main CD run](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36228513110)
 passed the full test gate, published both images and generated both Syft SBOMs. Deployment
 then failed while waiting for a completed ingress admission Job that upstream immediately
-deletes (`ttlSecondsAfterFinished: 0`). End-to-end delivery is therefore not yet demonstrated;
-a successful rerun after correcting that readiness check remains necessary.
+deletes (`ttlSecondsAfterFinished: 0`). After the reviewed fix reached main as `8074879`,
+[CD run 36230267941](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941)
+succeeded: full tests, GHCR publication, both Syft SBOMs, loading published digests under SHA
+tags, Secret creation, Kubernetes rollout and real ingress smoke. The first failure remains
+part of the record; the corrected run now demonstrates end-to-end delivery.
 
-The next demonstrated rung is automated delivery of a tested, identifiable artifact to the
-cluster, with rollout and ingress checks. Beyond this assignment's ephemeral runner, a persistent
+Our demonstrated level is CI plus automatic deployment of identifiable artifacts to the
+ephemeral cluster, including rollout and ingress checks. The next operational step is a persistent
 staging/production environment with observable promotion and recovery would provide ongoing
 service operation. We do not claim unattended production operation from a cluster deleted at
 job completion. The exact lecture taxonomy is not needed under the recorded instructor answer.
@@ -138,7 +141,8 @@ On the local kind cluster the setup Job was absent while this replacement wait s
 Job wait. Taha approved the fix, all ten CI checks passed, and it was merged into dev.
 Promotion PR #98 is merged as main commit `8074879`. The corrected
 [CD run 36230267941](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941)
-is being checked; rerunning the old SHA would preserve the failure. The lesson is to test persistent readiness state, rather
+succeeded through deployment and the real ingress smoke test; rerunning the old SHA would
+preserve the failure. The lesson is to test persistent readiness state, rather
 than assuming a short-lived installer object survives long enough to inspect.
 
 **Duration limit.** The diagnostic record supports this failure and its correction, but does
