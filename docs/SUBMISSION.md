@@ -7,20 +7,20 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | # | Item | ID | Where it will come from |
 |---|---|---|---|
 | 1 | GitHub repository URL — public, or private with both instructors added | ASG-SUB-001 | Current repo `https://github.com/TahaSohail-Goat/Assignment1_SCD` is **public**. |
-| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
-| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and `.../civicpulse-frontend`; both public, tags `34e8402fd08c371eb191558fb615bb6fcca4f2d7` and `8074879eb7067db84dab691c74dae420a078fb3f` plus `latest` |
+| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36235766515 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
+| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, tags `34e8402fd08c371eb191558fb615bb6fcca4f2d7` and `8074879eb7067db84dab691c74dae420a078fb3f` plus `latest` |
 | 4 | Demo video link (unlisted) | ASG-SUB-004 | **Pending:** to be recorded by both contributors; script in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Link: _not yet_ |
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
 
-`git shortlog -sn --no-merges` on `dev`, 2026-09-26 (refresh before submitting):
+`git shortlog -sn origin/dev` at `a4cd0b9`, 2026-09-26 (includes merges, matching the rubric; refresh after audit PR and final promotion):
 
 ```
-80	Taha Sohail
-31	Artfever
+109	Taha Sohail
+47	Artfever
 ```
 
-The rubric asks for neither partner below 35 %. At this snapshot the second contributor is at 28 %, so
+The rubric asks for neither partner below 35 %. At this snapshot the second contributor is at 30.1 %, so
 the remaining genuine work (pull-request reviews, documentation, evidence and fixes) should be
 authored by them; artificial commits are not an option (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
@@ -82,7 +82,7 @@ Viva-specific topics the source names explicitly: why TTL **and** explicit inval
 
 Honest attribution, not avoidance (ASG-SUB-012, ASG-DOC-025). `docs/AI-USAGE.md` must name the tools, which parts they wrote or shaped, and what was changed afterwards and why. Specific disclosure carries no penalty; presenting AI-generated work as one's own is plagiarism under the course policy. "A line you cannot defend is worth nothing regardless of its author."
 
-This repository is developed with Claude Code. Every phase records that in `docs/AI-USAGE.md` (Phase 00 entry included).
+This repository is developed with Claude Code for Taha and OpenAI Codex for Artfever. Both contributors disclose assistance separately in `docs/AI-USAGE.md`.
 
 ## 6. Pre-submission gate
 
@@ -118,3 +118,7 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 | Ollama in the default stack | §1.2 says five containers | Keep Ollama in `compose.yaml` |
 | Branch model | `dev` plus `feature/<n>-<slug>`, PRs into `dev`, `dev` into `main` | `docs/GITHUB_WORKFLOW.md` |
 | Tool installs per machine | Python 3.12, Node 22, Docker, kubectl, kind or k3d, k6 | `docs/ENVIRONMENT_PREREQUISITES.md` §8 |
+
+## Current owner holds (2026-09-26)
+
+Video and the live Groq/Ollama quality/latency comparison are on hold until the end; neither is claimed complete. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `c5f5e38`, run 36235766515. Dashboard #103, owner-task cleanup #105 and theme #106 are on dev awaiting promotion. Keep #55, #56 and #31 open.
