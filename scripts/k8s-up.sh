@@ -8,10 +8,17 @@
 # this checkout, loads them into the cluster, creates the Secret out of band (a random password;
 # nothing is written to the repository) and applies k8s/overlays/dev. It then seeds the database
 # and answers through the Ingress. Remove everything with: kind delete cluster --name civicpulse
+#
+# INGRESS_PORT (default 8090) is the local port used to reach the Ingress. It is deliberately not
+# 8080: the first quickstart command (docker compose up) publishes the frontend on 8080, and a
+# smoke test that reached that stack instead of the cluster would prove nothing. The script fails
+# at the start if the port is taken, and proves the smoke request went through the Ingress
+# controller of this cluster by finding it in the controller's own access log.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 
 CLUSTER="${CLUSTER:-civicpulse}"
+INGRESS_PORT="${INGRESS_PORT:-8090}"
 NODE_IMAGE="${KIND_NODE_IMAGE:-kindest/node:v1.37.0}"
 INGRESS_MANIFEST="https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml"
 METRICS_MANIFEST="https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.9.0/components.yaml"
@@ -20,6 +27,12 @@ VPA_BASE="https://raw.githubusercontent.com/kubernetes/autoscaler/vertical-pod-a
 for tool in docker kind kubectl; do
   command -v "$tool" > /dev/null || { echo "missing tool: $tool" >&2; exit 1; }
 done
+
+port_in_use() { (exec 3<> "/dev/tcp/127.0.0.1/$1") 2> /dev/null; }
+if port_in_use "$INGRESS_PORT"; then
+  echo "local port $INGRESS_PORT is already in use (another service owns it); set INGRESS_PORT to a free port" >&2
+  exit 1
+fi
 
 if ! kind get clusters | grep -qx "$CLUSTER"; then
   kind create cluster --name "$CLUSTER" --image "$NODE_IMAGE" --wait 120s
@@ -66,14 +79,28 @@ kubectl -n civicpulse rollout status deployment/frontend --timeout=120s
 echo "== seed (30 synthetic complaints, idempotent)"
 kubectl -n civicpulse exec deploy/backend -- python -m app.seed
 
-echo "== smoke test through the Ingress"
-kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80 > /dev/null 2>&1 &
+echo "== smoke test through the Ingress on local port $INGRESS_PORT"
+forward_log="$(mktemp)"
+kubectl -n ingress-nginx port-forward service/ingress-nginx-controller "$INGRESS_PORT:80" > "$forward_log" 2>&1 &
 forward_pid=$!
-trap 'kill "$forward_pid" 2> /dev/null || true' EXIT
+trap 'kill "$forward_pid" 2> /dev/null || true; rm -f "$forward_log"' EXIT
+for _ in $(seq 30); do
+  port_in_use "$INGRESS_PORT" && break
+  kill -0 "$forward_pid" 2> /dev/null || { echo "the port-forward exited:" >&2; cat "$forward_log" >&2; exit 1; }
+  sleep 1
+done
+port_in_use "$INGRESS_PORT" || { echo "the port-forward never started listening" >&2; exit 1; }
+marker="k8s-up-smoke-$RANDOM$RANDOM"
 curl -fsS --retry 20 --retry-delay 2 --retry-all-errors -H 'Host: civicpulse.local' \
-  http://127.0.0.1:8080/ | grep -qi '<html'
-curl -fsS -H 'Host: civicpulse.local' http://127.0.0.1:8080/api/stats
+  "http://127.0.0.1:$INGRESS_PORT/" | grep -qi '<html'
+curl -fsS -H 'Host: civicpulse.local' "http://127.0.0.1:$INGRESS_PORT/api/stats?smoke=$marker"
 echo
+kill -0 "$forward_pid" 2> /dev/null || { echo "the port-forward died during the smoke test" >&2; exit 1; }
+# The request must be in this cluster's Ingress controller log: a different service that happened
+# to answer on the port would not be there.
+kubectl -n ingress-nginx logs deploy/ingress-nginx-controller --tail=200 | grep -q "$marker" \
+  || { echo "the smoke request did not pass through the Ingress controller of this cluster" >&2; exit 1; }
+echo "confirmed in the Ingress controller log: $marker"
 kubectl -n civicpulse get pods,hpa
-echo "Ready. To browse: kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80"
-echo "then open http://civicpulse.local:8080 (add '127.0.0.1 civicpulse.local' to your hosts file)." # NOSONAR: loopback port-forward to the local cluster
+echo "Ready. To browse: kubectl -n ingress-nginx port-forward service/ingress-nginx-controller $INGRESS_PORT:80"
+echo "then open http://civicpulse.local:$INGRESS_PORT (add '127.0.0.1 civicpulse.local' to your hosts file)." # NOSONAR loopback

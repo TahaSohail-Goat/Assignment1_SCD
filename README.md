@@ -78,7 +78,9 @@ bash scripts/k8s-up.sh
 
 It creates a kind cluster, installs ingress-nginx, metrics-server and the VPA recommender, builds and
 loads the images, creates the Secret out of band (a random password, never written to the repository),
-applies [`k8s/overlays/dev`](k8s/overlays/dev), seeds the database and answers through the Ingress.
+applies [`k8s/overlays/dev`](k8s/overlays/dev), seeds the database and answers through the Ingress on local port 8090
+(`INGRESS_PORT`; not 8080, which the first command's frontend uses; the script fails at once if the port is taken and
+checks that its smoke request appears in this cluster's Ingress controller log).
 Remove it with `kind delete cluster --name civicpulse`. The
 [`k8s-quickstart`](.github/workflows/k8s-quickstart.yml) workflow runs this script on a clean runner, then deletes the
 database pod and checks that a full-row fingerprint of the table is unchanged.

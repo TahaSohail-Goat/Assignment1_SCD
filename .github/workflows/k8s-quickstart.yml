@@ -28,8 +28,27 @@ jobs:
           sudo install /tmp/kind /usr/local/bin/kind
           curl -fsSL --proto '=https' --tlsv1.2 https://dl.k8s.io/release/v1.37.1/bin/linux/amd64/kubectl -o /tmp/kubectl
           sudo install /tmp/kubectl /usr/local/bin/kubectl
-      - name: bash scripts/k8s-up.sh
-        run: bash scripts/k8s-up.sh
+      - name: A taken INGRESS_PORT fails at once and says so
+        run: |
+          python3 -m http.server 8091 --bind 127.0.0.1 > /dev/null 2>&1 &
+          other_pid=$!
+          sleep 1
+          if INGRESS_PORT=8091 bash scripts/k8s-up.sh > /tmp/conflict.txt 2>&1; then
+            cat /tmp/conflict.txt
+            echo 'the script accepted a port that another service owns'
+            exit 1
+          fi
+          cat /tmp/conflict.txt
+          grep -q 'already in use' /tmp/conflict.txt
+          kill "$other_pid"
+      - name: bash scripts/k8s-up.sh (another HTTP service already owns port 8080)
+        run: |
+          # The first quickstart command publishes the frontend on 8080; the smoke test must not confuse it
+          # with the Ingress (review of #99).
+          python3 -m http.server 8080 --bind 127.0.0.1 > /dev/null 2>&1 &
+          echo "OTHER_8080_PID=$!" >> "$GITHUB_ENV"
+          sleep 1
+          bash scripts/k8s-up.sh
       - name: RUNBOOK sections 11-12, autoscaler objects are present
         run: |
           kubectl -n civicpulse get pods
@@ -39,16 +58,16 @@ jobs:
       - name: The rate limit is shared by both backend replicas (ASG-CACHE-010)
         run: |
           kubectl -n civicpulse get deployment backend -o jsonpath='{.status.readyReplicas}' | grep -qE '^[2-9]'
-          kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80 > /dev/null 2>&1 &
+          kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8090:80 > /dev/null 2>&1 &
           forward_pid=$!
           trap 'kill "$forward_pid"' EXIT
-          curl -fsS --retry 30 --retry-delay 2 --retry-connrefused --retry-all-errors             -H 'Host: civicpulse.local' http://127.0.0.1:8080/api/stats -o /tmp/stats.json
+          curl -fsS --retry 30 --retry-delay 2 --retry-connrefused --retry-all-errors             -H 'Host: civicpulse.local' http://127.0.0.1:8090/api/stats -o /tmp/stats.json
           codes=""
           for i in $(seq 14); do
             code="$(curl -s --max-time 15 -o /tmp/response.txt -w '%{http_code}' -X POST \
               -H 'Host: civicpulse.local' -H 'Content-Type: application/json' \
               -d '{"text":"The tap in our lane has no water.","location":"Lane 3"}' \
-              http://127.0.0.1:8080/api/complaints)"
+              http://127.0.0.1:8090/api/complaints)"
             codes="$codes $code"
           done
           echo "status codes:$codes"
