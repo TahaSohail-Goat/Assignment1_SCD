@@ -6,11 +6,14 @@ type FieldErrors = Partial<Record<Field, string>>
 
 function validate(text: string, location: string, contact: string): FieldErrors {
   const errors: FieldErrors = {}
-  if (text.trim().length < 10 || text.trim().length > 2000)
+  // Python/Pydantic measures Unicode code points, not JavaScript UTF-16 units.
+  const textLength = [...text.trim()].length
+  const locationLength = [...location.trim()].length
+  if (textLength < 10 || textLength > 2000)
     errors.text = 'Complaint must be 10–2000 characters.'
-  if (location.trim().length < 3 || location.trim().length > 200)
+  if (locationLength < 3 || locationLength > 200)
     errors.location = 'Location must be 3–200 characters.'
-  if (contact.trim().length > 200)
+  if ([...contact.trim()].length > 200)
     errors.reporter_contact = 'Contact must be at most 200 characters.'
   return errors
 }
@@ -77,7 +80,7 @@ export default function Submit() {
         <label htmlFor="complaint-text">Complaint</label>
         <textarea id="complaint-text" value={text} onChange={(event) => setText(event.target.value)}
           aria-invalid={Boolean(errors.text)} aria-describedby={errors.text ? 'text-error' : undefined}
-          maxLength={2001} rows={5} required />
+          rows={5} required />
         {errors.text && <p id="text-error" role="alert">{errors.text}</p>}
 
         <label htmlFor="complaint-location">Location</label>
@@ -85,15 +88,14 @@ export default function Submit() {
           onChange={(event) => setLocation(event.target.value)}
           aria-invalid={Boolean(errors.location)}
           aria-describedby={errors.location ? 'location-error' : undefined}
-          maxLength={201} required />
+          required />
         {errors.location && <p id="location-error" role="alert">{errors.location}</p>}
 
         <label htmlFor="complaint-contact">Contact (optional)</label>
         <input id="complaint-contact" value={contact}
           onChange={(event) => setContact(event.target.value)}
           aria-invalid={Boolean(errors.reporter_contact)}
-          aria-describedby={errors.reporter_contact ? 'contact-error' : undefined}
-          maxLength={201} />
+          aria-describedby={errors.reporter_contact ? 'contact-error' : undefined} />
         {errors.reporter_contact && <p id="contact-error" role="alert">{errors.reporter_contact}</p>}
 
         <button type="submit" disabled={pending}>{pending ? 'Submitting…' : 'Submit complaint'}</button>

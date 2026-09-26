@@ -7,26 +7,25 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | # | Item | ID | Where it will come from |
 |---|---|---|---|
 | 1 | GitHub repository URL — public, or private with both instructors added | ASG-SUB-001 | Current repo `https://github.com/TahaSohail-Goat/Assignment1_SCD` is **public**. |
-| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
-| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and `.../civicpulse-frontend`; both public, tags `34e8402fd08c371eb191558fb615bb6fcca4f2d7` and `8074879eb7067db84dab691c74dae420a078fb3f` plus `latest` |
+| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36235766515 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
+| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, tags `34e8402fd08c371eb191558fb615bb6fcca4f2d7` and `8074879eb7067db84dab691c74dae420a078fb3f` plus `latest` |
 | 4 | Demo video link (unlisted) | ASG-SUB-004 | **Pending:** to be recorded by both contributors; script in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Link: _not yet_ |
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
 
-`git shortlog -sn --no-merges` on `dev`, 2026-09-26 (refresh before submitting):
+`git shortlog -sn origin/dev` at `39fca0c`, 2026-09-26 (includes merges, matching the rubric; refresh after audit PR and final promotion):
 
 ```
-80	Taha Sohail
-31	Artfever
+109	Taha Sohail
+70	Artfever
 ```
 
-The rubric asks for neither partner below 35 %. At this snapshot the second contributor is at 28 %, so
-the remaining genuine work (pull-request reviews, documentation, evidence and fixes) should be
-authored by them; artificial commits are not an option (`docs/TEAM_CONTRIBUTION.md`, rule 7).
+The rubric asks for neither partner below 35 %. At this snapshot Artfever has 70/179 = 39.1% and Taha has 109/179 = 60.9%; both pass.
+Recheck the final main revision. Only genuine authored work counts (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
 
-Policy: late submissions are not accepted; there is no retake ("Submit something imperfect on time"). The source gives **no calendar deadline**; the instructor said it is the Google Classroom one ("next Tuesday", exact date to be confirmed). (ASG-SUB-008)
+Policy: late submissions are not accepted; there is no retake ("Submit something imperfect on time"). The source gives **no calendar deadline**; the instructor said it is the Google Classroom one ("next Tuesday"). (ASG-SUB-008)
 
 ## 2. Engineering notes — the eight questions (§5.2 p23–24)
 
@@ -82,7 +81,7 @@ Viva-specific topics the source names explicitly: why TTL **and** explicit inval
 
 Honest attribution, not avoidance (ASG-SUB-012, ASG-DOC-025). `docs/AI-USAGE.md` must name the tools, which parts they wrote or shaped, and what was changed afterwards and why. Specific disclosure carries no penalty; presenting AI-generated work as one's own is plagiarism under the course policy. "A line you cannot defend is worth nothing regardless of its author."
 
-This repository is developed with Claude Code. Every phase records that in `docs/AI-USAGE.md` (Phase 00 entry included).
+This repository is developed with Claude Code for Taha and OpenAI Codex for Artfever. Both contributors disclose assistance separately in `docs/AI-USAGE.md`.
 
 ## 6. Pre-submission gate
 
@@ -97,11 +96,11 @@ Do not call the assignment complete until each mandatory ID in the traceability 
 
 ## Decisions and instructor answers
 
-Answers relayed by the owner on 2026-09-25. They were **verbal**, not written: keep a screenshot of the chat in `docs/evidence/instructor-*` with personal data hidden.
+Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 
 | Topic | Decision or answer | Effect |
 |---|---|---|
-| Deadline | The one on Google Classroom; "next Tuesday" (Tue 29 Sep or Tue 6 Oct 2026, to be confirmed). Team target: everything done by Sunday 27 Sep | Late work is not accepted (ASG-SUB-008) |
+| Deadline | The one on Google Classroom; "next Tuesday". Team target: everything done by Sunday 27 Sep | Late work is not accepted (ASG-SUB-008) |
 | Scope | The whole assignment, parts A–J | No phase or rubric part is dropped |
 | Rubric totals | Left as it is; the teaching assistant manages it | Every line stays at its stated marks |
 | Endpoints | Nine; there is no tenth | `ASG-FR-038` is not added |
@@ -118,3 +117,9 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written: k
 | Ollama in the default stack | §1.2 says five containers | Keep Ollama in `compose.yaml` |
 | Branch model | `dev` plus `feature/<n>-<slug>`, PRs into `dev`, `dev` into `main` | `docs/GITHUB_WORKFLOW.md` |
 | Tool installs per machine | Python 3.12, Node 22, Docker, kubectl, kind or k3d, k6 | `docs/ENVIRONMENT_PREREQUISITES.md` §8 |
+
+## Current owner holds (2026-09-26)
+
+Video and the live Groq/Ollama quality/latency comparison are on hold until the end; neither is claimed complete. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `c5f5e38`, run 36235766515. Dashboard #103, owner-task cleanup #105 and theme #106 are on dev awaiting promotion. Keep #55, #56 and #31 open.
+
+Audit evidence after #108: [final-audit-index.md](evidence/final-audit-index.md). Current dev contribution floor passes; historical commit-prefix exceptions remain disclosed. Promotion has not yet occurred.

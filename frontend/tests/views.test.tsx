@@ -41,6 +41,48 @@ function fillSubmit(text = 'The street light is broken.', location = 'Ward 2') {
   fireEvent.change(screen.getByLabelText('Location'), { target: { value: location } })
 }
 
+it('counts supplementary Unicode characters like the backend at minimum lengths', () => {
+  const fetchMock = vi.fn()
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Submit />)
+  fillSubmit('😀'.repeat(5), '😀😀')
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  expect(screen.getByText('Complaint must be 10–2000 characters.')).toBeTruthy()
+  expect(screen.getByText('Location must be 3–200 characters.')).toBeTruthy()
+  expect(fetchMock).not.toHaveBeenCalled()
+})
+
+it('accepts Unicode maximum lengths without UTF-16 input truncation', async () => {
+  const fetchMock = vi.fn(async () => reply(201, complaint))
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Submit />)
+  const text = '😀'.repeat(2000)
+  const location = '😀'.repeat(200)
+  fillSubmit(text, location)
+  fireEvent.change(screen.getByLabelText('Contact (optional)'), { target: { value: location } })
+  for (const label of ['Complaint', 'Location', 'Contact (optional)']) {
+    expect(screen.getByLabelText(label).hasAttribute('maxlength')).toBe(false)
+  }
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  await screen.findByText('Complaint submitted')
+  expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+    text, location, reporter_contact: location,
+  })
+})
+
+it('rejects Unicode input exceeding the backend maximum lengths', () => {
+  const fetchMock = vi.fn()
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Submit />)
+  fillSubmit('😀'.repeat(2001), '😀'.repeat(201))
+  fireEvent.change(screen.getByLabelText('Contact (optional)'), { target: { value: '😀'.repeat(201) } })
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  expect(screen.getByText('Complaint must be 10–2000 characters.')).toBeTruthy()
+  expect(screen.getByText('Location must be 3–200 characters.')).toBeTruthy()
+  expect(screen.getByText('Contact must be at most 200 characters.')).toBeTruthy()
+  expect(fetchMock).not.toHaveBeenCalled()
+})
+
 it('refuses short text and location before sending a request', () => {
   const fetchMock = vi.fn()
   vi.stubGlobal('fetch', fetchMock)
@@ -96,7 +138,7 @@ it('shows a 409 message verbatim and leaves the previous status visible', async 
     }))
   vi.stubGlobal('fetch', fetchMock)
   render(<Dashboard />)
-  const status = await screen.findByLabelText(`Status for complaint ${complaint.id}`)
+  const status = await screen.findByLabelText(`Status for complaint at ${complaint.location}: ${complaint.text}`)
   fireEvent.change(status, { target: { value: 'resolved' } })
   expect(await screen.findByText('Cannot move open to resolved')).toBeTruthy()
   expect((status as HTMLSelectElement).value).toBe('open')
@@ -112,7 +154,7 @@ it('combines dashboard filters and moves to the next page', async () => {
   await screen.findByText('The street light has been out for days.')
   fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'streetlights' } })
   fireEvent.change(screen.getByLabelText('Priority'), { target: { value: 'high' } })
-  fireEvent.change(screen.getByLabelText('Status'), { target: { value: 'open' } })
+  fireEvent.change(screen.getByRole('combobox', { name: 'Status', exact: true }), { target: { value: 'open' } })
   await waitFor(() => {
     const path = String(fetchMock.mock.lastCall?.[0])
     expect(path).toContain('category=streetlights')
@@ -145,6 +187,59 @@ it('ignores an older list response after the operator changes a filter', async (
   })
   expect(screen.getByText('Filtered water complaint')).toBeTruthy()
   expect(screen.queryByText(complaint.text)).toBeNull()
+})
+
+it('hides previous filter results while loading and retries a failed filter without resetting it', async () => {
+  let failFiltered!: (reason: Error) => void
+  const filtered = new Promise<Response>((_, reject) => { failFiltered = reject })
+  const fetchMock = vi.fn()
+    .mockResolvedValueOnce(reply(200, { items: [complaint], total: 1, page: 1, page_size: 20 }))
+    .mockReturnValueOnce(filtered)
+    .mockResolvedValueOnce(reply(200, { items: [{ ...complaint, text: 'Water complaint', category: 'water' }],
+      total: 1, page: 1, page_size: 20 }))
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Dashboard />)
+  await screen.findByText(complaint.text)
+  fireEvent.change(screen.getByLabelText('Category'), { target: { value: 'water' } })
+  expect(screen.getByRole('status').textContent).toContain('Loading')
+  expect(screen.queryByText(complaint.text)).toBeNull()
+  await act(async () => { failFiltered(new Error('Network unavailable')) })
+  expect(screen.getByRole('alert').textContent).toContain('Network unavailable')
+  expect(screen.queryByText(complaint.text)).toBeNull()
+  fireEvent.click(screen.getByRole('button', { name: 'Retry loading complaints' }))
+  await screen.findByText('Water complaint')
+  expect((screen.getByLabelText('Category') as HTMLSelectElement).value).toBe('water')
+  expect(String(fetchMock.mock.lastCall?.[0])).toContain('category=water')
+  expect(screen.queryByRole('alert')).toBeNull()
+})
+
+it('returns to the last valid filtered page when a status update removes its final row', async () => {
+  const lastRow = { ...complaint, id: '00000000-0000-4000-8000-000000000002', text: 'Last open complaint' }
+  let updated = false
+  const fetchMock = vi.fn(async (path: string, init?: RequestInit) => {
+    if (init?.method === 'PATCH') {
+      updated = true
+      return reply(200, { ...lastRow, status: 'in_progress' })
+    }
+    const requested = new URL(path, 'http://localhost')
+    const page = Number(requested.searchParams.get('page'))
+    return reply(200, { items: page === 2 ? (updated ? [] : [lastRow]) : [complaint],
+      total: updated ? 20 : 21, page, page_size: 20 })
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Dashboard />)
+  await screen.findByText(complaint.text)
+  fireEvent.change(screen.getByRole('combobox', { name: 'Status', exact: true }), { target: { value: 'open' } })
+  await screen.findByText(complaint.text)
+  fireEvent.click(screen.getByRole('button', { name: 'Next' }))
+  await screen.findByText(lastRow.text)
+  fireEvent.change(screen.getByLabelText(`Status for complaint at ${lastRow.location}: ${lastRow.text}`), { target: { value: 'in_progress' } })
+  await screen.findByText('20 complaints · Page 1 of 1')
+  expect(screen.getByText(complaint.text)).toBeTruthy()
+  expect(screen.queryByText('No complaints match these filters.')).toBeNull()
+  expect((screen.getByRole('button', { name: 'Next' }) as HTMLButtonElement).disabled).toBe(true)
+  expect(String(fetchMock.mock.lastCall?.[0])).toContain('page=1')
+  expect(String(fetchMock.mock.lastCall?.[0])).toContain('status=open')
 })
 
 it.each(['HIT', 'MISS', null] as const)('shows the X-Cache state %s from the response', async (cache) => {

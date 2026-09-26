@@ -1,0 +1,236 @@
+{
+    "reviewedPullRequests":  [
+                                 {
+                                     "reviewHead":  "62a96c6d3a6fe94b16e15dbe6e94cf5aabe18a16",
+                                     "number":  79,
+                                     "relatedIssues":  "Related issue: #41",
+                                     "reviewId":  "PRR_kwDOUqJlGs8AAAABPUA6RQ",
+                                     "mergedAt":  "2026-09-25T21:07:11Z",
+                                     "reviewBody":  "Reviewed as Taha (with Claude Code assisting). I merged this branch into current `dev`: no conflicts, `ruff`, `mypy` clean, **294 passed / 1 skipped against a real PostgreSQL 16.10**, so `test_seed_twice_inserts_only_thirty_rows` (the one you could not run) passes: first run 30, second run 0, total 30.\n\n- 30 distinct texts, all six categories and three priorities, fixed `uuid5` ids, `reporter_contact` null, `python -m app.seed` refuses to run without `DATABASE_URL` and disposes the engine. Good use of the repository\u0027s `ON CONFLICT DO NOTHING` insert, so no new SQL.\n\nTwo small things, not blockers:\n1. `docs/AI-USAGE.md`: my #47 row had landed in the Contributor B table (my append went to the end of the file). Your diff moves it to the right table, which is correct; I am fixing my other two rows the same way, so expect a trivial conflict there and keep both.\n2. I will wire `python -m app.seed` into `compose.yaml` (the `migrate` step) myself, since that file is mine until #48 rebases.\n\nApproving.\n",
+                                     "reviewer":  "TahaSohail-Goat"
+                                 },
+                                 {
+                                     "reviewHead":  "99a2fca74a5cb4e769fc48be508d3cf140426c58",
+                                     "number":  81,
+                                     "relatedIssues":  "Related issue: #36",
+                                     "reviewId":  "PRR_kwDOUqJlGs8AAAABPWatuA",
+                                     "mergedAt":  "2026-09-26T07:54:06Z",
+                                     "reviewBody":  "Reviewed as Taha (with Claude Code assisting). All ten required checks are green on this head. I also merged it into current `dev` locally: `npm ci`, `typecheck`, `lint`, `build` pass and **11 Vitest tests pass** (on my Windows path with a space the default fork pool times out, so I ran `vitest run --pool=threads`; CI on Linux runs the normal command and is green).\n\n- Both findings from my #80 review are fixed and tested: the Dashboard aborts the previous request and ignores stale responses (version counter plus `AbortController`, with a test that a slow older response cannot overwrite a newer filter), and Submit shows `Retry after N seconds` from the `Retry-After` header on a 429 (digits only, so a hostile header cannot inject text).\n- `Stats` shows every enum value and `X-Cache` HIT/MISS/Unknown from the response header; the error boundary logs only the error name and component stack, never complaint text; `test` script exists, so the `test-frontend` job now really runs.\n- The evidence PNG is described honestly as a mocked `X-Cache: HIT` response, not a live Redis measurement.\n\nNothing blocking. Approving.\n",
+                                     "reviewer":  "TahaSohail-Goat"
+                                 },
+                                 {
+                                     "reviewHead":  "6da39635fed23bdb51f2e20702ba5a579f92d7f6",
+                                     "number":  91,
+                                     "relatedIssues":  "Related issue: #48",
+                                     "reviewId":  "PRR_kwDOUqJlGs8AAAABPUmQJw",
+                                     "mergedAt":  "2026-09-26T05:52:32Z",
+                                     "reviewBody":  "Reviewed as Taha (with Claude Code assisting). All ten required checks are green on this head, including `integration` with your new negative ping step and the frontend size measurements, so I did not re-run locally; I read every file.\n\nWhat I checked:\n- **frontend/Dockerfile:** two stages, pinned `node:22.23.3-alpine3.24` and `nginx:1.27.5-alpine3.21`, only `dist/` reaches runtime, `USER nginx`, port 8080, healthcheck, nginx as PID 1. The CI step asserts no `node`, no `node_modules`, no `src` in the final image.\n- **nginx.conf:** non-root safe (pid and temp paths in /tmp), `/api/` proxied to `backend:8000` with `X-Forwarded-For $remote_addr` (overwrites the client\u0027s value, exactly what the rate limiter needs), SPA fallback.\n- **compose.yaml:** frontend on `edge` only; backend still the only bridge; Ollama serving container on `internal` only with the model fetched by a one-shot `ollama-pull` on `edge` (good answer to the `internal: true` question); backend published on loopback only; seed runs after migration.\n- **compose.prod.yaml:** no `build:`, no bind mount, no port on the database or cache, `IMAGE_TAG` required (`:?`).\n\nOne real defect to fix before #52 (fine as part of that PR): in `compose.prod.yaml` the images are `civicpulse-backend:${IMAGE_TAG}` and `civicpulse-frontend:${IMAGE_TAG}`, but `cd.yml` will publish `ghcr.io/tahasohail-goat/civicpulse-backend:\u003csha\u003e` (the prod Kustomize overlay already uses those names). As written, `docker compose -f compose.prod.yaml up` cannot pull what CD publishes. Use the full GHCR names in both places.\n\nSmall notes: the production `migrate` also loads the 30 demo complaints (acceptable for the demo, say so in the RUNBOOK); Ollama tag `0.34.0` is pinned, good.\n\nI will update RUNBOOK section 6 (seed) after this merges. Approving.\n",
+                                     "reviewer":  "TahaSohail-Goat"
+                                 },
+                                 {
+                                     "reviewHead":  "595b75c8708259c93d0bd12252ba6e76977902ab",
+                                     "number":  100,
+                                     "relatedIssues":  "Related issue: #55",
+                                     "reviewId":  "PRR_kwDOUqJlGs8AAAABPW0CTA",
+                                     "mergedAt":  "2026-09-26T10:01:19Z",
+                                     "reviewBody":  "Reviewed as Taha (with Claude Code assisting). CI is green on the head. I read the whole README, the capture provenance note, and looked at the screenshots themselves.\n\n- **Your README is better than the one I had drafted in #99, so yours should be the README.** It is honest about what is not done (video, live hosted/Ollama comparison, the 35 % share), it has real screenshots and real transcripts, and the two failed PowerShell quoting attempts are kept. I will **drop my README from #99** so there is no conflict, and only keep what is missing (see below).\n- **Screenshots are real:** I opened `screenshots-dashboard.png`: 31 complaints (30 seeded + your submission), the real complaint id `7f9e15feâ€¦` that the provenance note says was created by a 201 POST; the note states Playwright/Chromium, real HTTP, no mocks. The README claims match the note (`ba312b7`, isolated ports, MISS then HIT, `bad address \u0027database\u0027`, reseed `0 new complaints; 30 defined`).\n- **Answer to your \"why is rules the default\":** agreed. A stranger must be able to start the system without a key or a model download, and the assignment\u0027s fallback contract makes `rules` a legitimate default; the live hosted evidence is honestly marked pending rather than replaced.\n- The API table is right (nine pairs; transitions `open â†’ in_progress/rejected`, `in_progress â†’ resolved/rejected`; limits 10â€“2000 / 3â€“200).\n\nSmall follow-ups I will do after both PRs merge (not blockers here): (1) add one line for macOS/Linux, `cp .env.example .env \u0026\u0026 docker compose up --build`, which is what CI runs; (2) replace the last line that says the LICENSE \"is not present on this branch\" once #99 is in; (3) a test that every relative README link exists; (4) link `scripts/k8s-up.sh` as the bash equivalent of your PowerShell block. Please merge this one first, then I rebase #99.\n\nApproving. Merge it.\n",
+                                     "reviewer":  "TahaSohail-Goat"
+                                 },
+                                 {
+                                     "reviewHead":  "e602563258b06f0bda15dca5191f18e64efb19b3",
+                                     "number":  103,
+                                     "relatedIssues":  "Related issue: #102",
+                                     "reviewId":  "PRR_kwDOUqJlGs8AAAABPW7idw",
+                                     "mergedAt":  "2026-09-26T10:46:54Z",
+                                     "reviewBody":  "Reviewed as Taha (with Claude Code assisting), head `e602563`. CI on this head: all ten required checks and SonarCloud are green.\n\n**I checked that the tests are real regressions:** I put this PR\u0027s `views.test.tsx` on top of the current `dev` Dashboard and ran Vitest: **2 failed / 11 passed**, and the two failures are exactly the two new tests (`hides previous filter results while loading and retriesâ€¦` and `returns to the last valid filtered pageâ€¦`). On this head all **13 pass**, `typecheck` and `lint` are clean.\n\nThe three behaviours you asked me to check, against the code:\n- **Filter change hides stale rows:** `load()` now calls `setResult(null)` before the request, so during loading or after a failure no row from the previous selection sits under the new filter label. The test asserts the old complaint is gone while `Loading` is shown and again after the failure.\n- **Failed request can be retried:** the alert now has a `Retry loading complaints` button that calls `load()` again with the current filters and page (the test checks the selected category is still `water` and the request contains `category=water`). Abort/version protection is untouched, so a retry cannot be overwritten by an older response.\n- **Invalid final page recovers:** when the server\u0027s `total` makes the requested page too high, the component sets `page` to the last valid page and the effect reloads it; it cannot loop (after the correction `page == lastPage`). The test moves the last open row to `in_progress` from page 2 and lands on `20 complaints Â· Page 1 of 1` with `Next` disabled, requesting `page=1\u0026status=open`. The status rules stay on the server (409 text still verbatim, existing tests still pass).\n\nAnswer to your \"why hide old rows\": agreed, keeping rows under a new filter label can make an operator act on the wrong selection, especially when the new request fails.\n\nObservations, none a defect: (1) between the out-of-range response and the corrected fetch there is one render with neither rows nor the Loading text (`finally` sets loading false before the effect re-runs); a one-frame flash, not wrong data. (2) Hiding rows during the reload after a status change makes the list jump and drops keyboard focus from the select the operator just used; acceptable, a possible later polish.\n\nApproving. Artfever can merge it.\n",
+                                     "reviewer":  "TahaSohail-Goat"
+                                 }
+                             ],
+    "mainRules":  {
+                      "value":  [
+                                    {
+                                        "type":  "deletion",
+                                        "ruleset_source_type":  "Repository",
+                                        "ruleset_source":  "TahaSohail-Goat/Assignment1_SCD",
+                                        "ruleset_id":  23990471
+                                    },
+                                    {
+                                        "type":  "non_fast_forward",
+                                        "ruleset_source_type":  "Repository",
+                                        "ruleset_source":  "TahaSohail-Goat/Assignment1_SCD",
+                                        "ruleset_id":  23990471
+                                    },
+                                    {
+                                        "type":  "pull_request",
+                                        "parameters":  {
+                                                           "required_approving_review_count":  1,
+                                                           "dismiss_stale_reviews_on_push":  false,
+                                                           "required_reviewers":  [
+
+                                                                                  ],
+                                                           "require_code_owner_review":  false,
+                                                           "require_last_push_approval":  false,
+                                                           "required_review_thread_resolution":  false,
+                                                           "require_extra_approval_for_unattributed_changes":  true,
+                                                           "allowed_merge_methods":  [
+                                                                                         "merge"
+                                                                                     ]
+                                                       },
+                                        "ruleset_source_type":  "Repository",
+                                        "ruleset_source":  "TahaSohail-Goat/Assignment1_SCD",
+                                        "ruleset_id":  23990471
+                                    },
+                                    {
+                                        "type":  "required_status_checks",
+                                        "parameters":  {
+                                                           "strict_required_status_checks_policy":  false,
+                                                           "do_not_enforce_on_create":  false,
+                                                           "required_status_checks":  [
+                                                                                          {
+                                                                                              "context":  "lint-and-type"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "test-backend"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "test-frontend"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "build (backend)"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "build (frontend)"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "scan (backend)"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "scan (frontend)"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "manifests"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "integration"
+                                                                                          },
+                                                                                          {
+                                                                                              "context":  "context-and-image-size"
+                                                                                          }
+                                                                                      ]
+                                                       },
+                                        "ruleset_source_type":  "Repository",
+                                        "ruleset_source":  "TahaSohail-Goat/Assignment1_SCD",
+                                        "ruleset_id":  23990471
+                                    }
+                                ],
+                      "Count":  4
+                  },
+    "devShortlog":  [
+                        "   109\tTaha Sohail",
+                        "    70\tArtfever"
+                    ],
+    "capturedUtc":  "2026-09-26T12:59:10.8092260Z",
+    "mainShortlog":  [
+                         "   109\tTaha Sohail",
+                         "    42\tArtfever"
+                     ],
+    "ci":  {
+               "conclusion":  "success",
+               "head":  "39fca0cdbc477a0722f1d7bced4477dd7c9c2362",
+               "id":  36243422641,
+               "jobs":  [
+                            {
+                                "name":  "test-backend",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408095907"
+                            },
+                            {
+                                "name":  "manifests",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408096052"
+                            },
+                            {
+                                "name":  "build (frontend)",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408096060"
+                            },
+                            {
+                                "name":  "lint-and-type",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408096072"
+                            },
+                            {
+                                "name":  "build (backend)",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408096081"
+                            },
+                            {
+                                "name":  "context-and-image-size",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408096088"
+                            },
+                            {
+                                "name":  "test-frontend",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408096098"
+                            },
+                            {
+                                "name":  "integration",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408196147"
+                            },
+                            {
+                                "name":  "scan (frontend)",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408202132"
+                            },
+                            {
+                                "name":  "scan (backend)",
+                                "conclusion":  "success",
+                                "url":  "https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36243422641/job/108408202160"
+                            }
+                        ]
+           },
+    "registryImages":  [
+                           {
+                               "reference":  "ghcr.io/tahasohail-goat/civicpulse-backend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa",
+                               "inspection":  [
+                                                  "Name:      ghcr.io/tahasohail-goat/civicpulse-backend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa",
+                                                  "MediaType: application/vnd.oci.image.index.v1+json",
+                                                  "Digest:    sha256:1ac0d14d97990c51be8e329fdda1108c7bcb63316c8abbbf1fc118e260e99a5e",
+                                                  "           ",
+                                                  "Manifests: ",
+                                                  "  Name:        ghcr.io/tahasohail-goat/civicpulse-backend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa@sha256:66dc368023edab44f281df1980304afc6b4b76e25df6165909569fd707bf82cf",
+                                                  "  MediaType:   application/vnd.oci.image.manifest.v1+json",
+                                                  "  Platform:    linux/amd64",
+                                                  "               ",
+                                                  "  Name:        ghcr.io/tahasohail-goat/civicpulse-backend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa@sha256:16c413d0d8d10e948cfa333ae804e889475f26818fd68a79ac4e8896376cca8c",
+                                                  "  MediaType:   application/vnd.oci.image.manifest.v1+json",
+                                                  "  Platform:    unknown/unknown",
+                                                  "  Annotations: ",
+                                                  "    vnd.docker.reference.digest: sha256:66dc368023edab44f281df1980304afc6b4b76e25df6165909569fd707bf82cf",
+                                                  "    vnd.docker.reference.type:   attestation-manifest"
+                                              ]
+                           },
+                           {
+                               "reference":  "ghcr.io/tahasohail-goat/civicpulse-frontend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa",
+                               "inspection":  [
+                                                  "Name:      ghcr.io/tahasohail-goat/civicpulse-frontend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa",
+                                                  "MediaType: application/vnd.oci.image.index.v1+json",
+                                                  "Digest:    sha256:e475963b74acf4d994fd61ddd1ec4c902d86f7b1620f56ab20a59067ef84f261",
+                                                  "           ",
+                                                  "Manifests: ",
+                                                  "  Name:        ghcr.io/tahasohail-goat/civicpulse-frontend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa@sha256:bb81183de462e1a086578231ce002fe6e2139c16b1bdf19e9717c392833ba60b",
+                                                  "  MediaType:   application/vnd.oci.image.manifest.v1+json",
+                                                  "  Platform:    linux/amd64",
+                                                  "               ",
+                                                  "  Name:        ghcr.io/tahasohail-goat/civicpulse-frontend:c5f5e38ec222de9f28b6e3b9d319c244e1c447aa@sha256:7f1b4e41c38b59b91ca2aad454ea9429ba2d90c12ad58a3e991f8beded02c9e8",
+                                                  "  MediaType:   application/vnd.oci.image.manifest.v1+json",
+                                                  "  Platform:    unknown/unknown",
+                                                  "  Annotations: ",
+                                                  "    vnd.docker.reference.digest: sha256:bb81183de462e1a086578231ce002fe6e2139c16b1bdf19e9717c392833ba60b",
+                                                  "    vnd.docker.reference.type:   attestation-manifest"
+                                              ]
+                           }
+                       ]
+}

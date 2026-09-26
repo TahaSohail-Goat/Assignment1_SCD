@@ -3,7 +3,7 @@
 Evidence must be real and reproducible.
 
 ## Repository / GitHub
-- protected main screenshot
+- protected `main` and `dev`: ruleset exports (`docs/evidence/ruleset-*.json`) and the CI gate demonstration (`docs/evidence/ci-gate.md`)
 - issue hierarchy
 - labels
 - branch list

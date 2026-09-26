@@ -126,7 +126,7 @@ Each package lists the files it owns; a session never edits a file owned by an o
 - **#53 P11-S01** (`TahaSohail-Goat`): `docs/evidence/compose-*`; `docs/RUNBOOK.md`
 - **#54 P11-S02** (`Artfever`): `docs/evidence/k8s-pg-*`; `docs/evidence/k8s-rollback-*`; `docs/evidence/k8s-zero-downtime-*`; `docs/ENGINEERING-NOTES.md`
 - **#55 P12-S01** (`Artfever`): `README.md`; `docs/evidence/screenshots-*`
-- **#56 P12-S02** (`TahaSohail-Goat`): `scripts/check_submission.py`; `docs/FINAL_SUBMISSION_CHECKLIST.md`; `LICENSE`; `docs/PHASE_STATUS.md`; `docs/evidence/protection-*`
+- **#56 P12-S02** (`TahaSohail-Goat`): `scripts/check_submission.py`; `docs/FINAL_SUBMISSION_CHECKLIST.md`; `LICENSE`; `docs/PHASE_STATUS.md`
 
 Files that two packages both touch are **serialized** (one after the other) or **append-only**:
 

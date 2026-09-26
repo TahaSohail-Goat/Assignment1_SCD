@@ -1,0 +1,16 @@
+{
+  "timestamp_utc": "2026-09-26T12:58:37.289045+00:00",
+  "redis_version": "7.4.11",
+  "provider": "rules",
+  "requests": 2,
+  "hits": 1,
+  "misses": 1,
+  "provider_calls": 1,
+  "hit_rate": 0.5,
+  "ttl_seconds": 86400,
+  "category": "roads",
+  "priority": "low",
+  "first_latency_ms": 3,
+  "second_latency_ms": 0,
+  "scope": "two-request synthetic service-level run against real Redis; not hosted/offline comparison"
+}
