@@ -41,6 +41,48 @@ function fillSubmit(text = 'The street light is broken.', location = 'Ward 2') {
   fireEvent.change(screen.getByLabelText('Location'), { target: { value: location } })
 }
 
+it('counts supplementary Unicode characters like the backend at minimum lengths', () => {
+  const fetchMock = vi.fn()
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Submit />)
+  fillSubmit('😀'.repeat(5), '😀😀')
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  expect(screen.getByText('Complaint must be 10–2000 characters.')).toBeTruthy()
+  expect(screen.getByText('Location must be 3–200 characters.')).toBeTruthy()
+  expect(fetchMock).not.toHaveBeenCalled()
+})
+
+it('accepts Unicode maximum lengths without UTF-16 input truncation', async () => {
+  const fetchMock = vi.fn(async () => reply(201, complaint))
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Submit />)
+  const text = '😀'.repeat(2000)
+  const location = '😀'.repeat(200)
+  fillSubmit(text, location)
+  fireEvent.change(screen.getByLabelText('Contact (optional)'), { target: { value: location } })
+  for (const label of ['Complaint', 'Location', 'Contact (optional)']) {
+    expect(screen.getByLabelText(label).hasAttribute('maxlength')).toBe(false)
+  }
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  await screen.findByText('Complaint submitted')
+  expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({
+    text, location, reporter_contact: location,
+  })
+})
+
+it('rejects Unicode input exceeding the backend maximum lengths', () => {
+  const fetchMock = vi.fn()
+  vi.stubGlobal('fetch', fetchMock)
+  render(<Submit />)
+  fillSubmit('😀'.repeat(2001), '😀'.repeat(201))
+  fireEvent.change(screen.getByLabelText('Contact (optional)'), { target: { value: '😀'.repeat(201) } })
+  fireEvent.click(screen.getByRole('button', { name: 'Submit complaint' }))
+  expect(screen.getByText('Complaint must be 10–2000 characters.')).toBeTruthy()
+  expect(screen.getByText('Location must be 3–200 characters.')).toBeTruthy()
+  expect(screen.getByText('Contact must be at most 200 characters.')).toBeTruthy()
+  expect(fetchMock).not.toHaveBeenCalled()
+})
+
 it('refuses short text and location before sending a request', () => {
   const fetchMock = vi.fn()
   vi.stubGlobal('fetch', fetchMock)
