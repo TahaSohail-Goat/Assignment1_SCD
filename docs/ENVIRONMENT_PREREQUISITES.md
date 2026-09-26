@@ -1,5 +1,8 @@
 # Environment Prerequisites
 
+Sections 1-7 preserve Taha's initial 2026-09-25 scan and install guidance. Section 8
+contains separate contributor snapshots; the dated follow-up supersedes Artfever's initial missing-tool results.
+
 Phase 00 inspects the host **before** telling anyone to install anything. Only missing or incompatible tools get instructions; nothing already installed is re-installed.
 
 - **Scan date:** 2026-09-25 · **Host:** Windows 11 Pro 10.0.26200 · shell: PowerShell 5.1 + Git Bash · **not elevated** (installs below need an administrator prompt)
@@ -188,3 +191,19 @@ Each contributor installs on **their own machine** (an AI session may propose th
 | k6 | command not found | ❌ before #50 (Phase 09), §4.5 |
 
 **Phase-start rule:** a package is not started until the tools it needs are installed and verified on the machine of the person who owns it.
+
+### Artfever follow-up: actual Docker/Ollama measurement (2026-09-26)
+
+The original 2026-09-25 inventory above is historical. Artfever now runs Docker
+29.8.0 and Compose 5.5.1 on an i7-11800H (8 cores / 16 threads), with 23.77 GiB
+host RAM and about 11.6 GiB available to the Docker VM. These are his machine's
+measurements, not an update to Taha's hardware or installation state.
+
+The [environment capture](evidence/provider-comparison-environment.json) records
+Ollama 0.34.0 running `gemma3:1b` inside Docker with 2 CPU / 3 GiB limits and no
+GPU passthrough. The downloaded model is 815,319,791 bytes; peak charged container
+memory was 1,062,825,984 bytes (includes page cache). See the
+[comparison report](evidence/provider-comparison-README.md) for latency and quality:
+installation succeeded, but this CPU setup often needed a retry under the unchanged
+10-second per-attempt timeout. The model was unloaded after measurement to free RAM;
+its downloaded volume is retained. No host Ollama installation is needed.
