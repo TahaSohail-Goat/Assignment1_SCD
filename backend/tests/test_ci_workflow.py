@@ -19,7 +19,7 @@ TRIGGERS: dict[str, Any] = WORKFLOW[True]  # PyYAML reads the bare key `on` as t
 
 
 def test_it_runs_on_pull_requests_to_main_and_dev_and_on_push_to_dev() -> None:
-    assert set(TRIGGERS) == {"pull_request", "push"}
+    assert set(TRIGGERS) == {"pull_request", "push", "workflow_call"}
     assert TRIGGERS["pull_request"]["branches"] == ["main", "dev"]
     assert TRIGGERS["push"]["branches"] == ["dev"]
 
