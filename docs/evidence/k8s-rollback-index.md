@@ -1,6 +1,7 @@
 # Kubernetes rollback evidence (#54)
 
-The original, unedited capture is [cd-local-rollback.txt](cd-local-rollback.txt), committed
+The archived copy [k8s-rollback-local.txt](k8s-rollback-local.txt) is byte-identical to
+the original. The original, unedited capture is [cd-local-rollback.txt](cd-local-rollback.txt), committed
 with #52. Both methods were run against the real kind cluster through the actual ingress.
 It records 0.18s for imperative undo and 0.94s for restoring the previous source overlay/SHA.
 The intentionally missing image never displaced the old healthy replicas. These timings

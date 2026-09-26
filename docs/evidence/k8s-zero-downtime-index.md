@@ -1,5 +1,9 @@
 # Kubernetes rolling replacement evidence (#54)
 
+Archives under this package's names: [baseline](k8s-zero-downtime-baseline50.txt) and
+[adjusted](k8s-zero-downtime-adjusted50.txt). Each identifies original file SHA256 values
+and includes the original log/metadata/rollout text.
+
 Original captures (two runs, not new measurements):
 
 - [Baseline summary](k8s-load-baseline50/summary.json), [rollout command](k8s-load-baseline50/set-image.txt), [rollout completion](k8s-load-baseline50/rollout-status.txt).

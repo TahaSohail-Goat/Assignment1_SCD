@@ -22,8 +22,11 @@ Demonstrated today: continuous integration with automated lint/type checks, test
 manifest validation and Compose integration (`.github/workflows/ci.yml:35` onward). Reviewed
 feature changes reach dev through PRs. Continuous delivery/deployment automation is implemented:
 `.github/workflows/cd.yml:13` calls the full CI suite, `:17` gates publishing on it, and `:76` gates the disposable
-Kubernetes deployment on publishing. A successful main-branch CD run is still needed before
-claiming that end-to-end delivery has been demonstrated; local rehearsal does not prove GHCR.
+Kubernetes deployment on publishing. The [first main CD run](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36228513110)
+passed the full test gate, published both images and generated both Syft SBOMs. Deployment
+then failed while waiting for a completed ingress admission Job that upstream immediately
+deletes (`ttlSecondsAfterFinished: 0`). End-to-end delivery is therefore not yet demonstrated;
+a successful rerun after correcting that readiness check remains necessary.
 
 The next demonstrated rung is automated delivery of a tested, identifiable artifact to the
 cluster, with rollout and ingress checks. Beyond this assignment's ephemeral runner, a persistent

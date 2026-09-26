@@ -1,0 +1,78 @@
+# Archived zero-downtime capture: adjusted50
+This is an index-and-copy of the original #50 run, not a new experiment.
+
+## Source: docs/evidence/k8s-load-adjusted50/metadata.json
+SHA256: a70d9383fd2cf2bb3a178f41183d57ff4cce4f1486f578b144560172fe45fde4
+
+{
+  "started_utc": "2026-09-26T06:11:24.545361+00:00",
+  "rate": "50",
+  "hold": "180s",
+  "context": "kind-civicpulse",
+  "base_url": "http://frontend",
+  "k6_image": "grafana/k6:2.2.0",
+  "source_commit": "b442e8d6b68e6a3af778f4eda48be3c6641a3da1",
+  "workload_sha256": "2dfd13bd88829bc82492ba3049d9321aa9cec841831510ef27cedcf66b0a4866",
+  "rollout_image": "civicpulse-backend:rollout-b442e8d",
+  "k6_exit_code": 0,
+  "finished_utc": "2026-09-26T06:15:21.172435+00:00",
+  "raw_k6_sha256": "2b75a378b1739d23f8cfa60a57d39d2fc75b06569cc209389a3aad41c8db9865"
+}
+## Source: docs/evidence/k8s-load-adjusted50/set-image.txt
+SHA256: eeb7b51a87ba33eb540dd6f3dcfaf2913f9ee92fad2491d97a34774f033f3fb2
+
+deployment.apps/backend image updated
+
+## Source: docs/evidence/k8s-load-adjusted50/rollout-start-utc.txt
+SHA256: 0cf4dc23ffad3e71ec1fcc748119680d38df7638a1e51e61b53a164d8b5a99b9
+
+2026-09-26T06:12:38.366018+00:00
+## Source: docs/evidence/k8s-load-adjusted50/rollout-status.txt
+SHA256: 057d3ec50b8e3e22ce36f67bb3e15be36d0b949beb19a1d48468d991d0ea14a7
+
+deployment "backend" successfully rolled out
+
+## Source: docs/evidence/k8s-load-adjusted50/k6.txt
+SHA256: 58e98e12def5ddc23277a9bdda5df8ebc3efe8dd608d068300d919513f88f006
+
+
+
+  â–ˆ THRESHOLDS 
+
+    checks
+    âœ“ 'rate==1' rate=100.00%
+
+    dropped_iterations
+    âœ“ 'count==0' count=0
+
+    http_req_failed
+    âœ“ 'rate==0' rate=0.00%
+
+
+  â–ˆ TOTAL RESULTS 
+
+    checks_total.......: 9559    41.2042/s
+    checks_succeeded...: 100.00% 9559 out of 9559
+    checks_failed......: 0.00%   0 out of 9559
+
+    âœ“ read returns 200
+
+    HTTP
+    http_req_duration..............: avg=3.95ms min=1.5ms  med=3.99ms max=44.15ms p(90)=5.81ms p(95)=6.48ms
+      { expected_response:true }...: avg=3.95ms min=1.5ms  med=3.99ms max=44.15ms p(90)=5.81ms p(95)=6.48ms
+    http_req_failed................: 0.00%  0 out of 9559
+    http_reqs......................: 9559   41.2042/s
+
+    EXECUTION
+    dropped_iterations.............: 0      0/s
+    iteration_duration.............: avg=4.16ms min=1.63ms med=4.16ms max=44.37ms p(90)=6.1ms  p(95)=6.82ms
+    iterations.....................: 9559   41.2042/s
+    vus............................: 0      min=0         max=0  
+    vus_max........................: 100    min=100       max=100
+
+    NETWORK
+    data_received..................: 39 MB  169 kB/s
+    data_sent......................: 818 kB 3.5 kB/s
+
+
+
