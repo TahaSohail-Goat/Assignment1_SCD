@@ -1,0 +1,24 @@
+2026-09-26T07:58:22.455727+00:00
+ASG-DATA-023: local kind database pod replacement; no PVC/volume deletion.
+SQL fingerprint (all row fields, ordered by id): SELECT count(*), md5(string_agg(row_to_json(c)::text, E'\n' ORDER BY id)) FROM complaints c;
+$ kubectl --context kind-civicpulse -n civicpulse exec -i database-0 -- psql -U civicpulse -d civicpulse -At
+30|0c1dd90f66dc3c0884860e221147ce8e
+
+$ kubectl --context kind-civicpulse -n civicpulse get pod database-0 -o jsonpath={.metadata.uid}
+f80b3c2a-961d-4dbb-bd18-69961cb46a87
+$ kubectl --context kind-civicpulse -n civicpulse get pvc data-database-0 -o jsonpath={.metadata.uid}
+83c16544-f9b0-4bb6-a521-49e9b0f7bf57
+$ kubectl --context kind-civicpulse -n civicpulse delete pod database-0 --wait=true
+pod "database-0" deleted from civicpulse namespace
+
+$ kubectl --context kind-civicpulse -n civicpulse wait --for=condition=Ready pod/database-0 --timeout=120s
+pod/database-0 condition met
+
+$ kubectl --context kind-civicpulse -n civicpulse exec -i database-0 -- psql -U civicpulse -d civicpulse -At
+30|0c1dd90f66dc3c0884860e221147ce8e
+
+$ kubectl --context kind-civicpulse -n civicpulse get pod database-0 -o jsonpath={.metadata.uid}
+715567be-7c3f-4f53-8bbd-0a98160c3153
+$ kubectl --context kind-civicpulse -n civicpulse get pvc data-database-0 -o jsonpath={.metadata.uid}
+83c16544-f9b0-4bb6-a521-49e9b0f7bf57
+PASS: identical nonempty row count + full-row fingerprint; pod UID changed; PVC UID unchanged.
