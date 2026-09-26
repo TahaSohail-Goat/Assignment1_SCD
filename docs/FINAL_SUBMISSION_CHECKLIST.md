@@ -2,16 +2,16 @@
 
 ## Snapshot and interpretation
 
-Audit follow-up #109, 2026-09-26, Artfever. Verified dev `39fca0c`, main `c5f5e38`.
+Audit follow-ups #109/#112, 2026-09-26, Artfever. Earlier evidence uses dev `39fca0c`; latest promoted main is `db720f3`. Live provider source revisions are recorded in the #112 comparison report.
 This is an in-progress final audit, not a declaration that the assignment is complete.
 PASS means the stated verification has supporting evidence; FAIL means a known unmet
 condition; BLOCKED means final verification is held or not completed. Unverified does
 not mean unimplemented. Optional/advisory rows do not create mandatory work.
 
-Owner direction: video and live Groq/Ollama comparison are on hold until the end.
+Owner direction: video remains on hold. Live Groq/Ollama comparison resumed and was measured in #112; fixes/evidence await partner review.
 Ruleset/instructor screenshots and exact-deadline confirmation are removed from the task
-list; existing ruleset exports remain. No screenshot is claimed captured. No local Ollama
-service was started. Keep #55, #56 and #31 open.
+list; existing ruleset exports remain. No screenshot is claimed captured. The local offline
+profile was exercised in #112. Keep #55, #56 and #31 open.
 
 ## Commands and evidence
 
@@ -39,7 +39,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-GEN-002 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
 | ASG-GEN-003 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
 | ASG-GEN-004 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
-| ASG-GEN-005 | BLOCKED | Owner HOLD: default Compose runs four long-lived services; optional offline profile with the fifth Ollama service has not been exercised live. |
+| ASG-GEN-005 | PASS | Live five-service Compose profile, completed model download and healthy services captured in evidence/provider-comparison-api.json; downloader argv defect fixed in #112. Video remains separate. |
 | ASG-GEN-006 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
 | ASG-GEN-007 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
 | ASG-GEN-008 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
@@ -137,13 +137,13 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-CACHE-012 | PASS | docs/ENGINEERING-NOTES.md Redis volume decision explains AOF counter durability and one-second crash window. |
 | ASG-AI-001 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
 | ASG-AI-002 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
-| ASG-AI-003 | BLOCKED | Owner HOLD on live hosted/Ollama comparison and account limits. Implementations and mocked tests exist; live hosted/offline operation and quality are not claimed. |
+| ASG-AI-003 | PASS | All four implementations exist; rules/simulated have deterministic tests, and both Groq/Ollama now have live service plus POST/GET/metadata evidence in evidence/provider-comparison-README.md (#112). |
 | ASG-AI-004 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
-| ASG-AI-005 | BLOCKED | Owner HOLD on live hosted/Ollama comparison and account limits. Implementations and mocked tests exist; live hosted/offline operation and quality are not claimed. |
-| ASG-AI-006 | BLOCKED | Owner HOLD on live hosted/Ollama comparison and account limits. Implementations and mocked tests exist; live hosted/offline operation and quality are not claimed. |
+| ASG-AI-005 | PASS | Live Groq: 24/24 valid scored responses and real API creation/read/metadata. Client identification header fixes observed HTTP 403; original failures retained. See evidence/provider-comparison-README.md. |
+| ASG-AI-006 | PASS | Live gemma3:1b in internal-only Ollama container, CPU inference; 22/24 valid scored responses, two fallbacks, plus actual API model/fallback results. Model digest, network, resources and raw outputs captured in evidence/provider-comparison-README.md. |
 | ASG-AI-007 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
 | ASG-AI-008 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
-| ASG-AI-009 | BLOCKED | Owner HOLD on live hosted/Ollama comparison and account limits. Implementations and mocked tests exist; live hosted/offline operation and quality are not claimed. |
+| ASG-AI-009 | PASS | Published free limits rechecked 2026-09-26; actual response headers show 1000 RPD and 8000 TPM. RPM/TPD are published values; account billing plan is not inferred. ZDR operator-confirmed. See ENGINEERING-NOTES.md and provider-comparison-groq.json. |
 | ASG-AI-010 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
 | ASG-AI-011 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
 | ASG-AI-012 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
@@ -159,36 +159,36 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-AI-022 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
 | ASG-AI-023 | PASS | backend/tests/test_remote_triage.py, test_triage_service.py, test_injection_cache.py, test_meta.py; backend/app/providers/triage/. Controlled HTTP/schema/fallback tests pass in CI 36243422641; does not establish live model quality. |
 | ASG-AI-024 | PASS | docs/adr/0004-pii-and-data-governance.md records data flow, synthetic-data restriction and dated provider terms. Runtime tests are separate. |
-| ASG-AI-025 | BLOCKED | Owner HOLD on live hosted/Ollama comparison and account limits. Implementations and mocked tests exist; live hosted/offline operation and quality are not claimed. |
-| ASG-DEVOPS-001 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-002 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-003 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-004 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-005 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-006 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-007 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-008 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-009 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-010 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-011 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-012 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-013 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-014 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-015 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-016 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-017 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-018 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-019 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-020 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-021 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-022 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-023 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-024 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-025 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-026 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-027 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-028 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
-| ASG-DEVOPS-029 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Optional Ollama runtime remains unverified. |
+| ASG-AI-025 | PASS | Two uncached rounds of 12 fixed synthetic cases per provider. Groq median 663 ms; Ollama 18299.5 ms with retries. Category/priority agreement, summary errors, failures and limitations recorded in evidence/provider-comparison-README.md. Recommended measurement, not a mandatory accuracy target. |
+| ASG-DEVOPS-001 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-002 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-003 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-004 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-005 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-006 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-007 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-008 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-009 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-010 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-011 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-012 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-013 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-014 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-015 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-016 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-017 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-018 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-019 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-020 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-021 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-022 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-023 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-024 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-025 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-026 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-027 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-028 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
+| ASG-DEVOPS-029 | PASS | backend/tests/test_container_files.py; both Dockerfiles, compose.yaml and compose.prod.yaml; CI 36243422641 build/scan/context-and-image-size/integration jobs pass. Live offline profile verified in #112; see evidence/provider-comparison-README.md. |
 | ASG-K8S-001 | PASS | backend/tests/test_k8s_manifests.py; k8s/base and overlays; CI manifest validation; main CD 36235766515 and docs/evidence/k8s-load-README.md, k8s-pg-persistence.txt. Existing real cluster captures, not a new load run. |
 | ASG-K8S-002 | PASS | backend/tests/test_k8s_manifests.py; k8s/base and overlays; CI manifest validation; main CD 36235766515 and docs/evidence/k8s-load-README.md, k8s-pg-persistence.txt. Existing real cluster captures, not a new load run. |
 | ASG-K8S-003 | PASS | backend/tests/test_k8s_manifests.py; k8s/base and overlays; CI manifest validation; main CD 36235766515 and docs/evidence/k8s-load-README.md, k8s-pg-persistence.txt. Existing real cluster captures, not a new load run. |
@@ -311,7 +311,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-SUB-001 | PASS | gh repo view confirms PUBLIC; URL in SUBMISSION.md. |
 | ASG-SUB-002 | PASS | Main CD run 36235766515 succeeded at c5f5e38. Refresh after final promotion. |
 | ASG-SUB-003 | PASS | Both GHCR c5f5e38 full-SHA tags resolve via docker buildx imagetools inspect; manifest digests captured in evidence/final-audit-github.json. |
-| ASG-SUB-004 | BLOCKED | Owner HOLD: video or live comparison. Implementation does not replace actual evidence. |
+| ASG-SUB-004 | BLOCKED | Owner HOLD: demo video/link remains outstanding. Live provider comparison is captured in #112; it does not replace the video. |
 | ASG-SUB-005 | PASS | Command, revision and shortlog snapshot recorded in SUBMISSION.md; refresh final main. |
 | ASG-SUB-006 | PASS | docs/evidence/k8s-load-baseline50/hpa-watch.txt and k8s-load-comparison.png exist; load method and findings checked against k8s-load-README.md. |
 | ASG-SUB-007 | PASS | Submission lint executed on origin/dev 39fca0c; actual output in evidence/final-audit-index.md. Must repeat after final promotion. |
@@ -371,7 +371,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | E2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | E3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | E4 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
-| F1 | BLOCKED | Reconcile all mapped requirement evidence before final sign-off. |
+| F1 | PASS | ASG-AI-002..008: deterministic provider tests plus live Groq and Ollama POST/GET/metadata evidence in #112; all four provider implementations verified within their stated scopes. |
 | F2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | F3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | F4 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
@@ -382,7 +382,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | G2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | G3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | G4 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
-| G5 | BLOCKED | Reconcile all mapped requirement evidence before final sign-off. |
+| G5 | PASS | Both Compose files inspected; live five-service profile healthy and one-shot model downloader completed. evidence/provider-comparison-api.json and the two new downloader regressions cover #112. |
 | G6 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | H1 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | H2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
@@ -410,9 +410,9 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 
 ## Final handoff
 
-1. Partner reviews #109 evidence update; #108 is merged. Promotion of reviewed dev needs a separate approval.
+1. Partner reviews #112 live comparison and integration fixes. Earlier #110/#111 are merged; the next promotion needs its own approval.
 2. Refresh contribution counts on dev and main; exclude unrelated/unmerged branches.
 3. Finish per-ID and rubric evidence review, including PostgreSQL integration on final head.
-4. Resume held comparison/video when Artfever directs it; add actual results and video link.
+4. Record/upload the held demo video when Artfever resumes it; add its link. The live comparison is captured in #112.
 5. Promote reviewed dev changes; verify new main CD and refresh submission references.
 6. Close #55/#56/#31 only when their acceptance criteria are met.
