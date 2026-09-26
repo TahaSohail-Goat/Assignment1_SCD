@@ -190,7 +190,7 @@ Documented set plus the phase labels. Two labels were **added** in Phase 00 beca
 ### Issue templates
 `.github/ISSUE_TEMPLATE/` provides `phase.yml` (parent), `feature.yml`, `docs.yml` and `bug.yml`. Every template carries the sections required above (objective, requirement IDs, context, in/out of scope, acceptance criteria, test/evidence criteria, owner, dependencies, definition of done). The pull-request template is `.github/pull_request_template.md`.
 
-### Branch protection and review (as configured 2026-09-25)
+### Branch protection and review (configured 2026-09-25, relaxed the same day)
 Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write). Protection is implemented as two repository **rulesets** (Settings → Rules → Rulesets); the exported JSON is in `docs/evidence/`.
 
 | Setting | `main` (ruleset 23990471) | `dev` (ruleset 23990939) |
@@ -198,18 +198,20 @@ Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write). Prot
 | Deletion | blocked | blocked |
 | Force-push / non-fast-forward | blocked | blocked |
 | Pull request required | yes | yes |
-| Approvals required | **1** (the author cannot approve their own PR) | **1** |
-| Stale approvals dismissed on new push | yes | yes |
-| Review threads must be resolved | yes | yes |
+| Approvals required | **1** (the author cannot approve their own PR) | **0** |
+| Stale approvals dismissed on new push | no | no |
+| Review threads must be resolved | no | no |
 | Bypass actors | none (admin included) | none |
 | Allowed merge methods | **merge commit only** | rebase or merge commit |
-| Required status checks | *not yet* — added with `ci.yml` in Phase 10 (rubric I1); names must match the job names | *not yet* |
+| Required status checks | the ten `ci.yml` jobs (rubric I1): `lint-and-type`, `test-backend`, `test-frontend`, `build (backend)`, `build (frontend)`, `scan (backend)`, `scan (frontend)`, `manifests`, `integration`, `context-and-image-size` | the same ten |
+
+**Owner decision (2026-09-25): keep the process light.** `dev` was relaxed so that a merge is never blocked by review state, and `main` keeps exactly what the assignment requires (§3.4 p17, rubric A1): a pull request, one approval and, once `ci.yml` exists, the required checks. One thing GitHub still enforces on both branches: a review that **requests changes** blocks the merge until its author approves or dismisses it, so reviewers request changes only for real defects.
 
 Repository level: **squash merge is disabled** (it would erase the per-author commit counts rubric A4 measures); *delete branch on merge* stays **off** (it would try to delete `dev` after every `dev` → `main` merge); auto-merge is off.
 
-Still open for `ASG-GH-001`: a screenshot of the ruleset page in `docs/evidence/` (a CLI cannot take one; the JSON exports are supporting evidence only) and the required status checks.
+Evidence: `docs/evidence/ruleset-main.json` and `ruleset-dev.json` (exports of the live rules, including the required checks) and `docs/evidence/ci-gate.md` (a red pull request blocked, then green). Still open for `ASG-GH-001`: a screenshot of the ruleset page itself (`docs/evidence/protection-*`, taken by the repository owner in the browser; a CLI cannot take one).
 
-Merge only PRs that have a substantive partner review — an unreviewed merge cannot count toward the "≥ 5 merged PRs with partner review" rubric line, and the rulesets now enforce it.
+Ask for a partner review on every PR: rubric A3 counts merged PRs that carry a substantive partner review ("≥ 5 merged PRs"), and a review comment on a merged PR still counts. `dev` no longer enforces it, so a PR may be merged when time forces it, but an unreviewed merge does not help that rubric line.
 
 ### Requirement IDs in issues
 Every issue and PR cites `ASG-*` IDs from `docs/ASSIGNMENT_TRACEABILITY.md`. When a PR completes an ID, update that row's Owner/Issue/Artifact/Evidence/Status in the same PR.
