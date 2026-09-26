@@ -110,7 +110,7 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 | AI use | Allowed; each of us uses an assistant under their **own** account and discloses it in `docs/AI-USAGE.md` (assignment §5.5) | Only this two-account arrangement rests on the verbal answer |
 | Zero-downtime demo | Not asked | We do it anyway (§3.3, bonus +4) |
 | Initial commit on `main` | Not asked | History is not rewritten |
-| LICENSE | Not decided | Both members decide in Phase 12 |
+| LICENSE | Not decided at the original discussion | Subsequently implemented as [MIT](../LICENSE) in #99; this is a repository decision, not a new instructor answer |
 | `triaged_by` for `SimulatedTriage` and other hosted providers | Not specified by the assignment | Decided in Phase 02 (API design, #33) and recorded in the design document and an ADR; the four listed values must all be accepted |
 | Purpose of `docs/TRIAGE.md` | Not specified by the assignment | Triage design lives in `docs/AI.md`; decide by Phase 07 |
 | Frontend image tag | §2.1 says `nginx:alpine`, §3.1 says `nginx:1.27-alpine` | The pinned tag in §3.1 governs |
