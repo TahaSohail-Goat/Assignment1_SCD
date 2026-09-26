@@ -34,4 +34,23 @@ Groq's [data controls](https://console.groq.com/docs/your-data) say inference da
 
 The offline implementation calls Ollama's [`POST /api/chat`](https://docs.ollama.com/api/chat) with `stream: false` and a JSON schema in `format`, as documented in Ollama's [structured-output guide](https://docs.ollama.com/capabilities/structured-outputs). The default `gemma3:1b` is a [published 1B-parameter model](https://ollama.com/library/gemma3%3A1b); the default service URL is `http://ollama:11434` inside the deployment network. Provider methods make one call. `TriageService` owns the 10-second cutoff, the single jittered retry for typed timeout/429/5xx errors, and rules fallback.
 
-The hosted-versus-offline latency and quality comparison has not been measured; record real runs in `docs/ENGINEERING-NOTES.md` when both services are available.
+## Live comparison (2026-09-26, issue #112)
+
+Artfever confirmed ZDR before hosted requests. Two uncached rounds of the same 12
+synthetic cases used the production providers and unchanged timeout/retry/fallback
+policy. Groq returned 24/24 valid model responses, with 24/24 category and 20/24
+priority agreements against the predefined experiment labels; median service
+latency was 663 ms. CPU-only `gemma3:1b` returned 22/24 valid responses and two
+fallbacks; among valid responses, category agreement was 11/22 and priority 15/22,
+with an 18,299.5 ms service median including retries. Labels are experiment
+judgments, not assignment-prescribed urgency rules or a general accuracy benchmark.
+
+The first live run exposed and fixed the Compose downloader's shell argument
+splitting and Groq's rejection of the default urllib user-agent on this connection.
+The hosted client now identifies itself as `CivicPulse/1.0`. Successful response
+headers reported 1,000 requests/day and 8,000 tokens/minute; RPM/TPD remain the
+published values above. All original failures, actual outputs, model identity,
+memory/network evidence and live API checks are retained in the
+[comparison report](evidence/provider-comparison-README.md). Both provider paths
+were exercised through complaint creation, retrieval and provider metadata.
+The app was restored to rules mode after measurement; the video remains pending.
