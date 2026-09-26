@@ -30,6 +30,12 @@ jobs:
           sudo install /tmp/kubectl /usr/local/bin/kubectl
       - name: bash scripts/k8s-up.sh
         run: bash scripts/k8s-up.sh
+      - name: RUNBOOK sections 11-12, autoscaler objects are present
+        run: |
+          kubectl -n civicpulse get pods
+          kubectl -n civicpulse get hpa backend-hpa
+          kubectl -n civicpulse describe vpa backend-vpa | grep -E 'Update Mode|Name:'
+          kubectl -n civicpulse rollout status deployment/backend
       - name: Deleting the database pod keeps every row (ASG-DATA-023)
         run: |
           fingerprint() {
