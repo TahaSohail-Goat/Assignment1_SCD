@@ -109,7 +109,9 @@ jobs:
           kubectl apply -f "$vpa/recommender-deployment.yaml"
           kubectl wait --for=condition=Established crd/verticalpodautoscalers.autoscaling.k8s.io --timeout=60s
           kubectl -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=180s
-          kubectl -n ingress-nginx wait --for=condition=complete job/ingress-nginx-admission-patch --timeout=120s
+          # Upstream deletes completed admission Jobs immediately (TTL=0). Wait for their
+          # durable result instead; querying the finished Job races its garbage collection.
+          kubectl wait --for=jsonpath='{.webhooks[0].clientConfig.caBundle}' validatingwebhookconfiguration/ingress-nginx-admission --timeout=120s
           kubectl -n kube-system rollout status deployment/metrics-server --timeout=120s
       - name: Load the published digests under their SHA tags
         run: |
