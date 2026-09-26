@@ -270,7 +270,7 @@ Instructor answers and the decisions still open are in the decisions table of [`
 
 | Question | Status |
 |---|---|
-| Duration "2 Weeks" vs "four weeks"; no deadline date | The instructor: the deadline is the Google Classroom one, "next Tuesday"; the exact date is to be confirmed |
+| Duration "2 Weeks" vs "four weeks"; no deadline date | The instructor: the deadline is the Google Classroom one, "next Tuesday" |
 | Rubric sums to 175 (A–G to 120), not the stated 150 (110) | The instructor: left as it is; the teaching assistant manages it |
 | "Ten endpoints" vs nine listed | Nine; the instructor confirmed there is no tenth |
 | `triaged_by` value for the simulated and non-Groq providers | Open; decided in Phase 02 (API design) and recorded in an ADR |

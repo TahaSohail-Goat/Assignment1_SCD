@@ -268,7 +268,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
 | ASG-CICD-001 | §3.4 p17 | Three workflows: `ci.yml`, `cd.yml`, `release.yml` | Mandatory | TahaSohail-Goat | #51 | `.github/workflows/` | INS | `backend/tests/test_ci_workflow.py` | Done: `ci.yml`, `cd.yml`, `release.yml` (and `k8s-quickstart.yml`) |
-| ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TahaSohail-Goat | #51 | repo settings | DEMO | screenshot | Done: `main` and `dev` protected; the settings screenshot is pending (repository owner) |
+| ASG-CICD-002 | §3.4 p17 | Two branches: `dev` for work, `main` for deployable software; main protected with required checks and one approval | Mandatory | TahaSohail-Goat | #51 | repo settings | DEMO | `docs/evidence/ruleset-main.json`, `docs/evidence/ci-gate.md` | Done: `main` and `dev` protected by rulesets with the ten required checks (exports and the red-then-green demonstration) |
 | ASG-CICD-003 | §3.4 p17 | `ci.yml` runs on pull request to main and on push to dev | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); green run: https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36164848945 |
 | ASG-CICD-004 | §3.4 p17 | `lint-and-type`: ruff + mypy (backend); eslint + `tsc --noEmit` (frontend) | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); green run: https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36164848945 |
 | ASG-CICD-005 | §3.4 p17 | `test-backend`: pytest with coverage ≥ 65% on `app/`, `TRIAGE_PROVIDER=simulated` | Mandatory | TahaSohail-Goat | #51 | `ci.yml` | CI | `backend/tests/test_ci_workflow.py` | Implemented (P10-S01, #51); green run: https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36164848945 |
@@ -303,7 +303,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 
 | ID | Source | Requirement | Type | Owner | Issue | Code/Artifact | Verification | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|---|
-| ASG-GH-001 | §4 A p19 | `main` protected: no direct push, PR required, CI required, ≥ 1 approval | Mandatory | TahaSohail-Goat | #56 | repo settings | DEMO | `docs/evidence/` screenshot, `docs/evidence/ruleset-main.json`, `docs/evidence/ci-gate.md` | Done: rulesets on `main` and `dev` with PR, approvals and the ten required checks; the settings screenshot is pending (repository owner) |
+| ASG-GH-001 | §4 A p19 | `main` protected: no direct push, PR required, CI required, ≥ 1 approval | Mandatory | TahaSohail-Goat | #56 | repo settings | DEMO | `docs/evidence/` screenshot, `docs/evidence/ruleset-main.json`, `docs/evidence/ci-gate.md` | Done: rulesets on `main` and `dev` with PR, approvals and the ten required checks; evidence is the exports and the red-then-green demonstration |
 | ASG-GH-002 | §4 A p19 | Two-branch model: `dev` plus feature branches; no work committed directly to main | Mandatory | TahaSohail-Goat | #56 | branches | INS | branch list, `docs/GITHUB_WORKFLOW.md` | Done: `dev` and `feature/<n>-<slug>` branches; the six commits on `main` before the rulesets are the Phase 00 baseline (`SUBMISSION.md`) |
 | ASG-GH-003 | §4 A p19 | ≥ 5 merged PRs | Mandatory | TahaSohail-Goat | #56 | GitHub | INS | PR list, GitHub pull requests | Done: 44 merged pull requests, 21 of them with a substantive partner review (threshold 5) |
 | ASG-GH-004 | §4 A p19 | Each merged PR is linked to an Issue | Mandatory | TahaSohail-Goat | #56 | GitHub | INS | PR list, GitHub pull requests | Done: every merged PR names its issue (`Related issue` or `Closes`) |
@@ -345,7 +345,7 @@ Columns follow the pack contract: `ID | Source | Requirement | Type | Owner | Is
 | ASG-DOC-024 | §5.2 p24 | EN-Q8: a failure that cost > 1 hour — symptoms, wrong first belief, the exact command/log line that revealed the truth | Evidence | Artfever | #54 | notes | DOC | `docs/ENGINEERING-NOTES.md` | Done; reviewed (#96); the more-than-one-hour duration is confirmed by Artfever |
 | ASG-DOC-025 | §5.5 p25 | `docs/AI-USAGE.md`: tools named, which parts they wrote or shaped, what was changed afterwards and why | Mandatory | TahaSohail-Goat | #56 | `docs/AI-USAGE.md` | DOC | `docs/AI-USAGE.md` | Implemented: one row per pull request for both contributors |
 | ASG-DOC-026 | §5.7 p26 | `docs/TRIAGE.md` exists in the layout; its content is not specified | Advisory | Artfever | #46 | `docs/TRIAGE.md` | DOC | `docs/TRIAGE.md` | Implemented as operations/evidence guide (#46) |
-| ASG-DOC-027 | §5.7 p26; §4 A p19 | `docs/evidence/` holds screenshots: protection, conflict, blocked merge, `hpa -w`, scaling chart | Evidence | TahaSohail-Goat | #53 | `docs/evidence/` | DOC | `docs/evidence/` | Implemented; the settings screenshot (`protection-*`) and the instructor chat capture are pending (repository owner) |
+| ASG-DOC-027 | §5.7 p26; §4 A p19 | `docs/evidence/` holds screenshots: protection, conflict, blocked merge, `hpa -w`, scaling chart | Evidence | TahaSohail-Goat | #53 | `docs/evidence/` | DOC | `docs/evidence/` | Implemented: conflict, blocked merge, `hpa -w`, scaling chart, ruleset exports and the CI gate demonstration |
 | ASG-DOC-028 | §5.3 p24 | If a credential ever lands in history: rotate it and write an incident note | Policy | TBD | TBD | `docs/SECURITY.md` | DOC | — | Info |
 
 ## ASG-BONUS — Optional (capped at +15)
@@ -416,7 +416,7 @@ The layout root is named `civicpulse/` in the source; the product may be renamed
 | ASG-REPO-012 | §5.7 | `load/k6-script.js` | Mandatory | Artfever | #50 | INS | Implemented: `load/k6-script.js`; two real captures in `docs/evidence/k8s-load-README.md` |
 | ASG-REPO-013 | §5.7 | `docs/{ENGINEERING-NOTES,RUNBOOK,AI-USAGE,TRIAGE}.md` | Mandatory | Artfever | #54 | INS, `docs/` | Implemented (#54, #55): all four documents are written |
 | ASG-REPO-014 | §5.7 | `docs/adr/0001-provider-interface.md` … `0004-pii-and-data-governance.md` | Mandatory | TahaSohail-Goat | #56 | INS, `docs/adr/` | Implemented: ADRs 0001-0004 |
-| ASG-REPO-015 | §5.7 | `docs/evidence/` | Mandatory | TahaSohail-Goat | #53 | INS, `docs/evidence/` | Implemented; two captures pending the repository owner |
+| ASG-REPO-015 | §5.7 | `docs/evidence/` | Mandatory | TahaSohail-Goat | #53 | INS, `docs/evidence/` | Implemented |
 | ASG-REPO-016 | §5.7 | `scripts/check_submission.py` | Mandatory | TahaSohail-Goat | #56 | INS, `scripts/check_submission.py` | Implemented (#56) |
 | ASG-REPO-017 | §5.7 | `.github/workflows/{ci.yml,cd.yml,release.yml}` | Mandatory | TahaSohail-Goat | #51 | INS | Implemented (#51, #52) |
 | ASG-REPO-018 | §5.7 | `compose.yaml`, `compose.prod.yaml`, `.env.example`, `.gitignore` | Mandatory | TahaSohail-Goat | #47 | INS, `backend/tests/test_container_files.py` | Implemented (#47, #48) |

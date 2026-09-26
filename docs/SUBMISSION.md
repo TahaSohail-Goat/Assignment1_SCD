@@ -26,7 +26,7 @@ authored by them; artificial commits are not an option (`docs/TEAM_CONTRIBUTION.
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
 
-Policy: late submissions are not accepted; there is no retake ("Submit something imperfect on time"). The source gives **no calendar deadline**; the instructor said it is the Google Classroom one ("next Tuesday", exact date to be confirmed). (ASG-SUB-008)
+Policy: late submissions are not accepted; there is no retake ("Submit something imperfect on time"). The source gives **no calendar deadline**; the instructor said it is the Google Classroom one ("next Tuesday"). (ASG-SUB-008)
 
 ## 2. Engineering notes — the eight questions (§5.2 p23–24)
 
@@ -97,11 +97,11 @@ Do not call the assignment complete until each mandatory ID in the traceability 
 
 ## Decisions and instructor answers
 
-Answers relayed by the owner on 2026-09-25. They were **verbal**, not written: keep a screenshot of the chat in `docs/evidence/instructor-*` with personal data hidden.
+Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 
 | Topic | Decision or answer | Effect |
 |---|---|---|
-| Deadline | The one on Google Classroom; "next Tuesday" (Tue 29 Sep or Tue 6 Oct 2026, to be confirmed). Team target: everything done by Sunday 27 Sep | Late work is not accepted (ASG-SUB-008) |
+| Deadline | The one on Google Classroom; "next Tuesday". Team target: everything done by Sunday 27 Sep | Late work is not accepted (ASG-SUB-008) |
 | Scope | The whole assignment, parts A–J | No phase or rubric part is dropped |
 | Rubric totals | Left as it is; the teaching assistant manages it | Every line stays at its stated marks |
 | Endpoints | Nine; there is no tenth | `ASG-FR-038` is not added |
