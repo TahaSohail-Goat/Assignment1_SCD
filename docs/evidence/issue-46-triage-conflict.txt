@@ -1,0 +1,168 @@
+<<<<<<< HEAD
+"""Triage orchestration: the engineering around the model (assignment section 2.5).
+
+What this module guarantees, whatever the provider does:
+
+- a hard timeout on every call (10 seconds);
+- one retry, with jitter, on a timeout, a 429 or a 5xx, and never on a 400;
+- the provider's result is validated against ``TriageResult`` again (model output is untrusted);
+- on any failure the rule-based provider decides, ``triaged_by`` is ``rules:fallback`` and exactly
+  one WARNING is logged with the complaint id, the provider and the error class;
+- so a third party being down or rate-limited never becomes a 500 for the citizen.
+"""
+
+import logging
+import random
+import time
+import uuid
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeout
+
+from app import metrics
+from app.providers.triage.base import (
+    MalformedOutputError,
+    ProviderTimeoutError,
+    TriageProvider,
+    TriageProviderError,
+    TriageResult,
+)
+from app.providers.triage.rules import RuleBasedTriage
+from app.services.complaints import TriageDecision
+
+logger = logging.getLogger("app.triage")
+
+FALLBACK_NAME = "rules:fallback"
+DEFAULT_TIMEOUT_SECONDS = 10.0  # assignment section 2.5, item 2
+RETRY_JITTER_SECONDS = (0.1, 0.5)
+
+
+class TriageService:
+    def __init__(
+        self,
+        provider: TriageProvider,
+        fallback: TriageProvider | None = None,
+        timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+        sleep: Callable[[float], None] = time.sleep,
+        jitter: Callable[[], float] = lambda: random.uniform(*RETRY_JITTER_SECONDS),  # noqa: S311
+        clock: Callable[[], float] = time.perf_counter,
+    ) -> None:
+        self._provider = provider
+        self._fallback = fallback or RuleBasedTriage()
+        self._timeout = timeout_seconds
+        self._sleep = sleep
+        self._jitter = jitter
+        self._clock = clock
+        self._executor = ThreadPoolExecutor(max_workers=8, thread_name_prefix="triage")
+
+    def close(self) -> None:
+        self._executor.shutdown(wait=False, cancel_futures=True)
+
+    def triage(self, text: str, location: str, complaint_id: uuid.UUID) -> TriageDecision:
+        started = self._clock()
+        try:
+            result = self._call_with_one_retry(text, location)
+            triaged_by = self._provider.name
+        except Exception as error:  # any provider failure, expected or not, must not become a 500
+            result = self._validated(self._fallback.triage(text, location))
+            triaged_by = FALLBACK_NAME
+            self._record_fallback(complaint_id, error)
+        elapsed = self._clock() - started
+        metrics.TRIAGE_DURATION.labels(self._provider.name).observe(elapsed)
+        return TriageDecision(
+            category=result.category,
+            priority=result.priority,
+            ai_summary=result.summary,
+            triaged_by=triaged_by,
+            latency_ms=max(0, round(elapsed * 1000)),
+        )
+
+    def _call_with_one_retry(self, text: str, location: str) -> TriageResult:
+        try:
+            return self._call(text, location)
+        except TriageProviderError as error:
+            if not error.retryable:
+                raise
+        self._sleep(self._jitter())
+        return self._call(text, location)
+
+    def _call(self, text: str, location: str) -> TriageResult:
+        future = self._executor.submit(self._provider.triage, text, location)
+        try:
+            raw = future.result(timeout=self._timeout)
+        except FutureTimeout:
+            future.cancel()
+            raise ProviderTimeoutError(f"no answer within {self._timeout} seconds") from None
+        return self._validated(raw)
+
+    @staticmethod
+    def _validated(raw: object) -> TriageResult:
+        """Validate again, whatever the provider says it did (assignment section 2.5, item 1)."""
+        try:
+            return TriageResult.model_validate(raw)
+        except ValueError as error:  # pydantic's ValidationError is a ValueError
+            raise MalformedOutputError(str(error)) from error
+
+    def _record_fallback(self, complaint_id: uuid.UUID, error: Exception) -> None:
+        error_class = type(error).__name__
+        metrics.TRIAGE_FALLBACK.labels(self._provider.name, error_class).inc()
+        logger.warning(
+            "triage fallback",
+            extra={
+                "complaint_id": str(complaint_id),
+                "provider": self._provider.name,
+                "error_class": error_class,
+            },
+        )
+=======
+"""Cache and latency hook for the provider orchestration in issue #44.
+
+The primary/fallback decision remains in #44. This function wraps whichever
+validated provider result that orchestration returns; a cache hit avoids that
+call and a miss measures the entire lookup and inference path.
+"""
+
+import time
+from collections.abc import Callable, Mapping
+from dataclasses import dataclass
+from typing import Generic, TypeVar
+
+from app.services.triage_cache import TriageCache
+
+T = TypeVar("T")
+
+
+@dataclass(frozen=True)
+class CachedTriageOutcome(Generic[T]):
+    result: T
+    provider: str
+    latency_ms: int
+    cache_hit: bool
+
+
+def run_with_cache(
+    *,
+    cache: TriageCache,
+    text: str,
+    location: str,
+    infer: Callable[[], tuple[T, str]],
+    validate: Callable[[object], T],
+    serialize: Callable[[T], Mapping[str, object]],
+    on_lookup: Callable[[bool], None] | None = None,
+) -> CachedTriageOutcome[T]:
+    """Call the provider at most once for a sequential duplicate input."""
+    started = time.perf_counter()
+    cached = cache.get(text, location, validate)
+    hit = cached is not None
+    if on_lookup is not None:
+        on_lookup(hit)
+    if cached is not None:
+        result, provider = cached
+    else:
+        result, provider = infer()
+        cache.put(text, location, result, provider, serialize)
+    latency_ms = max(0, round((time.perf_counter() - started) * 1000))
+    return CachedTriageOutcome(result, provider, latency_ms, hit)
+>>>>>>> 78230a2 (feat(ai): prepare triage cache hooks and data governance)
+
+Resolution (2026-09-25): Kept the HEAD version of `TriageService.triage(text, location, complaint_id)` because #44 owns the retry, timeout, validation, fallback warning, and `TriageDecision` contract already used by complaint creation. Added the #46 cache lookup before that decision and a cache write after a successful primary-provider result, so a hit skips inference while the existing decision and latency fields still flow to persistence. The draft generic `run_with_cache` wrapper was removed because it duplicated the service entry point and could not preserve the existing fallback behavior without a second orchestration path. Fallback results are not cached so a temporary provider outage does not force rules for the full 24-hour TTL.

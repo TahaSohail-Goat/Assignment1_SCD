@@ -1,0 +1,84 @@
+2026-09-26T06:23:20.922706+00:00
+Local kind rehearsal. Images built locally from b442e8d; loaded under full GHCR/SHA names, NOT pulled from published GHCR packages. Real ingress controller v1.15.1. No video claim.
+$ kubectl --context kind-civicpulse -n civicpulse apply -k D:\CivicPulse-ops\rollback-overlay\k8s\overlays\prod
+namespace/civicpulse unchanged
+configmap/civicpulse-config unchanged
+service/backend unchanged
+service/cache unchanged
+service/database unchanged
+service/frontend unchanged
+persistentvolumeclaim/cache-data unchanged
+deployment.apps/backend configured
+deployment.apps/cache unchanged
+deployment.apps/frontend configured
+statefulset.apps/database configured
+poddisruptionbudget.policy/backend configured
+ingress.networking.k8s.io/civicpulse unchanged
+
+$ kubectl --context kind-civicpulse -n civicpulse rollout status deployment/backend --timeout=120s
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "backend" rollout to finish: 1 old replicas are pending termination...
+deployment "backend" successfully rolled out
+
+$ kubectl --context kind-civicpulse -n civicpulse rollout status deployment/frontend --timeout=120s
+deployment "frontend" successfully rolled out
+
+Ingress GET /: HTTP 200, 395 bytes
+Ingress GET /api/stats: HTTP 200, 152 bytes
+{"total":30,"by_category":{"water":5,"electricity":5,"sanitation":5,"roads":5,"streetlights":5,"other":5},"by_priority":{"high":12,"normal":12,"low":6}}
+Method: imperative
+$ kubectl --context kind-civicpulse -n civicpulse set image deployment/backend backend=civicpulse-backend:deliberate-missing-52
+deployment.apps/backend image updated
+
+Ingress GET /: HTTP 200, 395 bytes
+Ingress GET /api/stats: HTTP 200, 152 bytes
+{"total":30,"by_category":{"water":5,"electricity":5,"sanitation":5,"roads":5,"streetlights":5,"other":5},"by_priority":{"high":12,"normal":12,"low":6}}
+$ kubectl --context kind-civicpulse -n civicpulse rollout undo deployment/backend
+deployment.apps/backend rolled back
+Warning: resource deployments/backend was previously managed with 'kubectl apply'. Rolling back will not update the kubectl.kubernetes.io/last-applied-configuration annotation, which may cause unexpected behavior on future 'kubectl apply' operations. Consider using 'kubectl apply' with your previous configuration file instead.
+
+$ kubectl --context kind-civicpulse -n civicpulse rollout status deployment/backend --timeout=120s
+deployment "backend" successfully rolled out
+
+Ingress GET /: HTTP 200, 395 bytes
+Ingress GET /api/stats: HTTP 200, 152 bytes
+{"total":30,"by_category":{"water":5,"electricity":5,"sanitation":5,"roads":5,"streetlights":5,"other":5},"by_priority":{"high":12,"normal":12,"low":6}}
+Recovery command through rollout status and ingress smoke: 0.18 seconds
+Method: declarative
+$ kubectl --context kind-civicpulse -n civicpulse set image deployment/backend backend=civicpulse-backend:deliberate-missing-52
+deployment.apps/backend image updated
+
+Ingress GET /: HTTP 200, 395 bytes
+Ingress GET /api/stats: HTTP 200, 152 bytes
+{"total":30,"by_category":{"water":5,"electricity":5,"sanitation":5,"roads":5,"streetlights":5,"other":5},"by_priority":{"high":12,"normal":12,"low":6}}
+$ kubectl --context kind-civicpulse -n civicpulse apply -k D:\CivicPulse-ops\rollback-overlay\k8s\overlays\prod
+namespace/civicpulse unchanged
+configmap/civicpulse-config unchanged
+service/backend unchanged
+service/cache unchanged
+service/database unchanged
+service/frontend unchanged
+persistentvolumeclaim/cache-data unchanged
+deployment.apps/backend configured
+deployment.apps/cache unchanged
+deployment.apps/frontend unchanged
+statefulset.apps/database configured
+poddisruptionbudget.policy/backend configured
+ingress.networking.k8s.io/civicpulse unchanged
+
+$ kubectl --context kind-civicpulse -n civicpulse rollout status deployment/backend --timeout=120s
+deployment "backend" successfully rolled out
+
+Ingress GET /: HTTP 200, 395 bytes
+Ingress GET /api/stats: HTTP 200, 152 bytes
+{"total":30,"by_category":{"water":5,"electricity":5,"sanitation":5,"roads":5,"streetlights":5,"other":5},"by_priority":{"high":12,"normal":12,"low":6}}
+Recovery command through rollout status and ingress smoke: 0.94 seconds
+$ kubectl --context kind-civicpulse -n civicpulse get deployments
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+backend    2/2     2            2           25m
+cache      1/1     1            1           25m
+frontend   2/2     2            2           25m
+

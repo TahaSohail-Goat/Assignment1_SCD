@@ -27,10 +27,10 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 │   │                                                         ingress, configmap, secret, hpa, vpa, pdb, kustomization
 │   └── overlays/{dev,prod}/                   📁  Phase 09   kustomization.yaml each
 ├── load/                                      📁  Phase 09   k6-script.js  (ASG-REPO-012)
-├── scripts/                                   📁  Phase 12   check_submission.py  (ASG-REPO-016)
+├── scripts/                                   📁  Phase 12   check_submission.py (planned in #56)  (ASG-REPO-016)
 ├── docs/                                      ASG-REPO-013…015
 │   ├── ENGINEERING-NOTES.md · RUNBOOK.md · AI-USAGE.md          ✅ stubs (final content Phase 11–12)
-│   ├── TRIAGE.md                              ⏳ purpose unspecified
+│   ├── TRIAGE.md                              ⏳ purpose unspecified (decide in #46)
 │   ├── adr/0001…0004-*.md                     ✅ stubs (the four ADRs the rubric requires)
 │   ├── evidence/                              ✅  ruleset JSON exports (Phase 00); screenshots, captures, charts (Phase 11)
 │   └── …governance documents (see DOCUMENT_INDEX.md)           ✅
@@ -45,7 +45,7 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 ├── compose.yaml · compose.prod.yaml · .env.example              ⏳ Phase 08  (ASG-REPO-018)
 ├── .gitignore · .gitattributes                ✅ Phase 00
 ├── README.md                                  ✅ placeholder; real README Phase 12   (ASG-REPO-019)
-├── LICENSE                                    ⏳ type not decided
+├── LICENSE                                    ⏳ type not specified (decide in #55)
 ├── CLAUDE.md · AGENTS.md · PROMPT.md · START_HERE.md            ✅ governance / execution framework
 ```
 
@@ -67,3 +67,31 @@ The repository root **is** the layout root (the source calls it `civicpulse/`; t
 - Files the assignment lists (§5.7) must live at exactly those paths.
 - The four prompt/governance files at the root (`CLAUDE.md`, `AGENTS.md`, `PROMPT.md`, `START_HERE.md`) are kept for the duration of development. Phase 12 decides whether they stay in the submitted repository; they are also AI-usage evidence (ASG-DOC-025).
 - Nothing outside the §5.7 layout and `docs/`/`docx/` governance additions is added without a recorded reason.
+
+## Phase 02 audit against assignment §5.7
+
+Checked the tracked tree at `dev` commit `ca5dc93` with `git ls-files` and compared it with the literal paths in §5.7 (PDF pp25–26). A `.gitkeep` means the directory exists in Git, **not** that its required implementation exists. The repository root is the assignment's `civicpulse/` layout root. The extra `docx/` source and governance documents are documented Phase 00 additions, not substitutes for assignment paths.
+
+| Requirement | Present at this audit | Deviation and migration step | Owning package |
+|---|---|---|---|
+| `ASG-REPO-001` | `backend/app/{routes,services,repositories,providers}/` tracked as placeholders | Replace `.gitkeep` as the first real modules land; keep SQL in repositories. | #37–#40 |
+| `ASG-REPO-002` | `backend/app/providers/triage/` placeholder | Add `base`, `llm`, `ollama`, `rules`, `simulated`, `factory` modules. | #44–#46 |
+| `ASG-REPO-003` | `backend/alembic/versions/` placeholder | Add Alembic configuration and versioned migrations; no startup DDL. | #40 |
+| `ASG-REPO-004` | `backend/tests/` placeholder | Add the deterministic backend suite. | #39 |
+| `ASG-REPO-005` | Backend Dockerfile, `.dockerignore`, `pyproject.toml` absent | Add package configuration with the backend scaffold, then the image files. | #37, #47 |
+| `ASG-REPO-006` | `frontend/src/{components,pages,api}/` placeholders | Replace placeholders with the typed client, pages and components. | #34–#36 |
+| `ASG-REPO-007` | `frontend/tests/` placeholder | Add component tests. | #36 |
+| `ASG-REPO-008` | Frontend Dockerfile, `.dockerignore`, `nginx.conf`, `package.json` absent | Add the package with the scaffold and the image/proxy files in DevOps. | #34, #48 |
+| `ASG-REPO-009` | `k8s/base/` placeholder | Add namespace, backend, frontend, postgres, redis, ingress, configmap and secret-placeholder manifests. | #49 |
+| `ASG-REPO-010` | `k8s/base/` placeholder | Add HPA, VPA, PDB and base kustomization. | #49, #50 |
+| `ASG-REPO-011` | `k8s/overlays/{dev,prod}/` placeholders | Add each `kustomization.yaml`. | #49 |
+| `ASG-REPO-012` | `load/` placeholder | Add `k6-script.js`. | #50 |
+| `ASG-REPO-013` | `ENGINEERING-NOTES.md`, `RUNBOOK.md`, `AI-USAGE.md` exist; `TRIAGE.md` absent | Complete the existing documents and create `TRIAGE.md` once its purpose is decided. | #46, #53, #54 |
+| `ASG-REPO-014` | Four ADR files exist as stubs | Fill ADRs 0001–0004 with actual decisions and evidence in their owning packages. | #34, #46, #52 |
+| `ASG-REPO-015` | `docs/evidence/` contains ruleset JSON exports | Add the assignment's screenshots, captures and charts when the events can be demonstrated. | #53–#56 |
+| `ASG-REPO-016` | `scripts/` placeholder; `check_submission.py` absent | Write and run the script before submission. The instructor reportedly said it is optional to write; the team chose to do it. | #56 |
+| `ASG-REPO-017` | `.github/workflows/` placeholder | Add `ci.yml`, `cd.yml`, `release.yml`. | #51, #52 |
+| `ASG-REPO-018` | `.gitignore` exists; Compose files and `.env.example` absent | Add `compose.yaml`, `compose.prod.yaml` and the safe example environment file. | #47, #48 |
+| `ASG-REPO-019` | `README.md` exists as a placeholder; `LICENSE` absent | Complete the clean-clone README and choose a license with both contributors. | #55 |
+
+The missing files are scheduled work, not evidence that a feature already exists. The four ADR stubs and empty directories must not be counted as implemented behavior. The current issue owns this audit; the implementing issues own the actual files and their traceability status updates.

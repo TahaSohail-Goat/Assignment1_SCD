@@ -1,0 +1,25 @@
+# Deployment: images are addressed by the immutable commit SHA, never by `latest`
+# (ASG-CICD-023, ASG-DED-008). The deploy job of cd.yml sets the tag with
+# runner-only substitution and records it in the deployment annotation/job summary;
+# that SHA is the one value passed to `git show`. No direct deployment commit is pushed. Until then the placeholder below is not a pullable tag, on purpose.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: civicpulse-backend
+    newName: ghcr.io/tahasohail-goat/civicpulse-backend
+    newTag: REPLACE_WITH_COMMIT_SHA
+  - name: civicpulse-frontend
+    newName: ghcr.io/tahasohail-goat/civicpulse-frontend
+    newTag: REPLACE_WITH_COMMIT_SHA
+patches:
+  # The real Secret is created out of band (see base/secret.yaml); rendering the placeholder
+  # would overwrite it on every apply.
+  - patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: civicpulse-secrets
+        namespace: civicpulse

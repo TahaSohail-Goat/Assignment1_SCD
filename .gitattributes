@@ -15,3 +15,8 @@
 *.woff2 binary
 *.gz binary
 *.zip binary
+
+# Append-only log: when two branches each add a row at the end of docs/AI-USAGE.md, keep both rows
+# instead of raising a conflict. Never edit an existing row on two branches at once (that would
+# duplicate it). Applies to local merges and rebases; always rebase locally before merging on GitHub.
+docs/AI-USAGE.md merge=union

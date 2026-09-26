@@ -1,0 +1,151 @@
+# Standalone production Compose file. Set IMAGE_TAG to a built, immutable commit SHA tag.
+# Use this file alone: docker compose -f compose.prod.yaml up -d
+name: civicpulse
+
+services:
+  database:
+    image: postgres:16.10-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+
+  cache:
+    image: redis:7.4.11-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    volumes:
+      - redisdata:/data
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M }
+
+  migrate:
+    image: "ghcr.io/tahasohail-goat/civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
+    restart: "no"
+    command: ["sh", "-c", "alembic upgrade head && python -m app.seed"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+    networks: [internal]
+    depends_on:
+      database:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M }
+
+  backend:
+    image: "ghcr.io/tahasohail-goat/civicpulse-backend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB}
+      REDIS_URL: redis://cache:6379/0
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      TRIAGE_PROVIDER: ${TRIAGE_PROVIDER:-rules}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma3:1b}
+      TRUST_FORWARDED_FOR: "true"
+    networks: [edge, internal]
+    depends_on:
+      database:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 512M }
+
+  frontend:
+    image: "ghcr.io/tahasohail-goat/civicpulse-frontend:${IMAGE_TAG:?Set IMAGE_TAG to a built commit SHA tag}"
+    restart: unless-stopped
+    networks: [edge]
+    ports:
+      - "${FRONTEND_PORT:-8080}:8080"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 128M }
+
+  ollama:
+    image: ollama/ollama:0.34.0
+    profiles: [offline]
+    restart: unless-stopped
+    networks: [internal]
+    volumes:
+      - ollama_models:/root/.ollama
+    depends_on:
+      ollama-pull:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 3G }
+
+  ollama-pull:
+    image: ollama/ollama:0.34.0
+    profiles: [offline]
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    command: 'ollama serve & for i in $$(seq 1 60); do ollama list >/dev/null 2>&1 && break; sleep 1; done; ollama pull "$${OLLAMA_MODEL}"'
+    environment:
+      OLLAMA_HOST: 127.0.0.1:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma3:1b}
+    networks: [edge]
+    volumes:
+      - ollama_models:/root/.ollama
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 3G }
+
+networks:
+  edge:
+    driver: bridge
+  internal:
+    driver: bridge
+    internal: true
+
+volumes:
+  pgdata:
+  redisdata:
+  ollama_models:
