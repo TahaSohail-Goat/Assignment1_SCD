@@ -1,0 +1,24 @@
+[
+  {
+    "command": [
+      "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+      "buildx",
+      "imagetools",
+      "inspect",
+      "ghcr.io/tahasohail-goat/civicpulse-backend:1.0.0-rc.1"
+    ],
+    "stdout": "Name:      ghcr.io/tahasohail-goat/civicpulse-backend:1.0.0-rc.1\nMediaType: application/vnd.oci.image.index.v1+json\nDigest:    sha256:b1840154220370e605786e310c3fdd404d651563b33588d553684aed1737448b\n           \nManifests: \n  Name:        ghcr.io/tahasohail-goat/civicpulse-backend:1.0.0-rc.1@sha256:932d8513d40ee91d817b53e0c2dc6396a1c280db8c54d1a42583f374d26d129c\n  MediaType:   application/vnd.oci.image.manifest.v1+json\n  Platform:    linux/amd64\n               \n  Name:        ghcr.io/tahasohail-goat/civicpulse-backend:1.0.0-rc.1@sha256:85184f96a29dfcfd5a72e007d04873c60c59547fe6c3250f67b5ce128455bced\n  MediaType:   application/vnd.oci.image.manifest.v1+json\n  Platform:    unknown/unknown\n  Annotations: \n    vnd.docker.reference.digest: sha256:932d8513d40ee91d817b53e0c2dc6396a1c280db8c54d1a42583f374d26d129c\n    vnd.docker.reference.type:   attestation-manifest\n",
+    "exit_code": 0
+  },
+  {
+    "command": [
+      "C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe",
+      "buildx",
+      "imagetools",
+      "inspect",
+      "ghcr.io/tahasohail-goat/civicpulse-frontend:1.0.0-rc.1"
+    ],
+    "stdout": "Name:      ghcr.io/tahasohail-goat/civicpulse-frontend:1.0.0-rc.1\nMediaType: application/vnd.oci.image.index.v1+json\nDigest:    sha256:bfe5ba78988fae471d0c8177400e04cc3c0f08ba5a816653b72fbf720876c887\n           \nManifests: \n  Name:        ghcr.io/tahasohail-goat/civicpulse-frontend:1.0.0-rc.1@sha256:9a5c93fa3192f85a719352f2a749881a72abfee522610bb9dda79231ed270816\n  MediaType:   application/vnd.oci.image.manifest.v1+json\n  Platform:    linux/amd64\n               \n  Name:        ghcr.io/tahasohail-goat/civicpulse-frontend:1.0.0-rc.1@sha256:4f79ed7920d67ec18fce634bca596829808c8dd3ccc64cf7da939a09e8b42f01\n  MediaType:   application/vnd.oci.image.manifest.v1+json\n  Platform:    unknown/unknown\n  Annotations: \n    vnd.docker.reference.type:   attestation-manifest\n    vnd.docker.reference.digest: sha256:9a5c93fa3192f85a719352f2a749881a72abfee522610bb9dda79231ed270816\n",
+    "exit_code": 0
+  }
+]

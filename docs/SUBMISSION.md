@@ -7,20 +7,20 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | # | Item | ID | Where it will come from |
 |---|---|---|---|
 | 1 | GitHub repository URL — public, or private with both instructors added | ASG-SUB-001 | Current repo `https://github.com/TahaSohail-Goat/Assignment1_SCD` is **public**. |
-| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36245642750 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
-| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, deployed SHA tag `db720f3e7aa657216fbdd903b44ecdd28af45554` (see the successful CD run above); `latest` is mutable and is not the deployment reference |
+| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36260737154 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
+| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, deployed SHA tag `cee72923a380fdffdf5ed8de2ef0ce5cb58abadb` (see the successful CD run above); `latest` is mutable and is not the deployment reference |
 | 4 | Demo video link (unlisted) | ASG-SUB-004 | **Pending:** to be recorded by both contributors; script in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Link: _not yet_ |
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
 
-`git shortlog -sn origin/main` at `db720f3`, 2026-09-26 (includes merges, matching the rubric; refresh after the next promotion):
+`git shortlog -sn origin/main` at `cee7292`, 2026-09-26 (includes merges, matching the rubric; refresh after the next promotion):
 
 ```
 111	Taha Sohail
-83	Artfever
+118	Artfever
 ```
 
-The rubric asks for neither partner below 35 %. At this snapshot Artfever has 83/194 = 42.8% and Taha has 111/194 = 57.2%; both pass.
+The rubric asks for neither partner below 35 %. At this snapshot Artfever has 118/229 = 51.5% and Taha has 111/229 = 48.5%; both pass.
 Recheck the final main revision. Only genuine authored work counts (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
@@ -120,6 +120,14 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 
 ## Current owner holds (2026-09-26)
 
-Video remains on hold. The live Groq/Ollama quality/latency comparison is measured in #112: [method, raw results and limitations](evidence/provider-comparison-README.md). Its integration fixes and evidence await partner review; the video is still separate. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `db720f3`, [run 36245642750](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36245642750), successful through image/SBOM publication and the ephemeral Kubernetes ingress smoke test. PR #111 promoted the reviewed application and audit changes to main. Keep #55, #56 and #31 open.
+Video remains on hold. The live Groq/Ollama quality/latency comparison is measured in #112: [method, raw results and limitations](evidence/provider-comparison-README.md). Its integration fixes and evidence were reviewed in #113 and promoted to main in #114; the video is still separate. The ruleset/instructor screenshots and exact Classroom deadline confirmation are removed from the owner task list. The final checklist is [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). Latest verified main CD: `cee7292`, [run 36260737154](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36260737154), successful through image/SBOM publication and the ephemeral Kubernetes ingress smoke test. PR #114 promoted the reviewed live comparison, integration fixes and documentation to main. Keep #55, #56 and #31 open.
 
-Audit evidence after #108: [final-audit-index.md](evidence/final-audit-index.md). At main `db720f3`, Artfever has 83/194 commits (42.8%) and Taha 111/194 (57.2%); both meet the contribution floor. Historical commit-prefix exceptions remain disclosed. Refresh the counts on the final submission revision.
+Audit evidence after #108: [final-audit-index.md](evidence/final-audit-index.md). At main `cee7292`, Artfever has 118/229 commits (51.5%) and Taha 111/229 (48.5%); both meet the contribution floor. Historical commit-prefix exceptions remain disclosed. Refresh the counts on the final submission revision.
+
+## Verified release candidate (2026-09-27)
+
+[v1.0.0-rc.1](https://github.com/TahaSohail-Goat/Assignment1_SCD/releases/tag/v1.0.0-rc.1)
+was published from reviewed main `cee7292`. The tag-triggered workflow passed all ten
+checks, published both `1.0.0-rc.1` GHCR images and generated prerelease notes.
+[Release evidence and registry digests](evidence/release-verification-README.md).
+The video and its link remain on hold. No final submission or full rubric pass is claimed.
