@@ -76,4 +76,4 @@ curl -fsS -H 'Host: civicpulse.local' http://127.0.0.1:8080/api/stats
 echo
 kubectl -n civicpulse get pods,hpa
 echo "Ready. To browse: kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80"
-echo "then open http://civicpulse.local:8080 (add '127.0.0.1 civicpulse.local' to your hosts file)."
+echo "then open http://civicpulse.local:8080 (add '127.0.0.1 civicpulse.local' to your hosts file)." # NOSONAR: loopback port-forward to the local cluster

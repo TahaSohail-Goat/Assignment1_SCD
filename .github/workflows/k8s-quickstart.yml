@@ -24,9 +24,9 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install kind and kubectl
         run: |
-          curl -fsSL https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64 -o /tmp/kind
+          curl -fsSL --proto '=https' --tlsv1.2 https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64 -o /tmp/kind
           sudo install /tmp/kind /usr/local/bin/kind
-          curl -fsSL https://dl.k8s.io/release/v1.37.1/bin/linux/amd64/kubectl -o /tmp/kubectl
+          curl -fsSL --proto '=https' --tlsv1.2 https://dl.k8s.io/release/v1.37.1/bin/linux/amd64/kubectl -o /tmp/kubectl
           sudo install /tmp/kubectl /usr/local/bin/kubectl
       - name: bash scripts/k8s-up.sh
         run: bash scripts/k8s-up.sh
