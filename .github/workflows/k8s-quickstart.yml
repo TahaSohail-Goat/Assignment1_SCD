@@ -36,6 +36,23 @@ jobs:
           kubectl -n civicpulse get hpa backend-hpa
           kubectl -n civicpulse describe vpa backend-vpa | grep -E 'Update Mode|Name:'
           kubectl -n civicpulse rollout status deployment/backend
+      - name: The rate limit is shared by both backend replicas (ASG-CACHE-010)
+        run: |
+          kubectl -n civicpulse get deployment backend -o jsonpath='{.status.readyReplicas}' | grep -qE '^[2-9]'
+          kubectl -n ingress-nginx port-forward service/ingress-nginx-controller 8080:80 > /dev/null 2>&1 &
+          forward_pid=$!
+          trap 'kill "$forward_pid"' EXIT
+          codes=""
+          for i in $(seq 14); do
+            code="$(curl -s --retry 10 --retry-connrefused -o /dev/null -w '%{http_code}' -X POST \
+              -H 'Host: civicpulse.local' -H 'Content-Type: application/json' \
+              -d '{"text":"The tap in our lane has no water.","location":"Lane 3"}' \
+              http://127.0.0.1:8080/api/complaints)"
+            codes="$codes $code"
+          done
+          echo "status codes:$codes"
+          echo "$codes" | grep -q 429
+          test "$(echo "$codes" | grep -o 201 | wc -l)" -le 10
       - name: Deleting the database pod keeps every row (ASG-DATA-023)
         run: |
           fingerprint() {

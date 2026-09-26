@@ -44,7 +44,7 @@ def test_the_image_is_multi_stage_on_a_pinned_python_312_slim() -> None:
 
     assert len(bases) == 2
     for base in bases:
-        assert re.match(r"python:3\.12\.\d+-slim(-\w+)? AS \w+$", base), base
+        assert re.match(r"python:3\.12\.\d+-slim(-\w+)?@sha256:[0-9a-f]{64} AS \w+$", base), base
 
 
 def test_dependencies_are_installed_in_the_builder_stage_only() -> None:

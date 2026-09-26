@@ -7,11 +7,22 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | # | Item | ID | Where it will come from |
 |---|---|---|---|
 | 1 | GitHub repository URL — public, or private with both instructors added | ASG-SUB-001 | Current repo `https://github.com/TahaSohail-Goat/Assignment1_SCD` is **public**. |
-| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | Phase 10 |
-| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | Phase 10 |
-| 4 | Demo video link (unlisted) | ASG-SUB-004 | Phase 11–12 |
-| 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Phase 12 |
-| 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | Phase 09 / 11 |
+| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941 (full test gate, both images to GHCR by SHA, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
+| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and `.../civicpulse-frontend`; both public, tags `34e8402fd08c371eb191558fb615bb6fcca4f2d7` and `8074879eb7067db84dab691c74dae420a078fb3f` plus `latest` |
+| 4 | Demo video link (unlisted) | ASG-SUB-004 | **Pending:** to be recorded by both contributors; script in [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Link: _not yet_ |
+| 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
+| 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
+
+`git shortlog -sn --no-merges` on `dev`, 2026-09-26 (refresh before submitting):
+
+```
+80	Taha Sohail
+31	Artfever
+```
+
+The rubric asks for neither partner below 35 %. At this snapshot the second contributor is at 28 %, so
+the remaining genuine work (pull-request reviews, documentation, evidence and fixes) should be
+authored by them; artificial commits are not an option (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
 
