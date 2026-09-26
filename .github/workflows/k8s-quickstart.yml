@@ -1,0 +1,54 @@
+# Proves the README's second command (ASG-GEN-008): `bash scripts/k8s-up.sh` puts the system on a
+# kind cluster from a clean checkout. It runs when the script or the manifests change, and on
+# demand. It never publishes anything and uses no secret.
+name: k8s-quickstart
+on:
+  workflow_dispatch:
+  push:
+    branches: [dev]
+    paths: ["scripts/k8s-up.sh", "k8s/**", ".github/workflows/k8s-quickstart.yml"]
+  pull_request:
+    branches: [dev, main]
+    paths: ["scripts/k8s-up.sh", ".github/workflows/k8s-quickstart.yml"]
+permissions:
+  contents: read
+concurrency:
+  group: k8s-quickstart-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quickstart:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install kind and kubectl
+        run: |
+          curl -fsSL https://kind.sigs.k8s.io/dl/v0.33.0/kind-linux-amd64 -o /tmp/kind
+          sudo install /tmp/kind /usr/local/bin/kind
+          curl -fsSL https://dl.k8s.io/release/v1.37.1/bin/linux/amd64/kubectl -o /tmp/kubectl
+          sudo install /tmp/kubectl /usr/local/bin/kubectl
+      - name: bash scripts/k8s-up.sh
+        run: bash scripts/k8s-up.sh
+      - name: Deleting the database pod keeps every row (ASG-DATA-023)
+        run: |
+          fingerprint() {
+            kubectl -n civicpulse exec -i database-0 -- sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At' \
+              <<< "SELECT count(*), md5(string_agg(row_to_json(c)::text, E'\n' ORDER BY id)) FROM complaints c;"
+          }
+          before="$(fingerprint)"
+          echo "before: $before"
+          kubectl -n civicpulse delete pod database-0 --wait=true
+          kubectl -n civicpulse wait --for=condition=Ready pod/database-0 --timeout=180s
+          after="$(fingerprint)"
+          echo "after:  $after"
+          test "$before" = "$after"
+          test "${before%%|*}" -ge 30
+      - name: Cluster state on failure
+        if: failure()
+        run: |
+          kubectl -n civicpulse get pods,events --sort-by=.lastTimestamp || true
+          kubectl -n civicpulse logs deploy/backend --all-containers --tail=100 || true
+      - name: Remove the cluster
+        if: always()
+        run: kind delete cluster --name civicpulse
