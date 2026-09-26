@@ -1,0 +1,21 @@
+{
+    "old_source":  "db720f3",
+    "captured_at":  "2026-09-26T16:57:38.3413849Z",
+    "fixed_source":  "4aafaf7",
+    "regression":  "Two downloader tests failed on original files; all 33 container-file tests passed after fixing both files.",
+    "fixed_downloader_command":  [
+                                     "ollama serve \u0026 for i in $$(seq 1 60); do ollama list \u003e/dev/null 2\u003e\u00261 \u0026\u0026 break; sleep 1; done; ollama pull \"$${OLLAMA_MODEL}\""
+                                 ],
+    "old_downloader_command":  [
+                                   "ollama",
+                                   "serve"
+                               ],
+    "old_downloader_entrypoint":  [
+                                      "/bin/sh",
+                                      "-c"
+                                  ],
+    "fixed_downloader_entrypoint":  [
+                                        "/bin/sh",
+                                        "-c"
+                                    ]
+}
