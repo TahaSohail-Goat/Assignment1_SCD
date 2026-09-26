@@ -2,31 +2,33 @@
 
 ## Snapshot and interpretation
 
-Audit follow-ups #109/#112, 2026-09-26, Artfever. Earlier evidence uses dev `39fca0c`; latest promoted main is `db720f3`. Live provider source revisions are recorded in the #112 comparison report.
+Audit follow-ups #109/#112/#115, 2026-09-27, Artfever. Earlier evidence uses dev `39fca0c`; latest promoted main is `cee7292`. Live provider source revisions are recorded in the #112 comparison report.
 This is an in-progress final audit, not a declaration that the assignment is complete.
 PASS means the stated verification has supporting evidence; FAIL means a known unmet
 condition; BLOCKED means final verification is held or not completed. Unverified does
 not mean unimplemented. Optional/advisory rows do not create mandatory work.
 
-Owner direction: video remains on hold. Live Groq/Ollama comparison resumed and was measured in #112; fixes/evidence await partner review.
+Owner direction: video remains on hold. Live Groq/Ollama comparison resumed and was measured in #112; fixes/evidence reached main in #114.
 Ruleset/instructor screenshots and exact-deadline confirmation are removed from the task
 list; existing ruleset exports remain. No screenshot is claimed captured. The local offline
 profile was exercised in #112. Keep #55, #56 and #31 open.
 
 ## Commands and evidence
 
-- `git shortlog -sn origin/dev`: 109 Taha Sohail, 70 Artfever (39.1%) at 39fca0c.
-- `git shortlog -sn origin/main`: 109 Taha Sohail, 42 Artfever at c5f5e38.
-- `python scripts/check_submission.py --ref origin/dev`: contribution floor PASS on dev; historical
-  non-merge warning remains. No credential-pattern hit in any tracked path's history.
-  Pattern matching cannot prove the absence of arbitrary secrets.
-- Frontend: 21 tests passed, including minimum/maximum Unicode regression cases.
-- Backend on merged dev CI run 36243422641: **363 passed, 94.42% coverage**, with PostgreSQL 16. Four checker regressions pass using temporary Git repos. All ten CI jobs pass. The earlier local run skipped 33 PostgreSQL tests; CI supplies that missing evidence.
-- Initial scan: local Markdown file targets resolve; anchors/external URLs were not tested.
-- Latest main CD [36235766515](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36235766515)
-  succeeded at c5f5e38. Its cluster is ephemeral; dev-only work needs promotion.
+- Current main `cee7292`: Artfever 118/229 (51.5%), Taha 111/229 (48.5%).
+- [Fresh audit output](evidence/release-verification-audit.json): 28 passed, one
+  historical first-parent warning, zero failures. Includes tracked-history credential
+  pattern scans; these cannot prove the absence of arbitrary secrets.
+- Main [CD 36260737154](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36260737154)
+  passed all test/scan/integration gates, published both images and SBOMs, deployed the
+  production overlay, passed the Ingress smoke test and deleted its temporary cluster.
+- Historical frontend/backend and clean-clone captures remain in
+  [final-audit-index.md](evidence/final-audit-index.md); the main CD supplies the newer
+  PostgreSQL integration gate. The release report below records the tag-specific gate.
 - Historical warning: PR #9 was rebase-merged (349fe86). A linear first-parent commit is
   not proof of a direct push. All six linear first-parent commit subjects match PR #9 (first 60 characters); captured review explains the rebase merge. This reconciles the mechanical warning, not an immutable audit of every historical push event.
+
+- [Successful tag-triggered release and registry evidence](evidence/release-verification-README.md).
 
 ## Requirement verification
 
@@ -239,7 +241,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-CICD-018 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-019 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-020 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
-| ASG-CICD-021 | BLOCKED | release.yml and regression tests exist, but no successful tag-triggered release run is recorded. Final release remains to be exercised. |
+| ASG-CICD-021 | PASS | Tag v1.0.0-rc.1 at reviewed main cee7292: release run 36268651309 passed all gates, published both semver images and generated prerelease notes. Independent registry inspection: evidence/release-verification-README.md. |
 | ASG-CICD-022 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-023 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-024 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
@@ -410,9 +412,11 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 
 ## Final handoff
 
-1. Partner reviews #112 live comparison and integration fixes. Earlier #110/#111 are merged; the next promotion needs its own approval.
-2. Refresh contribution counts on dev and main; exclude unrelated/unmerged branches.
-3. Finish per-ID and rubric evidence review, including PostgreSQL integration on final head.
-4. Record/upload the held demo video when Artfever resumes it; add its link. The live comparison is captured in #112.
-5. Promote reviewed dev changes; verify new main CD and refresh submission references.
-6. Close #55/#56/#31 only when their acceptance criteria are met.
+1. Review and merge the consolidated #115 release/submission evidence update, then
+   promote it through the protected dev-to-main PR and verify that revision's CD.
+2. The application and live provider comparison already reached main through #114.
+3. Video and its link remain on explicit owner hold; no recording or URL is claimed.
+4. After the video is available, add its real link and refresh the submission-revision
+   counts/CD link. Keep #55/#56/#31 open until their remaining criteria are met.
+5. Historical commit-format failures, the removed screenshot-task rubric caveats and
+   optional bonus limits remain visible; do not interpret the mechanical audit as a grade.

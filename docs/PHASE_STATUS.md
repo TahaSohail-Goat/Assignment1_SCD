@@ -11,16 +11,16 @@ Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (see 
 | 04 | Backend & Domain Layer | #23 (packages #37, #38, #39) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
 | 05 | Data Layer | #24 (packages #40, #41) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
 | 06 | Cache, Rate Limiting & Reliability | #25 (packages #42, #43) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
-| 07 | AI Layer | #26 (packages #44, #45, #46) | `feature/<n>-<slug>` per package | — | Implementation merged; live Groq/Ollama comparison measured in #112. The live-path fixes and evidence await partner review. |
+| 07 | AI Layer | #26 (packages #44, #45, #46) | `feature/<n>-<slug>` per package | — | Implementation merged; live Groq/Ollama comparison measured in #112. The live-path fixes and evidence reached main in #114. |
 | 08 | Docker & Compose | #27 (packages #47, #48) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
 | 09 | Kubernetes | #28 (packages #49, #50) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
 | 10 | CI/CD | #29 (packages #51, #52) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
-| 11 | QA, Evidence & Reflection | #30 (packages #53, #54) | `feature/<n>-<slug>` per package | — | Operational evidence merged; live provider comparison captured in #112, awaiting review. |
-| 12 | Final Assignment Audit & Submission | #31 (packages #55, #56) | `feature/<n>-<slug>` per package | — | In progress: #55, #56 and #31 open. Video on hold; live comparison captured in #112. Both contributors pass the main commit floor; #111 promotion and CD succeeded. Release/video/final sign-off remain. |
+| 11 | QA, Evidence & Reflection | #30 (packages #53, #54) | `feature/<n>-<slug>` per package | — | Operational evidence merged; live provider comparison captured in #112 and promoted in #114. |
+| 12 | Final Assignment Audit & Submission | #31 (packages #55, #56) | `feature/<n>-<slug>` per package | — | In progress: #55, #56 and #31 open. Video on hold; live comparison captured in #112. Both contributors pass the main commit floor; #114 promotion and CD succeeded. Release candidate v1.0.0-rc.1 verified in #115. Video and final submission sign-off remain. |
 
 ## Current work
 
-Issue #112 records the live provider comparison and two integration fixes. Latest promoted main `db720f3` passed CD run 36245642750; the new #112 work still requires review and promotion. Removed owner tasks: ruleset/instructor screenshots and exact-deadline confirmation. Existing evidence is retained.
+Issue #112 records the live provider comparison and two integration fixes. Latest promoted main `cee7292` passed CD run 36260737154; the #112 work is merged through #113/#114. Removed owner tasks: ruleset/instructor screenshots and exact-deadline confirmation. Existing evidence is retained. #115 records the successful tag-triggered release and refreshed non-video submission evidence; its documentation PR needs review.
 
 ## How we work now
 
