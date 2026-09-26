@@ -209,7 +209,7 @@ Both members are collaborators (`TahaSohail-Goat` admin, `Artfever` write). Prot
 
 Repository level: **squash merge is disabled** (it would erase the per-author commit counts rubric A4 measures); *delete branch on merge* stays **off** (it would try to delete `dev` after every `dev` → `main` merge); auto-merge is off.
 
-Evidence: `docs/evidence/ruleset-main.json` and `ruleset-dev.json` (exports of the live rules, including the required checks) and `docs/evidence/ci-gate.md` (a red pull request blocked, then green). Still open for `ASG-GH-001`: a screenshot of the ruleset page itself (`docs/evidence/protection-*`, taken by the repository owner in the browser; a CLI cannot take one).
+Evidence: `docs/evidence/ruleset-main.json` and `ruleset-dev.json` (exports of the live rules, including the required checks) and `docs/evidence/ci-gate.md` (a red pull request blocked, then green).
 
 Ask for a partner review on every PR: rubric A3 counts merged PRs that carry a substantive partner review ("≥ 5 merged PRs"), and a review comment on a merged PR still counts. `dev` no longer enforces it, so a PR may be merged when time forces it, but an unreviewed merge does not help that rubric line.
 

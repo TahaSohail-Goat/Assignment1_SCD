@@ -1,6 +1,6 @@
 # Phase Status
 
-Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (the Google Classroom deadline is "next Tuesday"; see [`SUBMISSION.md`](SUBMISSION.md)).
+Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (see [`SUBMISSION.md`](SUBMISSION.md)).
 
 | Phase | Name | Issue | Branch | PR | Status |
 |---|---|---|---|---|---|
@@ -29,4 +29,4 @@ Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (the 
 
 Instructor answers, open decisions and the deadline are in the decisions table of [`SUBMISSION.md`](SUBMISSION.md).
 
-Remaining for full protection evidence: the ruleset screenshot (`docs/evidence/protection-*`, P12-S02, #56) and required status checks with `ci.yml` (P10-S01, #51).
+Protection evidence: the ruleset exports and the CI gate demonstration in `docs/evidence/`.
