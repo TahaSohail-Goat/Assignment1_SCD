@@ -3,8 +3,10 @@
 The assignment asks for a video of **at most 5 minutes with both partners speaking** that covers: clean
 clone to running system, AI triage, fallback, network isolation failing, HPA scaling and rollback
 (`docx/ASSIGNMENT.md` §4 J, p22; §3.2 p13 and §3.4 p18–19 for the failing ping and both rollbacks).
-The video is recorded by the two contributors: nothing in this file has been recorded yet, and no
-capture here is presented as the video.
+Published video: [YouTube (primary, unlisted)](https://youtu.be/bExMGzoHYow) / [Google Drive (backup)](https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link). Verified access and uploaded-media details are in
+[evidence/submission-final-README.md](evidence/submission-final-README.md).
+The shot list below is the original rehearsal plan; it is not an exact timestamp transcript
+of the final 4:38 edit. Optional cache/rate-limit/persistence shots are not claimed included.
 
 Split: **A** = Taha, **B** = Artfever. Record the screen at 1080p, terminal font large. Upload as an
 unlisted video and paste the link into `docs/SUBMISSION.md` (row 4) and the traceability row `ASG-SUB-004`.

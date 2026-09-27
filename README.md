@@ -237,25 +237,22 @@ Evidence: [load and rolling updates](docs/evidence/k8s-load-README.md),
 [engineering notes Q1–Q8](docs/ENGINEERING-NOTES.md). Rollback timings are local measurements
 with known-good images already available, not a universal recovery guarantee.
 
-## Demo video and remaining handover
+## Demo video and submission
 
-**The unlisted video is not recorded/uploaded yet.** Both partners must speak and the final
-recording must be at most five minutes. Issue #55 stays open for the actual link.
-Use real output in this recording plan:
+[YouTube (primary, unlisted)](https://youtu.be/bExMGzoHYow) / [Google Drive (backup)](https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link)
 
-| Time | Speaker | Show |
-|---|---|---|
-| 0:00–0:20 | Both | Problem and product |
-| 0:20–1:10 | Taha | Fresh clone, startup and seeded Dashboard/Stats; disclose sped-up build footage |
-| 1:10–2:00 | Artfever | Real AI result, provider failure with rules:fallback, prompt-injection example |
-| 2:00–2:30 | Taha | Frontend-to-database network attempt fails; explain the networks |
-| 2:30–3:30 | Artfever | Actual k6/HPA scaling, original timestamps and VPA recommendations |
-| 3:30–4:30 | Taha | Real rollback both ways; known-good revision and measurement limits |
-| 4:30–5:00 | Both | CI/CD gates and real contribution totals |
+The primary upload is Unlisted and reports **4:38**. The backup downloads without
+sign-in and contains video and audio. [Verification and scope](docs/evidence/submission-final-README.md).
+The demo shows fresh-clone startup, hosted triage, fallback, network isolation,
+HPA scaling and both rollback methods. The video links are supplied by Artfever.
 
-The [live hosted-versus-Ollama comparison](docs/evidence/provider-comparison-README.md) records actual quality, latency, fallback and resource measurements.
-The [v1.0.0-rc.1 release verification](docs/evidence/release-verification-README.md) passed the full gate and verified both versioned images and generated notes. Before final submission: record/upload the video and finalize the submission package (#56; the MIT [`LICENSE`](LICENSE) is in). At main `cee7292`, `git shortlog -sn` records Artfever 118/229 (51.5%) and Taha 111/229 (48.5%): both meet the 35% minimum. Recheck on the final submission revision. Only genuine authored work counts. The speaking split above follows
-[the team agreement](docs/TEAM_CONTRIBUTION.md). A passing build alone does not complete these items.
+[Submission package](docs/SUBMISSION.md) includes the repository, successful CD,
+GHCR images, video backup and HPA evidence. [Release v1.0.0-rc.1 evidence](docs/evidence/release-verification-README.md)
+records the successful tag-triggered workflow. Latest verified main `df7649c`
+passed [CD 36310273819](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36310273819).
+At that revision, Artfever has 120/232 commits (51.7%) and Taha 112/232 (48.3%).
+Counts are tied to this measured revision; recheck after the final documentation promotion.
+Historical rubric caveats remain in the [final checklist](docs/FINAL_SUBMISSION_CHECKLIST.md).
 
 ## Project documents and contribution
 

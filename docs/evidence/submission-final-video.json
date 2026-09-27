@@ -1,0 +1,41 @@
+{
+  "checked_at_utc": "2026-09-27T10:13:29.501995+00:00",
+  "youtube": {
+    "url": "https://youtu.be/bExMGzoHYow",
+    "title": "Civic_pulse_demo_video",
+    "playability": "OK",
+    "isUnlisted": true,
+    "lengthSeconds": "278",
+    "authenticated": false
+  },
+  "drive": {
+    "url": "https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link",
+    "download_http_status": 200,
+    "authenticated": false,
+    "download_sha256": "4d1f3b13dd70bb88ccd2c333b253dbc60cccab1085dad83b7bc1bc4a5a795413",
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "codec_type": "video",
+          "width": 848,
+          "height": 478,
+          "duration": "277.336289"
+        },
+        {
+          "codec_name": "aac",
+          "codec_type": "audio",
+          "duration": "277.449167"
+        }
+      ],
+      "format": {
+        "duration": "277.449167",
+        "size": "25609625"
+      }
+    }
+  },
+  "voice_verification": "Audio stream present; contributor confirmation requested. Audio stream alone does not establish both speakers.",
+  "visual_verification": "Sampled uploaded frames show clean-clone startup, Dashboard/Stats, hosted submission, fallback, failed frontend/database ping, HPA and rollback. No bonus rolling-update-under-load footage inferred."
+}

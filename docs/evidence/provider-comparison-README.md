@@ -1,5 +1,7 @@
 # Live hosted versus offline triage — issue #112
 
+> Follow-up, 2026-09-27: the video is now uploaded; [primary/backup links and verification](submission-final-README.md). Pending-video wording below describes the original capture date. #113/#114 and #116/#117 are merged; original raw evidence is preserved.
+
 Requirements: ASG-AI-003/005/006/009/025, ASG-GEN-005. ASG-AI-025 is a recommended
 measurement in the assignment; working provider paths are mandatory.
 
