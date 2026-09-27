@@ -122,7 +122,7 @@ Answers relayed by the owner on 2026-09-25. They were **verbal**, not written.
 
 Video links received: [YouTube (primary, unlisted)](https://youtu.be/bExMGzoHYow) / [Google Drive (backup)](https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link). The primary is Unlisted; the independently downloaded
 Drive backup is 277.449 seconds and has an AAC audio track. Verification details,
-visual coverage and speaker-confirmation status are in [the final evidence index](evidence/submission-final-README.md).
+visual coverage and Artfever's confirmation that both contributors speak are in [the final evidence index](evidence/submission-final-README.md).
 
 The live Groq/Ollama comparison and fixes reached main in #114; release verification
 reached main in #117. Latest verified main is `df7649c`, with successful
@@ -133,5 +133,6 @@ remains tied to source `cee7292`; later documentation promotions do not move tha
 The owner removed separate ruleset/instructor screenshot and exact-deadline tasks.
 Their original rubric caveats and historical commit-format failures remain disclosed in
 [FINAL_SUBMISSION_CHECKLIST.md](FINAL_SUBMISSION_CHECKLIST.md). No full-mark or Classroom-submission claim is made.
-The final video/documentation PR and protected promotion must be reviewed and merged
-before #55/#56/#31 are closed. The human uploads the submission package to Classroom.
+Final video/documentation PR #118 and promotion #119 are approved and merged.
+The subsequent voice-confirmation correction and final successful main CD gate
+closure of #55/#56/#31. The human uploads the submission package to Classroom.

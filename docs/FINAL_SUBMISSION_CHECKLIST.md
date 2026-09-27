@@ -276,7 +276,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-011 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-012 | PASS | Conditional requirement does not apply: project uses Kustomize, not Helm. |
 | ASG-DOC-013 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
-| ASG-DOC-014 | BLOCKED | Unlisted YouTube 4:38, downloadable Drive backup with audio; both-contributor voice confirmation requested. See evidence/submission-final-README.md. |
+| ASG-DOC-014 | PASS | Unlisted YouTube 4:38; Drive backup verified with audio. Artfever confirmed both contributor voices on 2026-09-27. Owner attestation and independent checks distinguished in evidence/submission-final-README.md. |
 | ASG-DOC-015 | PASS | Uploaded footage covers clean-clone startup, hosted triage, fallback, failed network access, HPA scaling and both rollback methods. Primary/backup in evidence/submission-final-README.md. |
 | ASG-DOC-016 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-017 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
@@ -402,7 +402,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J1 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | J2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | J3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
-| J4 | BLOCKED | Video uploaded and visual coverage verified; both-contributor voice confirmation requested in final review. |
+| J4 | PASS | Uploaded video has required visual coverage and is under five minutes; Artfever confirmed both voices on 2026-09-27. Primary and backup links verified; see final video evidence. |
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | BON1 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 | BON2 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
@@ -412,8 +412,8 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 
 ## Final handoff
 
-1. Review the final video/link/documentation update under #55/#56/#31, including
-   confirmation that both contributors speak. Both public links are in SUBMISSION.md.
+1. #118 and #119 are reviewed and merged. Both public links are in SUBMISSION.md;
+   Artfever confirmed both voices. Review/promote this confirmation correction.
 2. Merge the reviewed feature PR into dev, then the protected promotion into main;
    verify its CD and close the three issues only after their remaining criteria are met.
 3. Current audit counts and CD links identify main df7649c explicitly, not a future SHA.

@@ -22,9 +22,10 @@ The HPA run used 80 requests/s, scaled two to three replicas and completed 14,98
 without failures or dropped iterations. Rollback used the local b442e8d rehearsal baseline;
 its images were previously built/loaded locally. This is not a GHCR pull claim.
 
-**Speaker verification:** an audio track is present; confirmation that both contributors'
-real voice-overs are included has been requested from Artfever and is part of final review.
-Audio-stream metadata alone is not proof of the number or identity of speakers.
+**Speaker verification:** Artfever confirmed on 2026-09-27 that both contributors'
+voices are included, responding "its done" to the explicit both-voices question.
+This is owner attestation, alongside independently checked duration, visibility,
+audio-stream presence and visual coverage; it is not automated speaker identification.
 
 The final footage does not add a persistence down/up demonstration or prove a rolling
 update under simultaneous load. Existing CI and zero-downtime captures remain their own
@@ -48,7 +49,7 @@ evidence; optional bonus claims are not inferred from this video.
 
 Historical conventional-prefix failures remain FAIL. Original screenshot clauses remain
 BLOCKED because the owner removed those capture tasks; no instructor waiver is invented.
-Optional bonuses remain separate. The final documentation/video PR requires partner review,
-then a protected dev-to-main merge and fresh CD. Close #55/#56/#31 only after the video
-review and final promotion meet their criteria. Classroom submission is a human action;
+Optional bonuses remain separate. The documentation/video PR #118 was partner-approved and promoted through approved
+PR #119. The owner voice confirmation is now recorded. Close #55/#56/#31 after this
+sign-off correction is reviewed/promoted and the final main CD succeeds. Classroom submission is a human action;
 this audit does not claim it has happened or guarantee a grade.
