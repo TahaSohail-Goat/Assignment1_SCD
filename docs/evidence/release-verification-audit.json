@@ -1,0 +1,37 @@
+{
+  "date": "2026-09-27",
+  "results": [
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "cee72923a380fdffdf5ed8de2ef0ce5cb58abadb\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "shortlog",
+        "-sn",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "   118\tArtfever\n   111\tTaha Sohail\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "scripts/check_submission.py",
+        "--ref",
+        "origin/main"
+      ],
+      "exit_code": 0,
+      "stdout": "PASS  5.7 repository layout                                             54 required paths present\nPASS  DED-001 no .env / key file tracked\nPASS  DED-001 no credential pattern in tracked files\nPASS  DED-001 no .env / key file anywhere in Git history\nPASS  DED-001 no credential pattern in Git history (all tracked paths)\nPASS  DEVOPS-024 .env ignored, .env.example committed\nPASS  DED-002 no key or secret value in Kubernetes manifests\nPASS  DED-003 every image tag pinned\nPASS  DED-004 no localhost between services (compose, k8s)\nPASS  DED-006 compose.prod.yaml deploys images, no data port\nPASS  DED-006 no NodePort/LoadBalancer Service\nPASS  DED-009 PostgreSQL is a StatefulSet with volumeClaimTemplates\nPASS  CICD-025 every workflow has a permissions block\nPASS  CICD-026 every action has a version\nPASS  DED-007 publishing/deploying jobs use needs:\nPASS  DED-008 :latest is never deployed\nPASS  CICD-001 ci.yml, cd.yml and release.yml exist\nPASS  CICD-023 prod overlay tag is set to the commit SHA by cd.yml      runner-only substitution (docs/adr/0003-deploy-by-sha.md); Git keeps the placeholder\nWARN  DED-010 commits on main that are not merges                       6: check each came from a PR (349fe86 e4279b9|docs(status): record Phase 00 pull request number; e4279b9 fe960f7|docs(env): record detected prerequisites and setup steps; fe960f7 dfffc1c|docs(requirements): establish assignment traceability, rubric and blockers; dfffc1c a9ceaa2|docs(assignment): preserve source and add faithful transcription)\nPASS  final checklist covers every requirement ID                       coverage only; held and unverified items must remain BLOCKED\nPASS  README exists and is not a stub\nPASS  docs/ENGINEERING-NOTES.md is filled in\nPASS  docs/RUNBOOK.md is filled in\nPASS  docs/TRIAGE.md is filled in\nPASS  ADRs 0001-0004 exist                                              found 4\nPASS  docs/evidence has the captures of 5.7                             96 files\nPASS  AI-USAGE has entries for both contributors\nPASS  no TODO/FIXME left in code and config\nPASS  GH-008 each partner has at least 35%                              origin/main (cee72923a380): Artfever 118/229 (51.5%); Taha Sohail 111/229 (48.5%)\n\n28 passed, 1 warnings, 0 failed\nMechanical checks clean. This is a lint, not a grade.\n",
+      "stderr": ""
+    }
+  ]
+}

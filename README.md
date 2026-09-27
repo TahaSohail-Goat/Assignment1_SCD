@@ -254,7 +254,7 @@ Use real output in this recording plan:
 | 4:30–5:00 | Both | CI/CD gates and real contribution totals |
 
 The [live hosted-versus-Ollama comparison](docs/evidence/provider-comparison-README.md) records actual quality, latency, fallback and resource measurements.
-Before final submission: record/upload the video and complete the final audit/release package (#56; the MIT [`LICENSE`](LICENSE) is in). At main `db720f3`, `git shortlog -sn` records Artfever 83/194 (42.8%) and Taha 111/194 (57.2%): both meet the 35% minimum. Recheck on the final submission revision. Only genuine authored work counts. The speaking split above follows
+The [v1.0.0-rc.1 release verification](docs/evidence/release-verification-README.md) passed the full gate and verified both versioned images and generated notes. Before final submission: record/upload the video and finalize the submission package (#56; the MIT [`LICENSE`](LICENSE) is in). At main `cee7292`, `git shortlog -sn` records Artfever 118/229 (51.5%) and Taha 111/229 (48.5%): both meet the 35% minimum. Recheck on the final submission revision. Only genuine authored work counts. The speaking split above follows
 [the team agreement](docs/TEAM_CONTRIBUTION.md). A passing build alone does not complete these items.
 
 ## Project documents and contribution

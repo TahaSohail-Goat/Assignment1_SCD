@@ -1,8 +1,8 @@
 # ADR 0003 — Immutable Deployment Reference
 
 ## Status
-Implemented and promoted to main. Main `db720f3` passed
-[CD run 36245642750](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36245642750),
+Implemented and promoted to main. Main `cee7292` passed
+[CD run 36260737154](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36260737154),
 including GHCR image/SBOM publication and the ephemeral kind Ingress smoke test.
 
 ## Decision
@@ -41,8 +41,10 @@ its SHA to restore the declared configuration. Commands and measured local resul
 
 The local rehearsal loaded locally built images under full SHA names; it does not prove GHCR
 publication or successful Actions deployment. The separate main-branch CD run linked above
-provides that evidence. Both-partner video evidence remains pending; the tag-triggered
-release workflow still needs an actual release run.
+provides that evidence. Both-partner video evidence remains pending. The tag-triggered release was exercised
+successfully at `v1.0.0-rc.1`; [release evidence](../evidence/release-verification-README.md)
+records the test gate, semver image publication and generated notes. It does not deploy
+the release images; main CD remains the separate deployment evidence.
 
 ## References
 
