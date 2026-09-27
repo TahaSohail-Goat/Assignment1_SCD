@@ -1,5 +1,7 @@
 # Container sizes and build-context sizes (ASG-DEVOPS-010, ASG-DEVOPS-012)
 
+> Follow-up, 2026-09-27: the video is now uploaded; [primary/backup links and verification](submission-final-README.md). Pending-video wording below describes the original capture date. #113/#114 and #116/#117 are merged; original raw evidence is preserved.
+
 Measured by the `context-and-image-size` job of `ci.yml` on a GitHub-hosted runner (`ubuntu-24.04`,
 Docker with BuildKit). The job's own output is the source; the run linked below is the evidence.
 

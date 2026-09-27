@@ -53,4 +53,4 @@ published values above. All original failures, actual outputs, model identity,
 memory/network evidence and live API checks are retained in the
 [comparison report](evidence/provider-comparison-README.md). Both provider paths
 were exercised through complaint creation, retrieval and provider metadata.
-The app was restored to rules mode after measurement; the video remains pending.
+The app was restored to rules mode after measurement; Published demo and backup links are recorded in [final video evidence](evidence/submission-final-README.md).

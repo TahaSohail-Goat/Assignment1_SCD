@@ -16,11 +16,16 @@ Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (see 
 | 09 | Kubernetes | #28 (packages #49, #50) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
 | 10 | CI/CD | #29 (packages #51, #52) | `feature/<n>-<slug>` per package | — | Implementation merged to main in the reviewed promotion history; see traceability for evidence. |
 | 11 | QA, Evidence & Reflection | #30 (packages #53, #54) | `feature/<n>-<slug>` per package | — | Operational evidence merged; live provider comparison captured in #112 and promoted in #114. |
-| 12 | Final Assignment Audit & Submission | #31 (packages #55, #56) | `feature/<n>-<slug>` per package | — | In progress: #55, #56 and #31 open. Video on hold; live comparison captured in #112. Both contributors pass the main commit floor; #114 promotion and CD succeeded. Release candidate v1.0.0-rc.1 verified in #115. Video and final submission sign-off remain. |
+| 12 | Final Assignment Audit & Submission | #31 (packages #55, #56) | `feature/<n>-<slug>` per package | — | Submission package prepared: video primary/backup links added, final audit captured. #55/#56/#31 await final reviewed documentation merge and main promotion; historical caveats remain disclosed. |
 
 ## Current work
 
-Issue #112 records the live provider comparison and two integration fixes. Latest promoted main `cee7292` passed CD run 36260737154; the #112 work is merged through #113/#114. Removed owner tasks: ruleset/instructor screenshots and exact-deadline confirmation. Existing evidence is retained. #115 records the successful tag-triggered release and refreshed non-video submission evidence; its documentation PR needs review.
+Video and backup links are in [SUBMISSION.md](SUBMISSION.md), with verification in
+[evidence/submission-final-README.md](evidence/submission-final-README.md).
+#113/#114 merged the live provider work; #116/#117 merged the successful release evidence.
+Latest verified main `df7649c` passed CD 36310273819. Final link/audit documentation
+is being reviewed under #55/#56/#31. Close these issues after the protected promotion;
+this status does not claim a Classroom submission or erase historical rubric caveats.
 
 ## How we work now
 
