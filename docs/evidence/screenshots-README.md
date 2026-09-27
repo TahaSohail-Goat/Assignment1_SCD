@@ -1,5 +1,7 @@
 # README capture provenance — issue #55
 
+> Follow-up, 2026-09-27: the video is now uploaded; [primary/backup links and verification](submission-final-README.md). Pending-video wording below describes the original capture date. #113/#114 and #116/#117 are merged; original raw evidence is preserved.
+
 Requirements: ASG-GEN-005..010, ASG-DOC-001..007; video requirements remain pending.
 
 Captured on Artfever's Windows machine, 2026-09-26, from a **new clone** of `dev` at

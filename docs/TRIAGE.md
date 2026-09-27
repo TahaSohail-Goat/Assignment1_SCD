@@ -33,4 +33,4 @@ to Groq, and no credentials were captured. Ollama's serving container was attach
 only to the inspected internal network, with model downloads handled by the separate
 one-shot edge container. Real POST/GET/metadata checks retained both model and fallback
 outcomes. After testing, the backend was restored to rules and the model unloaded from
-RAM; the downloaded volume remains available. The required video is still pending.
+RAM; the downloaded volume remains available. Published demo and backup links are recorded in [final video evidence](evidence/submission-final-README.md).

@@ -50,7 +50,9 @@ def test_the_quickstart_commands_exist_and_are_the_ones_ci_runs() -> None:
     assert (REPOSITORY / "LICENSE").exists()
 
 
-def test_the_readme_says_what_is_not_done() -> None:
-    lowered = README.lower()
-
-    assert "not recorded" in lowered  # the demo video
+def test_the_readme_links_the_uploaded_demo_and_discloses_audit_limits() -> None:
+    assert "https://youtu.be/bExMGzoHYow" in README
+    assert "https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view" in README
+    assert "docs/evidence/submission-final-README.md" in README
+    assert "docs/FINAL_SUBMISSION_CHECKLIST.md" in README
+    assert "historical rubric caveats" in README.lower()

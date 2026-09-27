@@ -2,24 +2,24 @@
 
 ## Snapshot and interpretation
 
-Audit follow-ups #109/#112/#115, 2026-09-27, Artfever. Earlier evidence uses dev `39fca0c`; latest promoted main is `cee7292`. Live provider source revisions are recorded in the #112 comparison report.
+Audit follow-ups #109/#112/#115, 2026-09-27, Artfever. Earlier evidence uses dev `39fca0c`; latest promoted main is `df7649c`. Live provider source revisions are recorded in the #112 comparison report.
 This is an in-progress final audit, not a declaration that the assignment is complete.
 PASS means the stated verification has supporting evidence; FAIL means a known unmet
 condition; BLOCKED means final verification is held or not completed. Unverified does
 not mean unimplemented. Optional/advisory rows do not create mandatory work.
 
-Owner direction: video remains on hold. Live Groq/Ollama comparison resumed and was measured in #112; fixes/evidence reached main in #114.
+Owner supplied the final YouTube/Drive links; the earlier hold is superseded. Live Groq/Ollama comparison resumed and was measured in #112; fixes/evidence reached main in #114.
 Ruleset/instructor screenshots and exact-deadline confirmation are removed from the task
 list; existing ruleset exports remain. No screenshot is claimed captured. The local offline
-profile was exercised in #112. Keep #55, #56 and #31 open.
+profile was exercised in #112. Final closure of #55/#56/#31 waits for the reviewed final documentation promotion.
 
 ## Commands and evidence
 
-- Current main `cee7292`: Artfever 118/229 (51.5%), Taha 111/229 (48.5%).
-- [Fresh audit output](evidence/release-verification-audit.json): 28 passed, one
+- Current main `df7649c`: Artfever 120/232 (51.7%), Taha 112/232 (48.3%).
+- [Fresh audit output](evidence/submission-final-audit.json): 28 passed, one
   historical first-parent warning, zero failures. Includes tracked-history credential
   pattern scans; these cannot prove the absence of arbitrary secrets.
-- Main [CD 36260737154](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36260737154)
+- Main [CD 36310273819](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36310273819)
   passed all test/scan/integration gates, published both images and SBOMs, deployed the
   production overlay, passed the Ingress smoke test and deleted its temporary cluster.
 - Historical frontend/backend and clean-clone captures remain in
@@ -42,11 +42,11 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-GEN-003 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
 | ASG-GEN-004 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
 | ASG-GEN-005 | PASS | Live five-service Compose profile, completed model download and healthy services captured in evidence/provider-comparison-api.json; downloader argv defect fixed in #112. Video remains separate. |
-| ASG-GEN-006 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
-| ASG-GEN-007 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
-| ASG-GEN-008 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
-| ASG-GEN-009 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
-| ASG-GEN-010 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; video remains separately held. |
+| ASG-GEN-006 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; uploaded video verification is linked in submission-final-README.md. |
+| ASG-GEN-007 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; uploaded video verification is linked in submission-final-README.md. |
+| ASG-GEN-008 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; uploaded video verification is linked in submission-final-README.md. |
+| ASG-GEN-009 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; uploaded video verification is linked in submission-final-README.md. |
+| ASG-GEN-010 | PASS | README and screenshots-README.md document actual startup and limits; CI 36243422641 verifies Compose, main CD 36235766515 verifies ephemeral Kubernetes deployment. Signing exception is recorded in SUBMISSION.md; uploaded video verification is linked in submission-final-README.md. |
 | ASG-GEN-011 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
 | ASG-GEN-012 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
 | ASG-GEN-013 | PASS | Source constraints/ambiguities recorded in docx/ASSIGNMENT.md, RUBRIC.md and SUBMISSION.md; two-person project and backend contract preserved. Informational guidance is not a claim of completed live evidence. |
@@ -241,7 +241,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-CICD-018 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-019 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-020 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
-| ASG-CICD-021 | PASS | Tag v1.0.0-rc.1 at reviewed main cee7292: release run 36268651309 passed all gates, published both semver images and generated prerelease notes. Independent registry inspection: evidence/release-verification-README.md. |
+| ASG-CICD-021 | PASS | Tag v1.0.0-rc.1 at reviewed main df7649c: release run 36268651309 passed all gates, published both semver images and generated prerelease notes. Independent registry inspection: evidence/release-verification-README.md. |
 | ASG-CICD-022 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-023 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
 | ASG-CICD-024 | PASS | backend/tests/test_ci_workflow.py and test_cd_workflows.py; .github/workflows/; CI 36243422641 and main CD 36235766515; docs/evidence/final-audit-github.json. |
@@ -250,7 +250,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-CICD-027 | PASS | docs/evidence/ci-gate.md and ci-red-check.png, ci-red-blocked.png, ci-green.png show PR #90 failing then fixed; current main rules captured in final-audit-github.json. |
 | ASG-CICD-028 | PASS | docs/evidence/k8s-rollback-index.md and cd-local-rollback.txt: undo 0.18 s, overlay restore 0.94 s in rejected-rollout scenario with old replicas healthy. Not a general outage-recovery guarantee. |
 | ASG-CICD-029 | PASS | docs/evidence/k8s-rollback-index.md and cd-local-rollback.txt: undo 0.18 s, overlay restore 0.94 s in rejected-rollout scenario with old replicas healthy. Not a general outage-recovery guarantee. |
-| ASG-CICD-030 | BLOCKED | Owner HOLD: both rollback methods still need the required video. |
+| ASG-CICD-030 | PASS | Both rollback methods appear in the uploaded video; controlled local failed-rollout scope and source are documented in evidence/submission-final-README.md. |
 | ASG-CICD-031 | PASS | docs/evidence/k8s-rollback-index.md and cd-local-rollback.txt: undo 0.18 s, overlay restore 0.94 s in rejected-rollout scenario with old replicas healthy. Not a general outage-recovery guarantee. |
 | ASG-GH-001 | BLOCKED | Protection settings verified in final-audit-github.json. Owner removed the separate ruleset screenshot task; no screenshot or instructor waiver is claimed. Original rubric evidence caveat remains. |
 | ASG-GH-002 | PASS | docs/evidence/final-audit-github.json: current main PR+approval+ten-check rules; five merged, issue-linked PRs with substantive partner reviews. git history and docs/GITHUB_WORKFLOW.md. |
@@ -276,8 +276,8 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-011 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-012 | PASS | Conditional requirement does not apply: project uses Kustomize, not Helm. |
 | ASG-DOC-013 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
-| ASG-DOC-014 | BLOCKED | Owner HOLD: unlisted video, both partners speaking, at most five minutes. |
-| ASG-DOC-015 | BLOCKED | Owner HOLD: unlisted video, both partners speaking, at most five minutes. |
+| ASG-DOC-014 | BLOCKED | Unlisted YouTube 4:38, downloadable Drive backup with audio; both-contributor voice confirmation requested. See evidence/submission-final-README.md. |
+| ASG-DOC-015 | PASS | Uploaded footage covers clean-clone startup, hosted triage, fallback, failed network access, HPA scaling and both rollback methods. Primary/backup in evidence/submission-final-README.md. |
 | ASG-DOC-016 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-017 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-018 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
@@ -291,7 +291,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-026 | PASS | docs/TRIAGE.md exists and explains provider operation and measurement scope; assignment does not prescribe its contents. |
 | ASG-DOC-027 | BLOCKED | Existing conflict/CI/HPA/chart evidence is present; owner removed the separate ruleset screenshot task. Original screenshot clause remains a disclosed rubric caveat, not a new active task. |
 | ASG-DOC-028 | PASS | Conditional incident policy recorded in SECURITY.md. No credential-pattern match found in current full-history scan; no credential incident is invented. |
-| ASG-BONUS-001 | BLOCKED | Final source/evidence review outstanding. Matrix: Measured: zero failed requests during a rolling replacement under k6 load (two runs); the video is pending |
+| ASG-BONUS-001 | BLOCKED | Existing measured rolling-update-under-load captures retained; uploaded final video shows scaling/rollback separately and adds no simultaneous rollout-under-load footage. Optional bonus, not a mandatory blocker. |
 | ASG-BONUS-002 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
 | ASG-BONUS-003 | BLOCKED | Final source/evidence review outstanding. Matrix: Partial: images are deployed by digest under the SHA tag (`cd.yml`); Cosign signing and verification are not done |
 | ASG-BONUS-004 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
@@ -313,7 +313,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-SUB-001 | PASS | gh repo view confirms PUBLIC; URL in SUBMISSION.md. |
 | ASG-SUB-002 | PASS | Main CD run 36235766515 succeeded at c5f5e38. Refresh after final promotion. |
 | ASG-SUB-003 | PASS | Both GHCR c5f5e38 full-SHA tags resolve via docker buildx imagetools inspect; manifest digests captured in evidence/final-audit-github.json. |
-| ASG-SUB-004 | BLOCKED | Owner HOLD: demo video/link remains outstanding. Live provider comparison is captured in #112; it does not replace the video. |
+| ASG-SUB-004 | PASS | Owner-provided YouTube primary verified Unlisted and playable; Drive backup downloaded without authentication. evidence/submission-final-video.json. |
 | ASG-SUB-005 | PASS | Command, revision and shortlog snapshot recorded in SUBMISSION.md; refresh final main. |
 | ASG-SUB-006 | PASS | docs/evidence/k8s-load-baseline50/hpa-watch.txt and k8s-load-comparison.png exist; load method and findings checked against k8s-load-README.md. |
 | ASG-SUB-007 | PASS | Submission lint executed on origin/dev 39fca0c; actual output in evidence/final-audit-index.md. Must repeat after final promotion. |
@@ -348,7 +348,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 
 | Rubric | Status | Evidence / remaining verification |
 |---|---|---|
-| A1 | BLOCKED | Reconcile all mapped requirement evidence before final sign-off. |
+| A1 | BLOCKED | Protection exports and successful gated PR/CD evidence verified; original screenshot clause remains an owner-removed-task rubric caveat (ASG-GH-001). |
 | A2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | A3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | A4 | FAIL | Count/share thresholds pass on dev; historical conventional-prefix exceptions remain (ASG-GH-007). |
@@ -402,7 +402,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J1 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | J2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | J3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
-| J4 | BLOCKED | Owner HOLD: both-partner unlisted video. |
+| J4 | BLOCKED | Video uploaded and visual coverage verified; both-contributor voice confirmation requested in final review. |
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | BON1 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 | BON2 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
@@ -412,11 +412,10 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 
 ## Final handoff
 
-1. Review and merge the consolidated #115 release/submission evidence update, then
-   promote it through the protected dev-to-main PR and verify that revision's CD.
-2. The application and live provider comparison already reached main through #114.
-3. Video and its link remain on explicit owner hold; no recording or URL is claimed.
-4. After the video is available, add its real link and refresh the submission-revision
-   counts/CD link. Keep #55/#56/#31 open until their remaining criteria are met.
-5. Historical commit-format failures, the removed screenshot-task rubric caveats and
-   optional bonus limits remain visible; do not interpret the mechanical audit as a grade.
+1. Review the final video/link/documentation update under #55/#56/#31, including
+   confirmation that both contributors speak. Both public links are in SUBMISSION.md.
+2. Merge the reviewed feature PR into dev, then the protected promotion into main;
+   verify its CD and close the three issues only after their remaining criteria are met.
+3. Current audit counts and CD links identify main df7649c explicitly, not a future SHA.
+4. Submit the repository/video/evidence links through Classroom. Historical failures,
+   screenshot caveats and optional bonus limitations remain disclosed; no grade guarantee.

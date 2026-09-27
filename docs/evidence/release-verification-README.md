@@ -1,5 +1,7 @@
 # Release verification (issue #115)
 
+> Follow-up, 2026-09-27: the video is now uploaded; [primary/backup links and verification](submission-final-README.md). Pending-video wording below describes the original capture date. #113/#114 and #116/#117 are merged; original raw evidence is preserved.
+
 Verified by Artfever on 2026-09-27 (Asia/Karachi; GitHub timestamps are UTC).
 Requirements: ASG-CICD-021/022, ASG-SUB-002/003/005/007, ASG-DOC-010.
 

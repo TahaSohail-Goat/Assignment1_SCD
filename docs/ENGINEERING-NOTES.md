@@ -166,7 +166,7 @@ all troubleshooting work. No exact start/end time is claimed.
   replacement, not deletion of the PVC or a backup/restore disaster.
 - [Rollback evidence index](evidence/k8s-rollback-index.md) and
   [zero-downtime evidence index](evidence/k8s-zero-downtime-index.md) identify the original
-  captures without treating copied files as additional experiments. Required video is pending.
+  captures without treating copied files as additional experiments. Published demo and backup links are recorded in [final video evidence](evidence/submission-final-README.md).
 
 ## Hosted provider evidence (issue #45, 2026-09-25)
 
@@ -202,7 +202,7 @@ shell script, leaving the model volume empty, and this connection rejected Groq'
 default urllib user-agent with 403. Both are fixed with regressions; the rejected
 requests are retained separately and excluded from model-quality conclusions.
 Actual API POST/GET/metadata checks demonstrate `llm:groq`, `llm:ollama` and a safe
-persisted `rules:fallback` outcome. The demo video remains pending.
+persisted `rules:fallback` outcome. Published demo and backup links are recorded in [final video evidence](evidence/submission-final-README.md).
 ## Redis volume decision (issue #43)
 
 `compose.yaml` enables Redis AOF and mounts `redisdata` at `/data`. The stats and triage cache values can be rebuilt, but rebuilding them immediately after a restart adds database and provider load. The rate-limit counters matter more: losing them grants each caller a fresh allowance and can produce a burst against the hosted model. AOF with `appendfsync everysec` preserves recent counters across ordinary restarts, with up to roughly one second of acknowledged writes still at risk on a crash. The counter implementation and exact admission behavior are documented in `docs/CACHE.md` Job 2.
