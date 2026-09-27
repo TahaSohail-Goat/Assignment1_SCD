@@ -36,6 +36,6 @@
       }
     }
   },
-  "voice_verification": "Audio stream present; contributor confirmation requested. Audio stream alone does not establish both speakers.",
+  "voice_verification": "Artfever explicitly confirmed both contributor voices are included on 2026-09-27, replying \"its done\" to the direct both-voices question. This is owner attestation, not automated speaker identification.",
   "visual_verification": "Sampled uploaded frames show clean-clone startup, Dashboard/Stats, hosted submission, fallback, failed frontend/database ping, HPA and rollback. No bonus rolling-update-under-load footage inferred."
 }
