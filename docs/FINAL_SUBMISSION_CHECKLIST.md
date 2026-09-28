@@ -295,7 +295,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-BONUS-001 | BLOCKED | Existing measured rolling-update-under-load captures retained; uploaded final video shows scaling/rollback separately and adds no simultaneous rollout-under-load footage. Optional bonus, not a mandatory blocker. |
 | ASG-BONUS-002 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
 | ASG-BONUS-003 | BLOCKED | Final source/evidence review outstanding. Matrix: Partial: images are deployed by digest under the SHA tag (`cd.yml`); Cosign signing and verification are not done |
-| ASG-BONUS-004 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
+| ASG-BONUS-004 | PASS | Optional observability profile scraped the backend (`up=1`, target healthy); real Grafana dashboard screenshot and capture notes in docs/evidence/observability-*. Pending partner review and promotion. |
 | ASG-BONUS-005 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
 | ASG-BONUS-006 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
 | ASG-BONUS-007 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
@@ -408,7 +408,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | BON1 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 | BON2 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 | BON3 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
-| BON4 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
+| BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in docs/evidence/observability-*. Pending partner review and promotion. |
 | BON5 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 
 ## Final handoff

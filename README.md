@@ -68,6 +68,14 @@ into a named volume first; allow extra time, disk and memory. Never commit `.env
 Hosted inference sends complaint text/location externally; use synthetic demo data.
 See [provider behaviour, privacy and live-comparison limits](docs/AI.md).
 
+### Optional monitoring
+
+The `observability` Compose profile runs Prometheus scraping the backend and a
+provisioned Grafana dashboard. Set `GRAFANA_ADMIN_PASSWORD` in your ignored `.env`;
+see [the runbook](docs/RUNBOOK.md#16-optional-prometheus-and-grafana-asg-bonus-004)
+for startup, verification and the dashboard URL. The [captured dashboard](docs/evidence/observability-grafana-dashboard.png)
+shows a real healthy scrape and HTTP traffic.
+
 ## Architecture
 
 ```mermaid

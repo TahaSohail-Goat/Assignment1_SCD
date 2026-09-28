@@ -179,14 +179,67 @@ services:
           cpus: "2.0"
           memory: 3G
 
+  prometheus:
+    image: prom/prometheus:v3.6.0
+    profiles: [observability]
+    restart: unless-stopped
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.path=/prometheus"]
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheusdata:/prometheus
+    networks: [internal, monitoring]
+    ports:
+      - "127.0.0.1:9090:9090"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9090/-/ready"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 256M }
+
+  grafana:
+    image: grafana/grafana:12.2.0
+    profiles: [observability]
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-change-me-locally}
+    volumes:
+      - ./observability/grafana/datasources.yml:/etc/grafana/provisioning/datasources/civicpulse.yml:ro
+      - ./observability/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/civicpulse.yml:ro
+      - ./observability/grafana/civicpulse.json:/var/lib/grafana/dashboards/civicpulse.json:ro
+      - grafanadata:/var/lib/grafana
+    networks: [monitoring]
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits: { cpus: "0.5", memory: 512M }
+
 networks:
   edge:
     driver: bridge
   internal:
     driver: bridge
     internal: true # no route to the outside world: the database and the cache cannot be reached from it
+  monitoring:
+    driver: bridge
 
 volumes:
   pgdata: # the complaints survive `docker compose down`; without it the data lives in the container layer
   redisdata: # the AOF file: cached counters and rate-limit windows survive a cache restart
   ollama_models: # the downloaded model weights (gigabytes); used by the ollama service of issue #48
+  prometheusdata: # optional local metrics history
+  grafanadata: # optional local dashboard state
