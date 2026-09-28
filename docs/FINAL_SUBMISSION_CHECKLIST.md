@@ -9,8 +9,9 @@ condition; BLOCKED means final verification is held or not completed. Unverified
 not mean unimplemented. Optional/advisory rows do not create mandatory work.
 
 Owner supplied the final YouTube/Drive links; the earlier hold is superseded. Live Groq/Ollama comparison resumed and was measured in #112; fixes/evidence reached main in #114.
-Ruleset/instructor screenshots and exact-deadline confirmation are removed from the task
-list; existing ruleset exports remain. No screenshot is claimed captured. The local offline
+The owner later supplied authentic main-ruleset screenshots in #125, resolving the A1
+evidence gap; instructor screenshots and exact-deadline confirmation remain outside the
+current task list. The existing ruleset exports remain. The local offline
 profile was exercised in #112. Final closure of #55/#56/#31 waits for the reviewed final documentation promotion.
 
 ## Commands and evidence
@@ -252,7 +253,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-CICD-029 | PASS | docs/evidence/k8s-rollback-index.md and cd-local-rollback.txt: undo 0.18 s, overlay restore 0.94 s in rejected-rollout scenario with old replicas healthy. Not a general outage-recovery guarantee. |
 | ASG-CICD-030 | PASS | Both rollback methods appear in the uploaded video; controlled local failed-rollout scope and source are documented in evidence/submission-final-README.md. |
 | ASG-CICD-031 | PASS | docs/evidence/k8s-rollback-index.md and cd-local-rollback.txt: undo 0.18 s, overlay restore 0.94 s in rejected-rollout scenario with old replicas healthy. Not a general outage-recovery guarantee. |
-| ASG-GH-001 | BLOCKED | Protection settings verified in final-audit-github.json. Owner removed the separate ruleset screenshot task; no screenshot or instructor waiver is claimed. Original rubric evidence caveat remains. |
+| ASG-GH-001 | PASS | Artfever captured the active main ruleset, one required approval and ten required CI checks in docs/evidence/ruleset-main-*.png (#125). Live ruleset API and existing CI gate evidence corroborate the images; the screenshots are from the read-only ruleset view. |
 | ASG-GH-002 | PASS | docs/evidence/final-audit-github.json: current main PR+approval+ten-check rules; five merged, issue-linked PRs with substantive partner reviews. git history and docs/GITHUB_WORKFLOW.md. |
 | ASG-GH-003 | PASS | docs/evidence/final-audit-github.json: current main PR+approval+ten-check rules; five merged, issue-linked PRs with substantive partner reviews. git history and docs/GITHUB_WORKFLOW.md. |
 | ASG-GH-004 | PASS | docs/evidence/final-audit-github.json: current main PR+approval+ten-check rules; five merged, issue-linked PRs with substantive partner reviews. git history and docs/GITHUB_WORKFLOW.md. |
@@ -289,7 +290,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-024 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-025 | PASS | README.md, docs/adr/0001..0004, docs/RUNBOOK.md, docs/ENGINEERING-NOTES.md and docs/AI-USAGE.md; docs/evidence/screenshots-README.md. Source/document inspection plus test_readme.py in CI 36243422641. |
 | ASG-DOC-026 | PASS | docs/TRIAGE.md exists and explains provider operation and measurement scope; assignment does not prescribe its contents. |
-| ASG-DOC-027 | BLOCKED | Existing conflict/CI/HPA/chart evidence is present; owner removed the separate ruleset screenshot task. Original screenshot clause remains a disclosed rubric caveat, not a new active task. |
+| ASG-DOC-027 | PASS | Existing conflict/CI/HPA/chart captures plus the authentic main-ruleset screenshots in docs/evidence/ruleset-main-*.png (#125). |
 | ASG-DOC-028 | PASS | Conditional incident policy recorded in SECURITY.md. No credential-pattern match found in current full-history scan; no credential incident is invented. |
 | ASG-BONUS-001 | BLOCKED | Existing measured rolling-update-under-load captures retained; uploaded final video shows scaling/rollback separately and adds no simultaneous rollout-under-load footage. Optional bonus, not a mandatory blocker. |
 | ASG-BONUS-002 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
@@ -348,7 +349,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 
 | Rubric | Status | Evidence / remaining verification |
 |---|---|---|
-| A1 | BLOCKED | Protection exports and successful gated PR/CD evidence verified; original screenshot clause remains an owner-removed-task rubric caveat (ASG-GH-001). |
+| A1 | PASS | Main ruleset screenshots show Active, PR required, one approval, ten required checks and blocked force pushes; see docs/evidence/ruleset-main-screenshots.md. Grader acceptance remains external. |
 | A2 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | A3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | A4 | FAIL | Count/share thresholds pass on dev; historical conventional-prefix exceptions remain (ASG-GH-007). |
