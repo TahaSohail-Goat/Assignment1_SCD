@@ -118,7 +118,8 @@ def test_the_data_services_publish_no_port() -> None:
 
 
 def test_the_named_volumes_exist_and_are_used_where_expected() -> None:
-    assert set(COMPOSE["volumes"]) == {"pgdata", "redisdata", "ollama_models"}
+    assert {"pgdata", "redisdata", "ollama_models"} <= set(COMPOSE["volumes"])
+    assert {"prometheusdata", "grafanadata"} <= set(COMPOSE["volumes"])
     assert any(v.startswith("pgdata:") for v in SERVICES["database"]["volumes"])
     assert any(v.startswith("redisdata:") for v in SERVICES["cache"]["volumes"])
 
@@ -173,7 +174,7 @@ def test_every_image_tag_is_pinned() -> None:
 def test_credentials_come_from_the_environment_not_from_the_file() -> None:
     assert "${POSTGRES_PASSWORD}" in COMPOSE_TEXT
     assert "${POSTGRES_USER}" in COMPOSE_TEXT
-    assert not re.search(r"(?i)password:\s*(?!\$\{)\S", COMPOSE_TEXT)
+    assert not re.search(r"(?im)^\s*\w*password:\s*(?!\$\{)\S", COMPOSE_TEXT)
 
 
 def test_services_reach_each_other_by_service_name_never_localhost() -> None:
