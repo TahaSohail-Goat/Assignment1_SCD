@@ -406,7 +406,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J4 | PASS | Uploaded video has required visual coverage and is under five minutes; Artfever confirmed both voices on 2026-09-27. Primary and backup links verified; see final video evidence. |
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | BON1 | PASS | Live rolling-update-under-load evidence is indexed in `docs/evidence/k8s-zero-downtime-index.md`. |
-| BON2 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
+| BON2 | PASS | Local Argo CD Application reconciled the public repository's `dev` overlay to `Synced` / `Healthy` with prune and self-heal. Raw status, workload state and an authentic terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
 | BON3 | BLOCKED | Keyless signing and predeployment verification are implemented in #129; a successful main CD run is pending. Optional work, not a mandatory blocker. |
 | BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in docs/evidence/observability-*. Pending partner review and promotion. |
 | BON5 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |

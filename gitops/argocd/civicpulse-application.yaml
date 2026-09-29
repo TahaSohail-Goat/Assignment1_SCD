@@ -1,0 +1,26 @@
+# ASG-BONUS-002: a local Argo CD Application that reconciles the public repository's dev overlay.
+# The actual database/API-key Secret is deliberately absent from the rendered overlay, so Argo CD
+# never receives or overwrites it. It is created out of band before this Application is applied.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: civicpulse
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/TahaSohail-Goat/Assignment1_SCD.git
+    targetRevision: dev
+    path: k8s/overlays/dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: civicpulse
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PruneLast=true

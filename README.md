@@ -188,6 +188,18 @@ updates; Services are ClusterIP. Production uses immutable full commit SHA tags 
 CD. See [load experiments](docs/evidence/k8s-load-README.md),
 [persistence](docs/evidence/k8s-pg-persistence.txt) and [rollback](docs/evidence/k8s-rollback-index.md).
 
+### Optional GitOps demonstration
+
+After the Bash quickstart has created `kind-civicpulse`, install the pinned local Argo CD demo and
+reconcile CivicPulse declaratively from this repository's `dev` overlay:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/argocd-gitops-demo.ps1
+```
+
+The Application enables automated prune and self-heal while leaving the out-of-band runtime Secret
+outside Git. See the [live capture and limits](docs/evidence/argocd-gitops-README.md).
+
 ## API: nine method/path pairs
 
 | Method | Path | Behaviour |
