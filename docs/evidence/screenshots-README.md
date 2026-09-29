@@ -24,6 +24,10 @@ history; the procedure below them describes that original capture.
 - Flow: submitted the synthetic burst-water-main complaint (POST **201**, rules, water, high), opened
   Dashboard (**31 complaints**), opened Stats (**MISS**), left and returned within the TTL (**HIT**).
 - Zero page errors and zero console errors. The temporary project and its volumes were removed.
+- Follow-up for issue #145: the six light/dark README captures (`screenshots-{submit,dashboard,stats}.png`
+  and their `-dark` variants) were taken in one run of the same procedure on a new empty project,
+  from the frontend image built from the #143 branch. The same flow gave POST **201**, **31
+  complaints**, Stats **MISS** then **HIT**, zero page errors; the dark set follows the theme toggle.
 
 These captures show rules classification, live storage/cache and the new presentation. They do not
 demonstrate a hosted LLM, Ollama or fallback, and the submitted video still shows the earlier UI.
