@@ -294,7 +294,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-028 | PASS | Conditional incident policy recorded in SECURITY.md. No credential-pattern match found in current full-history scan; no credential incident is invented. |
 | ASG-BONUS-001 | BLOCKED | Existing measured rolling-update-under-load captures retained; uploaded final video shows scaling/rollback separately and adds no simultaneous rollout-under-load footage. Optional bonus, not a mandatory blocker. |
 | ASG-BONUS-002 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
-| ASG-BONUS-003 | BLOCKED | Final source/evidence review outstanding. Matrix: Partial: images are deployed by digest under the SHA tag (`cd.yml`); Cosign signing and verification are not done |
+| ASG-BONUS-003 | BLOCKED | #129 implements keyless signing of both published digests and identity-bound verification before deployment. It remains BLOCKED until a successful main CD run records both steps. |
 | ASG-BONUS-004 | PASS | Optional observability profile scraped the backend (`up=1`, target healthy); real Grafana dashboard screenshot and capture notes in docs/evidence/observability-*. Pending partner review and promotion. |
 | ASG-BONUS-005 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
 | ASG-BONUS-006 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
@@ -407,7 +407,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | BON1 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 | BON2 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
-| BON3 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
+| BON3 | BLOCKED | Keyless signing and predeployment verification are implemented in #129; a successful main CD run is pending. Optional work, not a mandatory blocker. |
 | BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in docs/evidence/observability-*. Pending partner review and promotion. |
 | BON5 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 

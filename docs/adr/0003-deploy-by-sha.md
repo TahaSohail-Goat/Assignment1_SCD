@@ -7,7 +7,9 @@ including GHCR image/SBOM publication and the ephemeral kind Ingress smoke test.
 
 ## Decision
 Publish both images with the full merged commit SHA and `latest`; deploy only the SHA tag.
-The build job exposes both registry digests. The ephemeral kind job pulls by those digests,
+The build job exposes both registry digests. It keylessly signs each exact digest with the
+GitHub Actions OIDC identity for `cd.yml` on `main`; the deploy job verifies that identity
+against the same digest before it creates a cluster. The ephemeral kind job then pulls by those digests,
 tags the verified images with the source SHA and loads them into kind before applying the
 production overlay. A mutable registry tag cannot change the bytes selected by that job.
 
