@@ -42,5 +42,5 @@ Additional implementation files include `scripts/k8s-up.sh`, `.github/workflows/
 
 - New top-level directories require an issue and an update to this file.
 - Files the assignment lists (§5.7) must live at exactly those paths.
-- The four prompt/governance files at the root (`CLAUDE.md`, `AGENTS.md`, `PROMPT.md`, `START_HERE.md`) are kept for the duration of development. Phase 12 decides whether they stay in the submitted repository; they are also AI-usage evidence (ASG-DOC-025).
+- The prompt/governance files (`CLAUDE.md` and `AGENTS.md` at the root; `PROMPT.md` and `START_HERE.md` in `docx/`) are kept for the duration of development. Phase 12 decides whether they stay in the submitted repository; they are also AI-usage evidence (ASG-DOC-025).
 - Nothing outside the §5.7 layout and `docs/`/`docx/` governance additions is added without a recorded reason.
