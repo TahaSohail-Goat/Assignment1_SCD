@@ -231,3 +231,17 @@ The required video of both methods and explanations must still be recorded by th
 docker compose down        # keeps the data
 docker compose down -v     # also removes pgdata and redisdata
 ```
+
+## 16. Optional Prometheus and Grafana (ASG-BONUS-004)
+
+Set a unique `GRAFANA_ADMIN_PASSWORD` in the ignored `.env`, then run
+`docker compose --profile observability up -d --build --wait`. This profile adds a
+Prometheus scrape of `backend:8000/metrics` every 15 seconds and a provisioned Grafana
+dashboard. Open `http://127.0.0.1:3000/d/civicpulse/civicpulse-operations` and sign in
+as `admin` with that password. The Prometheus UI is bound to `127.0.0.1:9090`.
+
+Verify ingestion at `http://127.0.0.1:9090/api/v1/query?query=up%7Bjob%3D%22civicpulse-backend%22%7D`:
+the sample value must be `1`. Generate a few requests to `/health`, then refresh the
+dashboard; the HTTP request total should increase. The optional stack uses named
+volumes `prometheusdata` and `grafanadata`; `docker compose --profile observability down`
+stops it without erasing history. The default quickstart does not start these services.

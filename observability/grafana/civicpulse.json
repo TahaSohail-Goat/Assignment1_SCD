@@ -1,0 +1,48 @@
+{
+  "uid": "civicpulse",
+  "title": "CivicPulse Operations",
+  "description": "Backend availability, HTTP traffic and triage latency from the real /metrics endpoint.",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "15s",
+  "time": { "from": "now-15m", "to": "now" },
+  "tags": ["civicpulse", "ASG-BONUS-004"],
+  "panels": [
+    {
+      "id": 1,
+      "title": "Backend scrape up",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 6, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "civicpulse-prometheus" },
+      "targets": [{ "expr": "up{job=\"civicpulse-backend\"}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "min": 0, "max": 1 }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } }
+    },
+    {
+      "id": 2,
+      "title": "HTTP requests",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 6, "x": 6, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "civicpulse-prometheus" },
+      "targets": [{ "expr": "sum(http_requests_total) or vector(0)", "refId": "A" }],
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false } }
+    },
+    {
+      "id": 3,
+      "title": "HTTP requests / second (5m)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "civicpulse-prometheus" },
+      "targets": [{ "expr": "sum by (status) (rate(http_requests_total[5m]))", "legendFormat": "{{status}}", "refId": "A" }]
+    },
+    {
+      "id": 4,
+      "title": "Triage latency p95 (5m)",
+      "type": "timeseries",
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "civicpulse-prometheus" },
+      "targets": [{ "expr": "histogram_quantile(0.95, sum by (le, provider) (rate(triage_duration_seconds_bucket[5m])))", "legendFormat": "{{provider}}", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    }
+  ]
+}
