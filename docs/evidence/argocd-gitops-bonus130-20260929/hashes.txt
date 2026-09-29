@@ -1,0 +1,4 @@
+﻿SHA256 325636C0E1B453252E980663E1CDE3478444AF83D2D1EFC95F5A3E80D07F2AB9 D:\University Work\Semester 5\SCD\Assignment 1\Assignment1_SCD\docs\evidence\argocd-gitops-bonus130-20260929\application.yaml
+SHA256 45FF76FEB8011314F940059F9A1588BBDE87EE31CDB5B9834BABD83B8C11550A D:\University Work\Semester 5\SCD\Assignment 1\Assignment1_SCD\docs\evidence\argocd-gitops-bonus130-20260929\status.txt
+SHA256 69B9AD67D074D39C4C85C8C6C3B4DFC28343A3B139E12B866EAECB028A4F531A D:\University Work\Semester 5\SCD\Assignment 1\Assignment1_SCD\docs\evidence\argocd-gitops-bonus130-20260929\workloads.txt
+SHA256 2FD98E8DB8323F623B07EAFF8B6C0F29BF2004C15AA6B6969E6E34BED254F63B D:\University Work\Semester 5\SCD\Assignment 1\Assignment1_SCD\docs\evidence\argocd-gitops-bonus130-20260929\argocd-pods.txt

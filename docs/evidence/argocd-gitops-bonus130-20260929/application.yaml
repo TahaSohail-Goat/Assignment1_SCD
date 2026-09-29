@@ -1,0 +1,323 @@
+﻿apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"argoproj.io/v1alpha1","kind":"Application","metadata":{"annotations":{},"finalizers":["resources-finalizer.argocd.argoproj.io"],"name":"civicpulse","namespace":"argocd"},"spec":{"destination":{"namespace":"civicpulse","server":"https://kubernetes.default.svc"},"project":"default","source":{"path":"k8s/overlays/dev","repoURL":"https://github.com/TahaSohail-Goat/Assignment1_SCD.git","targetRevision":"dev"},"syncPolicy":{"automated":{"prune":true,"selfHeal":true},"syncOptions":["CreateNamespace=true","PruneLast=true"]}}}
+  creationTimestamp: "2026-09-29T05:07:24Z"
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+  generation: 14
+  name: civicpulse
+  namespace: argocd
+  resourceVersion: "64377"
+  uid: 3d5b3708-a408-44eb-a154-b64c60d06cdf
+spec:
+  destination:
+    namespace: civicpulse
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: k8s/overlays/dev
+    repoURL: https://github.com/TahaSohail-Goat/Assignment1_SCD.git
+    targetRevision: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - PruneLast=true
+status:
+  controllerNamespace: argocd
+  health:
+    lastTransitionTime: "2026-09-29T06:50:18Z"
+    status: Healthy
+  history:
+  - deployStartedAt: "2026-09-29T05:07:28Z"
+    deployedAt: "2026-09-29T05:07:29Z"
+    id: 0
+    initiatedBy:
+      automated: true
+    revision: 27103d1f1175b7c1f695857f812f3d0cc7d263d8
+    source:
+      path: k8s/overlays/dev
+      repoURL: https://github.com/TahaSohail-Goat/Assignment1_SCD.git
+      targetRevision: dev
+  operationState:
+    finishedAt: "2026-09-29T05:07:29Z"
+    message: successfully synced (all tasks run)
+    operation:
+      initiatedBy:
+        automated: true
+      retry:
+        limit: 5
+      sync:
+        prune: true
+        revision: 27103d1f1175b7c1f695857f812f3d0cc7d263d8
+        source:
+          path: k8s/overlays/dev
+          repoURL: https://github.com/TahaSohail-Goat/Assignment1_SCD.git
+          targetRevision: dev
+        syncOptions:
+        - CreateNamespace=true
+        - PruneLast=true
+    phase: Succeeded
+    startedAt: "2026-09-29T05:07:28Z"
+    syncResult:
+      resources:
+      - group: ""
+        hookPhase: Running
+        kind: Namespace
+        message: namespace/civicpulse configured
+        name: civicpulse
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: policy
+        hookPhase: Running
+        kind: PodDisruptionBudget
+        message: poddisruptionbudget.policy/backend configured
+        name: backend
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: ConfigMap
+        message: configmap/civicpulse-config configured
+        name: civicpulse-config
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: PersistentVolumeClaim
+        message: persistentvolumeclaim/cache-data configured
+        name: cache-data
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: Service
+        message: service/frontend configured
+        name: frontend
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: Service
+        message: service/cache configured
+        name: cache
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: Service
+        message: service/database configured
+        name: database
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: ""
+        hookPhase: Running
+        kind: Service
+        message: service/backend configured
+        name: backend
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: apps
+        hookPhase: Running
+        images:
+        - civicpulse-frontend:dev
+        kind: Deployment
+        message: deployment.apps/frontend configured
+        name: frontend
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: apps
+        hookPhase: Running
+        images:
+        - redis:7.4.11-alpine
+        kind: Deployment
+        message: deployment.apps/cache configured
+        name: cache
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: apps
+        hookPhase: Running
+        images:
+        - civicpulse-backend:dev
+        kind: Deployment
+        message: deployment.apps/backend configured
+        name: backend
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: autoscaling
+        hookPhase: Running
+        kind: HorizontalPodAutoscaler
+        message: horizontalpodautoscaler.autoscaling/backend-hpa configured
+        name: backend-hpa
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v2
+      - group: apps
+        hookPhase: Running
+        images:
+        - postgres:16.10-alpine
+        kind: StatefulSet
+        message: statefulset.apps/database configured
+        name: database
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: networking.k8s.io
+        hookPhase: Running
+        kind: Ingress
+        message: ingress.networking.k8s.io/civicpulse configured
+        name: civicpulse
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      - group: autoscaling.k8s.io
+        hookPhase: Running
+        kind: VerticalPodAutoscaler
+        message: verticalpodautoscaler.autoscaling.k8s.io/backend-vpa configured
+        name: backend-vpa
+        namespace: civicpulse
+        status: Synced
+        syncPhase: Sync
+        version: v1
+      revision: 27103d1f1175b7c1f695857f812f3d0cc7d263d8
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/TahaSohail-Goat/Assignment1_SCD.git
+        targetRevision: dev
+  reconciledAt: "2026-09-29T06:49:19Z"
+  resourceHealthSource: appTree
+  resources:
+  - kind: ConfigMap
+    name: civicpulse-config
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - kind: Namespace
+    name: civicpulse
+    status: Synced
+    version: v1
+  - kind: PersistentVolumeClaim
+    name: cache-data
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - kind: Service
+    name: backend
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - kind: Service
+    name: cache
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - kind: Service
+    name: database
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - kind: Service
+    name: frontend
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: backend
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: cache
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: apps
+    kind: Deployment
+    name: frontend
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: apps
+    kind: StatefulSet
+    name: database
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: autoscaling.k8s.io
+    kind: VerticalPodAutoscaler
+    name: backend-vpa
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: autoscaling
+    kind: HorizontalPodAutoscaler
+    name: backend-hpa
+    namespace: civicpulse
+    status: Synced
+    version: v2
+  - group: networking.k8s.io
+    kind: Ingress
+    name: civicpulse
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  - group: policy
+    kind: PodDisruptionBudget
+    name: backend
+    namespace: civicpulse
+    status: Synced
+    version: v1
+  sourceHydrator: {}
+  sourceType: Kustomize
+  summary:
+    externalURLs:
+    - http://civicpulse.local/
+    - http://civicpulse.local/api
+    images:
+    - civicpulse-backend:dev
+    - civicpulse-frontend:dev
+    - postgres:16.10-alpine
+    - redis:7.4.11-alpine
+  sync:
+    comparedTo:
+      destination:
+        namespace: civicpulse
+        server: https://kubernetes.default.svc
+      source:
+        path: k8s/overlays/dev
+        repoURL: https://github.com/TahaSohail-Goat/Assignment1_SCD.git
+        targetRevision: dev
+    revision: 27103d1f1175b7c1f695857f812f3d0cc7d263d8
+    status: Synced

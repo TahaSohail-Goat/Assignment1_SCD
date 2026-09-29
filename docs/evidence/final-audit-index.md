@@ -92,6 +92,9 @@ This is a targeted pattern scan, not a proof against every possible secret repre
   four sentences explaining retention of Taha's orchestration plus cache hooks. PR #70
   merged as 61e129a; current triage.py retains that resolved structure.
 - [Red/green merge gate](ci-gate.md): PR #90 and existing screenshots; no new screenshot claimed.
+- [GitOps reconciliation](argocd-gitops-README.md): local Argo CD reconciled the public `dev`
+  overlay at `27103d1` to `Synced` / `Healthy`; raw Application and workload captures plus a
+  terminal screenshot are retained. This is a local-cluster bonus demonstration.
 
 ## Submission lint output
 

@@ -1,0 +1,8 @@
+﻿NAME                                                READY   STATUS    RESTARTS       AGE    IP            NODE                       NOMINATED NODE   READINESS GATES
+argocd-application-controller-0                     1/1     Running   1 (107s ago)   106m   10.244.0.18   civicpulse-control-plane   <none>           <none>
+argocd-applicationset-controller-7fb7c76f76-glm5c   1/1     Running   1 (107s ago)   106m   10.244.0.7    civicpulse-control-plane   <none>           <none>
+argocd-dex-server-7d54f7f9d6-lmvks                  1/1     Running   1 (107s ago)   106m   10.244.0.11   civicpulse-control-plane   <none>           <none>
+argocd-notifications-controller-7fcfd67447-tkfvs    1/1     Running   1 (107s ago)   106m   10.244.0.10   civicpulse-control-plane   <none>           <none>
+argocd-redis-6bf744486c-8pcjv                       1/1     Running   1 (107s ago)   106m   10.244.0.9    civicpulse-control-plane   <none>           <none>
+argocd-repo-server-57b98df6c6-hrllq                 1/1     Running   1 (107s ago)   106m   10.244.0.8    civicpulse-control-plane   <none>           <none>
+argocd-server-665b8b6947-4rg4n                      1/1     Running   1 (107s ago)   106m   10.244.0.12   civicpulse-control-plane   <none>           <none>
