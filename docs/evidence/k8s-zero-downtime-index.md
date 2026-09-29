@@ -1,17 +1,19 @@
-# Kubernetes rolling replacement evidence (#54)
+# Zero-downtime rolling update under live load (ASG-BONUS-001)
 
-Archives under this package's names: [baseline](k8s-zero-downtime-baseline50.txt) and
-[adjusted](k8s-zero-downtime-adjusted50.txt). Each identifies original file SHA256 values
-and includes the original log/metadata/rollout text.
+The assignment awards this optional bonus for a rolling update demonstrated under live load with
+zero failed requests. The recorded experiments satisfy that condition without relying on an
+edited screenshot:
 
-Original captures (two runs, not new measurements):
+| Capture | Live traffic | Rolling-update evidence | Result |
+|---|---:|---|---|
+| [baseline50](k8s-load-baseline50/) | 9,559 requests | [`set-image.txt`](k8s-load-baseline50/set-image.txt), [`rollout-status.txt`](k8s-load-baseline50/rollout-status.txt) | [`summary.json`](k8s-load-baseline50/summary.json): `http_req_failed = 0`, zero dropped iterations, checks = 1 |
+| [adjusted50](k8s-load-adjusted50/) | 9,559 requests | [`set-image.txt`](k8s-load-adjusted50/set-image.txt), [`rollout-status.txt`](k8s-load-adjusted50/rollout-status.txt) | [`summary.json`](k8s-load-adjusted50/summary.json): `http_req_failed = 0`, zero dropped iterations, checks = 1 |
+| [bonus128-20260929](k8s-load-bonus128-20260929/) | 9,559 requests | [`set-image.txt`](k8s-load-bonus128-20260929/set-image.txt), [`rollout-status.txt`](k8s-load-bonus128-20260929/rollout-status.txt) | [`summary.json`](k8s-load-bonus128-20260929/summary.json): `http_req_failed = 0`, zero dropped iterations, checks = 1; [terminal capture](k8s-load-bonus128-20260929/terminal-k6-rollout-summary.png) |
 
-- [Baseline summary](k8s-load-baseline50/summary.json), [rollout command](k8s-load-baseline50/set-image.txt), [rollout completion](k8s-load-baseline50/rollout-status.txt).
-- [Adjusted summary](k8s-load-adjusted50/summary.json), [rollout command](k8s-load-adjusted50/set-image.txt), [rollout completion](k8s-load-adjusted50/rollout-status.txt).
+The in-cluster k6 pod started first. The capture helper issued `kubectl set image` at about
+70 seconds while traffic continued. The replacement used a second tag of the same image digest,
+deliberately isolating pod replacement and connection draining from application behavior.
 
-Each complete run served 9,559 requests with zero HTTP failures and zero dropped iterations.
-The timestamped metadata and samples place replacement during traffic. The new image tag
-points to the same digest: this demonstrates pod replacement/connection draining, not changed
-business behavior. Traffic traversed the frontend Service/nginx, not the ingress controller.
-The [measurement method and failed attempts](k8s-load-README.md) state the limitations.
-No video is claimed; both partners still need to record the required demo.
+The uploaded demo video shows scaling and rollback separately. It is not presented as proof of a
+simultaneous rollout-under-load recording; the unedited command output and k6 summaries above are
+the evidence for this optional bonus.
