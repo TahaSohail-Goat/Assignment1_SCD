@@ -23,10 +23,9 @@ Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (see 
 Video and backup links are in [SUBMISSION.md](SUBMISSION.md), with verification in
 [evidence/submission-final-README.md](evidence/submission-final-README.md).
 #113/#114 merged the live provider work; #116/#117 merged the successful release evidence.
-Latest verified main `df7649c` passed CD 36310273819. Final link/audit documentation
-was approved and merged through #118/#119. The subsequent owner voice confirmation
-is recorded in the small sign-off correction. Close these issues after the protected promotion;
-this status does not claim a Classroom submission or erase historical rubric caveats.
+Latest main `77cc1e0` passed CD 36554371413 after the final bonus promotion. All repository
+deliverables, evidence and capped bonus implementations are on `main`. This status does not
+claim a Classroom submission or erase historical rubric caveats.
 
 ## How we work now
 
