@@ -280,22 +280,24 @@ Read the [security baseline](docs/SECURITY.md), [CI/CD guide](docs/CICD.md) and
 
 ## Screenshots and evidence
 
-The screenshots below were captured from a fresh `dev` clone using real PostgreSQL, Redis and rules
-triage: 30 seed complaints plus one submission, with no mocked browser responses. The
-[capture details](docs/evidence/screenshots-README.md) and
+The screenshots below show the animated interface (issue #142): a three.js city backdrop, a 3D stats
+chart and Motion transitions. They were captured from a separate Compose project with empty volumes,
+real PostgreSQL, Redis and rules triage: 30 seed complaints plus one submission, with no mocked
+browser responses. Without WebGL, on software rendering or with reduced motion, the same views use
+a static background. The [capture details](docs/evidence/screenshots-README.md) and the original
 [verification transcript](docs/evidence/screenshots-clean-clone-log.txt) describe the setup.
 
 ### Submit
 
-![Successful complaint submission and rules classification](docs/evidence/screenshots-submit.png)
+![Successful complaint submission, rules classification and the high-priority pulse in the 3D city](docs/evidence/screenshots-submit.png)
 
 ### Dashboard
 
-![Dashboard filters and stored complaints](docs/evidence/screenshots-dashboard.png)
+![Dashboard filters and stored complaints with category and priority badges](docs/evidence/screenshots-dashboard.png)
 
 ### Stats
 
-![31 complaints and a real Redis cache HIT](docs/evidence/screenshots-stats.png)
+![31 complaints, a real Redis cache HIT and the 3D category chart](docs/evidence/screenshots-stats.png)
 
 Additional evidence includes [load and rolling updates](docs/evidence/k8s-load-README.md),
 [rollback](docs/evidence/k8s-rollback-index.md), [PVC persistence](docs/evidence/k8s-pg-persistence.txt),
