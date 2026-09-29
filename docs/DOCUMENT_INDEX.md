@@ -37,7 +37,7 @@
 | `docs/PHASE_EXECUTION_PROTOCOL.md` · `docs/QUALITY_GATES.md` | Phase loop and gates | Start/end of each phase |
 | `docs/adr/` | Architecture decision records (the four required ADRs plus any others) | When making or revisiting a decision |
 | `docs/phases/PHASE-NN-*.md` | Scope of each phase | The current phase only |
-| `PROMPT.md` · `CLAUDE.md` · `AGENTS.md` · `START_HERE.md` | Execution framework and permanent contract | Once per session (`AGENTS.md`/`CLAUDE.md`), `PROMPT.md` per phase |
+| `CLAUDE.md` · `AGENTS.md` · `docx/PROMPT.md` · `docx/START_HERE.md` | Execution framework and permanent contract | Once per session (`AGENTS.md`/`CLAUDE.md`), `docx/PROMPT.md` per phase |
 
 ## Token-Saving Rule
 
