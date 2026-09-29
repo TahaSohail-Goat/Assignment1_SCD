@@ -14,13 +14,21 @@ const HALF = (BLOCKS - 1) / 2
 type Building = { x: number; z: number; h: number; w: number; phase: number }
 type Pulse = { x: number; z: number; born: number; life: number; speed: number; strength: number; color: THREE.Color }
 
-/** A stable, seeded skyline: taller towers near the centre, parks scattered between. */
-function makeSkyline(): Building[] {
-  let seed = 11
-  const random = () => {
+/**
+ * Small seeded generator (Park-Miller). The scene is decorative, so it needs repeatable
+ * variety, not unpredictability; a seed keeps the skyline and pulse rhythm stable.
+ */
+function seededRandom(start: number): () => number {
+  let seed = start
+  return () => {
     seed = (seed * 16807) % 2147483647
     return (seed - 1) / 2147483646
   }
+}
+
+/** A stable skyline: taller towers near the centre, parks scattered between. */
+function makeSkyline(): Building[] {
+  const random = seededRandom(11)
   const buildings: Building[] = []
   const radius = HALF * SPACING
   for (let i = 0; i < BLOCKS; i++) {
@@ -44,8 +52,8 @@ function makeSkyline(): Building[] {
 }
 
 /** Street crossings lie half a block away from block centres. */
-function randomCrossing(): [number, number] {
-  const pick = () => (Math.floor(Math.random() * BLOCKS) - HALF + 0.5) * SPACING
+function randomCrossing(random: () => number): [number, number] {
+  const pick = () => (Math.floor(random() * BLOCKS) - HALF + 0.5) * SPACING
   return [pick(), pick()]
 }
 
@@ -56,6 +64,7 @@ function City({ theme }: { theme: Theme }) {
   const pulses = useRef<Pulse[]>([])
   const pending = useRef<Priority[]>([])
   const nextAmbient = useRef(0.4)
+  const random = useMemo(() => seededRandom(29), [])
   const palette = scenePalette[theme]
   const colors = useMemo(() => ({
     base: new THREE.Color(palette.building),
@@ -71,9 +80,9 @@ function City({ theme }: { theme: Theme }) {
     const t = state.clock.elapsedTime
     const live = pulses.current
     if (t > nextAmbient.current) {
-      const [x, z] = randomCrossing()
+      const [x, z] = randomCrossing(random)
       live.push({ x, z, born: t, life: 3.2, speed: 2.4, strength: 0.75, color: colors.glow })
-      nextAmbient.current = t + 0.9 + Math.random() * 1.4
+      nextAmbient.current = t + 0.9 + random() * 1.4
     }
     for (const priority of pending.current.splice(0)) {
       const big = priority === 'high' ? 1.6 : 1.2
