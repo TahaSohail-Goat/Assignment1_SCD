@@ -292,9 +292,9 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-026 | PASS | docs/TRIAGE.md exists and explains provider operation and measurement scope; assignment does not prescribe its contents. |
 | ASG-DOC-027 | PASS | Existing conflict/CI/HPA/chart captures plus the authentic main-ruleset screenshots in docs/evidence/ruleset-main-*.png (#125). |
 | ASG-DOC-028 | PASS | Conditional incident policy recorded in SECURITY.md. No credential-pattern match found in current full-history scan; no credential incident is invented. |
-| ASG-BONUS-001 | BLOCKED | Existing measured rolling-update-under-load captures retained; uploaded final video shows scaling/rollback separately and adds no simultaneous rollout-under-load footage. Optional bonus, not a mandatory blocker. |
+| ASG-BONUS-001 | PASS | Three preserved in-cluster k6 captures overlap `kubectl set image` and successful rolling rollouts. Each records 9,559 requests, `http_req_failed = 0`, zero dropped iterations and passing checks; see `docs/evidence/k8s-zero-downtime-index.md`. The video is explicitly not used as the simultaneous-load evidence. |
 | ASG-BONUS-002 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
-| ASG-BONUS-003 | BLOCKED | Final source/evidence review outstanding. Matrix: Partial: images are deployed by digest under the SHA tag (`cd.yml`); Cosign signing and verification are not done |
+| ASG-BONUS-003 | BLOCKED | #129 implements keyless signing of both published digests and identity-bound verification before deployment. It remains BLOCKED until a successful main CD run records both steps. |
 | ASG-BONUS-004 | PASS | Optional observability profile scraped the backend (`up=1`, target healthy); real Grafana dashboard screenshot and capture notes in docs/evidence/observability-*. Pending partner review and promotion. |
 | ASG-BONUS-005 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
 | ASG-BONUS-006 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
@@ -405,9 +405,9 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J3 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | J4 | PASS | Uploaded video has required visual coverage and is under five minutes; Artfever confirmed both voices on 2026-09-27. Primary and backup links verified; see final video evidence. |
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
-| BON1 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
-| BON2 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
-| BON3 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
+| BON1 | PASS | Live rolling-update-under-load evidence is indexed in `docs/evidence/k8s-zero-downtime-index.md`. |
+| BON2 | PASS | Local Argo CD Application reconciled the public repository's `dev` overlay to `Synced` / `Healthy` with prune and self-heal. Raw status, workload state and an authentic terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
+| BON3 | BLOCKED | Keyless signing and predeployment verification are implemented in #129; a successful main CD run is pending. Optional work, not a mandatory blocker. |
 | BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in docs/evidence/observability-*. Pending partner review and promotion. |
 | BON5 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
 

@@ -231,3 +231,26 @@ def test_the_prod_overlay_never_deploys_latest_and_pulls_from_ghcr() -> None:
     for image in kustomization["images"]:
         assert image["newTag"] != "latest"
         assert image["newName"].startswith("ghcr.io/")
+
+
+def test_argocd_application_reconciles_the_dev_overlay_without_managing_secrets() -> None:
+    application = yaml.safe_load(
+        (K8S.parent / "gitops" / "argocd" / "civicpulse-application.yaml").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert application["apiVersion"] == "argoproj.io/v1alpha1"
+    assert application["kind"] == "Application"
+    assert application["metadata"]["namespace"] == "argocd"
+    assert application["spec"]["source"] == {
+        "repoURL": "https://github.com/TahaSohail-Goat/Assignment1_SCD.git",
+        "targetRevision": "dev",
+        "path": "k8s/overlays/dev",
+    }
+    assert application["spec"]["destination"] == {
+        "server": "https://kubernetes.default.svc",
+        "namespace": "civicpulse",
+    }
+    automated = application["spec"]["syncPolicy"]["automated"]
+    assert automated == {"prune": True, "selfHeal": True}

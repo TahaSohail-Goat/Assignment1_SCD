@@ -1,0 +1,13 @@
+﻿NAME                       READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                    SELECTOR
+deployment.apps/backend    2/2     2            2           3d    backend      civicpulse-backend:dev    app.kubernetes.io/name=backend
+deployment.apps/cache      1/1     1            1           3d    redis        redis:7.4.11-alpine       app.kubernetes.io/name=cache
+deployment.apps/frontend   2/2     2            2           3d    frontend     civicpulse-frontend:dev   app.kubernetes.io/name=frontend
+
+NAME                           READY   STATUS    RESTARTS       AGE     IP            NODE                       NOMINATED NODE   READINESS GATES
+pod/backend-7b56b4c694-rndmj   1/1     Running   1 (107s ago)   103m    10.244.0.20   civicpulse-control-plane   <none>           <none>
+pod/backend-7b56b4c694-rtgm6   1/1     Running   1 (107s ago)   103m    10.244.0.19   civicpulse-control-plane   <none>           <none>
+pod/cache-68bcf6cffd-frkl4     1/1     Running   7 (107s ago)   3d      10.244.0.17   civicpulse-control-plane   <none>           <none>
+pod/database-0                 1/1     Running   7 (107s ago)   2d22h   10.244.0.16   civicpulse-control-plane   <none>           <none>
+pod/frontend-b985b4cd6-hj4h7   1/1     Running   3 (80s ago)    120m    10.244.0.6    civicpulse-control-plane   <none>           <none>
+pod/frontend-b985b4cd6-nnrvj   1/1     Running   3 (78s ago)    120m    10.244.0.4    civicpulse-control-plane   <none>           <none>
+pod/load-bonus128-20260929     0/1     Unknown   0              119m    <none>        civicpulse-control-plane   <none>           <none>

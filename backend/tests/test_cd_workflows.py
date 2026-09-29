@@ -45,6 +45,35 @@ def test_cd_deploys_sha_images_and_creates_the_secret_before_workloads() -> None
     assert "git push" not in text
 
 
+def test_cd_keylessly_signs_and_verifies_exact_image_digests() -> None:
+    workflow = yaml.safe_load((ROOT / ".github/workflows/cd.yml").read_text())
+    build = workflow["jobs"]["build-push"]
+    deploy = workflow["jobs"]["deploy-k8s"]
+    assert build["permissions"]["id-token"] == "write"
+
+    build_steps = {step.get("name"): step for step in build["steps"]}
+    deploy_steps = {step.get("name"): step for step in deploy["steps"]}
+    sign = build_steps["Keylessly sign published image digests"]["run"]
+    verify = deploy_steps["Verify keyless signatures before deployment"]["run"]
+
+    assert "$REGISTRY/civicpulse-backend@$BACKEND_DIGEST" in sign
+    assert "$REGISTRY/civicpulse-frontend@$FRONTEND_DIGEST" in sign
+    assert ":latest" not in sign
+    assert "cosign verify" in verify
+    assert (
+        "https://token.actions.githubusercontent.com"
+        in (
+            deploy_steps["Verify keyless signatures before deployment"]["env"][
+                "CERTIFICATE_OIDC_ISSUER"
+            ]
+        )
+    )
+    names = [step.get("name", "") for step in deploy["steps"]]
+    assert names.index("Verify keyless signatures before deployment") < names.index(
+        "Create ephemeral kind cluster"
+    )
+
+
 def test_production_compose_pulls_the_same_registry_namespace() -> None:
     compose = yaml.safe_load((ROOT / "compose.prod.yaml").read_text())
     for service in ["backend", "migrate", "frontend"]:
