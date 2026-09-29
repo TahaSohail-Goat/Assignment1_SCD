@@ -2,42 +2,84 @@
 
 [![CI](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/ci.yml)
 [![CD](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/cd.yml)
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=TahaSohail-Goat_Assignment1_SCD&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=TahaSohail-Goat_Assignment1_SCD)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-CivicPulse is a civic-issue reporting and triage service. Citizens submit a complaint and
-location; the service validates it, assigns a category and priority, stores it, and exposes it
-to operators through a dashboard and statistics view.
+**AI-assisted triage for civic complaints.** Citizens describe a problem in their own words;
+CivicPulse assigns a category, a priority and a summary, stores it, and puts urgent issues in
+front of operators first.
 
 Built for CS4032 Assignment 1 by **TahaSohail-Goat** and **Artfever** with React, TypeScript,
-FastAPI, PostgreSQL, Redis, Docker and Kubernetes.
+three.js, FastAPI, PostgreSQL, Redis, Docker and Kubernetes.
+
+![CivicPulse submit view: a high-priority water complaint triaged by rules over the animated 3D city](docs/evidence/screenshots-submit.png)
 
 ## Contents
 
-- [What CivicPulse provides](#what-civicpulse-provides)
+- [The problem](#the-problem)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Tech stack](#tech-stack)
 - [Quick start](#quick-start)
 - [Configure triage](#configure-triage)
 - [Architecture](#architecture)
 - [Repository layout](#repository-layout)
 - [API](#api)
+- [Frontend](#frontend)
+- [Testing and quality](#testing-and-quality)
 - [Operations and observability](#operations-and-observability)
 - [Kubernetes](#kubernetes)
 - [CI, delivery and security](#ci-delivery-and-security)
-- [Screenshots and evidence](#screenshots-and-evidence)
+- [Evidence](#evidence)
 - [Demo and submission](#demo-and-submission)
 - [Documentation, contribution and license](#documentation-contribution-and-license)
 
-## What CivicPulse provides
+## The problem
+
+A municipal complaint form usually drops free text into one undifferentiated queue. A burst water
+main can sit behind routine streetlight reports because nothing sorted them, and dropdowns do not
+help: citizens pick the wrong category or cannot judge urgency. The information is in the text.
+
+CivicPulse reads that text through a replaceable triage provider: deterministic rules by default,
+a hosted or local language model when configured. The system around the provider validates every
+result and falls back to rules when a model is slow, rate-limited or wrong.
+
+## Features
 
 | Area | Capability |
 |---|---|
-| Citizen workflow | Submit a complaint with a location and optional contact details. |
+| Citizen workflow | Submit a complaint with a location and optional contact details; see the category, priority, summary and provider that produced them. |
 | Triage | Rule-based default, optional Groq hosted provider, optional local Ollama, schema validation and safe fallback. |
-| Operations | Filtered dashboard, status transitions, paginated history, category/priority statistics and cache state. |
-| Reliability | PostgreSQL persistence, Redis cache/rate limit, health/readiness probes, retry/timeout/fallback handling. |
-| Deployment | Docker Compose for local use; Kubernetes manifests, HPA/VPA/PDB and a gated GitHub Actions delivery workflow. |
-| Evidence | CI, deployment, load, rollback, provider-comparison, observability and submission evidence under `docs/evidence/`. |
+| Operations | Filtered, paginated dashboard with status transitions; category/priority statistics with visible cache state. |
+| Interface | Animated three.js city backdrop that pulses when a complaint is triaged, a 3D statistics chart, Motion transitions, light and dark themes. |
+| Reliability | PostgreSQL persistence, Redis cache and rate limit, health/readiness probes, retry/timeout/fallback handling. |
+| Deployment | Docker Compose locally; Kubernetes manifests with HPA/VPA/PDB and a gated, signed GitHub Actions delivery pipeline. |
 
 The backend is the sole authority for validation, status transitions and triage results. The
 frontend never connects to PostgreSQL or Redis.
+
+## Screenshots
+
+Captured from a fresh Compose stack (30 seed complaints plus one submission) with real PostgreSQL,
+Redis and rules triage and no mocked responses.
+[Capture details](docs/evidence/screenshots-README.md).
+
+| View | Light | Dark |
+|---|---|---|
+| Submit | ![Submit view with a triaged complaint in light mode](docs/evidence/screenshots-submit.png) | ![Submit form in dark mode over the 3D city](docs/evidence/screenshots-submit-dark.png) |
+| Dashboard | ![Dashboard filters and complaint cards with badges in light mode](docs/evidence/screenshots-dashboard.png) | ![Dashboard in dark mode](docs/evidence/screenshots-dashboard-dark.png) |
+| Stats | ![31 complaints, a real Redis cache HIT and the 3D category chart](docs/evidence/screenshots-stats.png) | ![Stats with the 3D chart in dark mode](docs/evidence/screenshots-stats-dark.png) |
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React 18, TypeScript, Vite, three.js with React Three Fiber and drei, Motion, served by nginx |
+| Backend | Python 3.12, FastAPI, Pydantic, SQLAlchemy, Alembic |
+| Data | PostgreSQL 16, Redis 7 (cache, rate limiter, triage cache) |
+| AI triage | Rules, Groq (hosted LLM), Ollama (local), simulated provider for tests |
+| Delivery | Docker, Compose, Kubernetes (kind), GitHub Actions, GHCR, Cosign, Trivy, kubeconform |
+| Observability | Structured JSON logs, Prometheus, Grafana, OpenTelemetry with Jaeger |
 
 ## Quick start
 
@@ -156,7 +198,7 @@ the design choices.
 
 ```text
 backend/       FastAPI application, Alembic migrations, repositories and tests
-frontend/      React/Vite user interface, typed API client and component tests
+frontend/      React/Vite interface, three.js scenes, typed API client and component tests
 k8s/           Base manifests plus dev and production overlays
 observability/ Prometheus and Grafana provisioning
 scripts/       Kubernetes, GitOps and submission helpers
@@ -184,6 +226,43 @@ The required repository inventory is maintained in [REPOSITORY_STRUCTURE.md](doc
 `reporter_contact`. `PATCH /api/complaints/{id}/status` accepts `{"status":"in_progress"}`.
 Allowed transitions are `open` to `in_progress`/`rejected` and `in_progress` to
 `resolved`/`rejected`. [API design](docs/API_DESIGN.md) records response-shape decisions.
+
+## Frontend
+
+The interface has three views: **Submit**, **Dashboard** and **Stats**.
+
+- **3D layer:** a low-poly city rendered with three.js through React Three Fiber. Pulse waves cross
+  it continuously, and a successful submission sends a larger pulse coloured by the returned
+  priority. The Stats view adds a 3D bar chart with a category/priority switch.
+- **Animation:** Motion drives page transitions, the navigation pill, staggered cards, loading
+  skeletons, the triage scan bar and count-up totals.
+- **Fallbacks:** the 3D scenes load lazily and only with hardware WebGL and no reduced-motion
+  preference. Without WebGL, on software rendering (SwiftShader, llvmpipe) or with reduced motion,
+  the same views use a static background. Every number also appears as accessible text.
+- **Runtime configuration:** nginx proxies `/api` to the backend, so one image runs in any
+  environment ([ADR 0002](docs/adr/0002-frontend-runtime-config.md)).
+
+To work on the interface with hot reload, keep the Compose backend running and start Vite:
+
+```powershell
+cd frontend
+npm ci
+npm run dev
+```
+
+Vite serves http://localhost:5173 and proxies `/api` to the backend on port 8000.
+
+## Testing and quality
+
+| Check | Command | Where it runs |
+|---|---|---|
+| Backend unit and integration tests, coverage gate 65% | `cd backend; pip install -r requirements-dev.txt; pytest` | CI `test-backend` |
+| Frontend component tests | `cd frontend; npm ci; npm test` | CI `test-frontend` |
+| Lint, type check, API contract | `npm run lint`, `npm run typecheck`, `npm run check:api-contract` | CI `lint-and-type` |
+| Compose end-to-end smoke test | `docker compose up -d --build --wait` from a clean checkout | CI `integration` |
+| Submission lint | `python scripts/check_submission.py` | Locally, before submitting |
+
+Pull requests also run Trivy image scans, kubeconform manifest validation and SonarCloud analysis.
 
 ## Operations and observability
 
@@ -269,8 +348,8 @@ scans, manifest validation and Compose integration. Pushes to protected `main` r
 publish immutable GHCR images, produce SBOMs, keylessly sign and verify image digests, deploy to an
 ephemeral kind cluster and perform an Ingress smoke test.
 
-Latest main [CD 36554371413](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413)
-passed those gates at `77cc1e0`. The workflow deletes its cluster after the smoke test; this is
+Latest main [CD 36584542080](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36584542080)
+passed those gates at `bfe599a`. The workflow deletes its cluster after the smoke test; this is
 deployment evidence, not a persistent public hosting service.
 
 Security controls include ignored environment files, non-root pinned images, network segmentation,
@@ -278,31 +357,19 @@ schema validation, rate limiting, signed immutable deployment references and pro
 Read the [security baseline](docs/SECURITY.md), [CI/CD guide](docs/CICD.md) and
 [Cosign verification evidence](docs/evidence/cosign-verification.md).
 
-## Screenshots and evidence
+## Evidence
 
-The screenshots below show the animated interface (issue #142): a three.js city backdrop, a 3D stats
-chart and Motion transitions. They were captured from a separate Compose project with empty volumes,
-real PostgreSQL, Redis and rules triage: 30 seed complaints plus one submission, with no mocked
-browser responses. Without WebGL, on software rendering or with reduced motion, the same views use
-a static background. The [capture details](docs/evidence/screenshots-README.md) and the original
-[verification transcript](docs/evidence/screenshots-clean-clone-log.txt) describe the setup.
+All captures are authentic and kept under [`docs/evidence/`](docs/evidence/):
 
-### Submit
-
-![Successful complaint submission, rules classification and the high-priority pulse in the 3D city](docs/evidence/screenshots-submit.png)
-
-### Dashboard
-
-![Dashboard filters and stored complaints with category and priority badges](docs/evidence/screenshots-dashboard.png)
-
-### Stats
-
-![31 complaints, a real Redis cache HIT and the 3D category chart](docs/evidence/screenshots-stats.png)
-
-Additional evidence includes [load and rolling updates](docs/evidence/k8s-load-README.md),
-[rollback](docs/evidence/k8s-rollback-index.md), [PVC persistence](docs/evidence/k8s-pg-persistence.txt),
-[provider comparison](docs/evidence/provider-comparison-README.md), and
-[engineering notes](docs/ENGINEERING-NOTES.md).
+- [Screenshot capture details](docs/evidence/screenshots-README.md) and the original
+  [clean-clone verification transcript](docs/evidence/screenshots-clean-clone-log.txt)
+- [Load test, HPA scaling and zero-downtime rolling updates](docs/evidence/k8s-load-README.md)
+- [Rollback](docs/evidence/k8s-rollback-index.md) and [PVC persistence](docs/evidence/k8s-pg-persistence.txt)
+- [Provider comparison](docs/evidence/provider-comparison-README.md)
+- [Argo CD GitOps](docs/evidence/argocd-gitops-README.md),
+  [Grafana dashboard](docs/evidence/observability-grafana-dashboard.png) and
+  [OpenTelemetry trace](docs/evidence/otel-trace.png)
+- [Engineering notes](docs/ENGINEERING-NOTES.md) answering the assignment questions
 
 ## Demo and submission
 
