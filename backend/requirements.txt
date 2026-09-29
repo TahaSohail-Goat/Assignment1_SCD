@@ -10,6 +10,14 @@ idna==3.20
 Mako==1.4.3
 MarkupSafe==3.0.3
 prometheus_client==0.26.0
+opentelemetry-api==1.45.0
+opentelemetry-exporter-http-transport==0.66b0
+opentelemetry-exporter-otlp-common==0.66b0
+opentelemetry-exporter-otlp-proto-common==1.45.0
+opentelemetry-exporter-otlp-proto-http==1.45.0
+opentelemetry-proto==1.45.0
+opentelemetry-sdk==1.45.0
+opentelemetry-semantic-conventions==0.66b0
 psycopg==3.3.6
 psycopg-binary==3.3.6
 pydantic==2.13.5
@@ -21,5 +29,6 @@ SQLAlchemy==2.1.1
 starlette==1.7.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0
+urllib3==2.8.0
 tzdata==2026.4
 uvicorn==0.54.0

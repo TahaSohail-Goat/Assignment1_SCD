@@ -245,3 +245,21 @@ the sample value must be `1`. Generate a few requests to `/health`, then refresh
 dashboard; the HTTP request total should increase. The optional stack uses named
 volumes `prometheusdata` and `grafanadata`; `docker compose --profile observability down`
 stops it without erasing history. The default quickstart does not start these services.
+
+## 17. Optional OpenTelemetry tracing (ASG-BONUS-005)
+
+Jaeger is a local, opt-in tracing profile. Set the two endpoints in the shell that starts
+Compose, then run the profile:
+
+```powershell
+$env:OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://jaeger:4318/v1/traces'
+$env:VITE_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
+docker compose --profile tracing up -d --build --wait
+```
+
+Open `http://127.0.0.1:8080`, submit synthetic data, and inspect the trace at
+`http://127.0.0.1:16686`. The fetch instrumentation sends `traceparent` to `/api`; the backend
+continues that context and creates a `triage.provider` span around each provider call. Jaeger and
+its OTLP receiver bind only to loopback. The trace attributes exclude citizen content, contact
+details, provider bodies, headers and credentials. Stop it with
+`docker compose --profile tracing down` when finished.

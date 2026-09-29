@@ -30,7 +30,13 @@ class FakeProbe:
 def _clean_application_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     """The tests state their own configuration: CI sets TRIAGE_PROVIDER=simulated for the job,
     a developer may have a .env exported; neither may change what a test expects."""
-    for name in ("TRIAGE_PROVIDER", "LOG_LEVEL", "DATABASE_URL", "REDIS_URL"):
+    for name in (
+        "TRIAGE_PROVIDER",
+        "LOG_LEVEL",
+        "DATABASE_URL",
+        "REDIS_URL",
+        "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT",
+    ):
         monkeypatch.delenv(name, raising=False)
 
 

@@ -10,6 +10,9 @@ import uuid
 from collections.abc import Callable, Iterator
 
 import pytest
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanExporter
 
 from app import metrics
 from app.domain import Category
@@ -78,6 +81,26 @@ def test_a_healthy_provider_is_used_and_recorded_by_name(make_service, recorder,
     assert decision.latency_ms == 250  # two clock readings, 250 ms apart
     assert provider.calls == 1
     assert _warnings(caplog) == []
+
+
+def test_provider_span_keeps_the_request_trace_without_recording_complaint_content(
+    make_service, recorder
+) -> None:
+    exporter = InMemorySpanExporter()
+    provider = TracerProvider()
+    provider.add_span_processor(SimpleSpanProcessor(exporter))
+    tracer = provider.get_tracer("test")
+    service = make_service(SimulatedTriage(seed=3), tracer=tracer)
+
+    with tracer.start_as_current_span("POST /api/complaints") as request_span:
+        service.triage(TEXT, LOCATION, COMPLAINT_ID)
+        request_trace_id = request_span.get_span_context().trace_id
+
+    provider_span = next(
+        span for span in exporter.get_finished_spans() if span.name == "triage.provider"
+    )
+    assert provider_span.context.trace_id == request_trace_id
+    assert provider_span.attributes == {"civicpulse.triage.provider": "simulated"}
 
 
 def test_the_mandatory_case_a_provider_that_always_raises_falls_back_to_rules(
