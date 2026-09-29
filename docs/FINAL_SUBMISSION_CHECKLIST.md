@@ -3,7 +3,7 @@
 ## Snapshot and interpretation
 
 Audit follow-ups #109/#112/#115 and bonus close-out, 2026-09-29, Artfever. Earlier evidence
-uses dev `39fca0c`; latest promoted main is `77cc1e0`. Live provider source revisions are
+uses dev `39fca0c`; latest promoted main is `bfe599a`. Live provider source revisions are
 recorded in the #112 comparison report.
 This is the final repository audit; it records evidence rather than a grade guarantee.
 PASS means the stated verification has supporting evidence; FAIL means a known unmet
@@ -18,11 +18,11 @@ profile was exercised in #112. The final bonus promotion is on `main` and its CD
 
 ## Commands and evidence
 
-- Current main `77cc1e0`: Artfever 143/255 (56.1%), Taha 112/255 (43.9%).
+- Current main `bfe599a`: Artfever 148/270 (54.8%), Taha 122/270 (45.2%).
 - [Fresh audit output](evidence/submission-final-audit.json): 28 passed, one
   historical first-parent warning, zero failures. Includes tracked-history credential
   pattern scans; these cannot prove the absence of arbitrary secrets.
-- Main [CD 36554371413](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413)
+- Main [CD 36584542080](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36584542080)
   passed all test/scan/integration gates, published and keylessly signed both images and SBOMs,
   verified their workflow identity, deployed the production overlay, passed the Ingress smoke
   test and deleted its temporary cluster.
@@ -297,7 +297,7 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-028 | PASS | Conditional incident policy recorded in SECURITY.md. No credential-pattern match found in current full-history scan; no credential incident is invented. |
 | ASG-BONUS-001 | PASS | Three preserved in-cluster k6 captures overlap `kubectl set image` and successful rolling rollouts. Each records 9,559 requests, `http_req_failed = 0`, zero dropped iterations and passing checks; see `docs/evidence/k8s-zero-downtime-index.md`. The video is explicitly not used as the simultaneous-load evidence. |
 | ASG-BONUS-002 | PASS | Local Argo CD reconciliation, raw status and terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
-| ASG-BONUS-003 | PASS | Main CD 36554371413 passed keyless signing, identity-bound verification, digest deployment and the Ingress smoke test; see `docs/evidence/cosign-verification.md`. |
+| ASG-BONUS-003 | PASS | Main CD 36554371413 and the latest main CD 36584542080 passed keyless signing, identity-bound verification, digest deployment and the Ingress smoke test; see `docs/evidence/cosign-verification.md`. |
 | ASG-BONUS-004 | PASS | Optional observability profile scraped the backend (`up=1`, target healthy); real Grafana dashboard screenshot and capture notes in `docs/evidence/observability-*`, promoted to main. |
 | ASG-BONUS-005 | PASS | An authentic browser-to-backend-to-`llm:groq` provider trace is indexed in `docs/evidence/otel-trace-*`, promoted to main. |
 | ASG-BONUS-006 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
@@ -410,13 +410,13 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | BON1 | PASS | Live rolling-update-under-load evidence is indexed in `docs/evidence/k8s-zero-downtime-index.md`. |
 | BON2 | PASS | Local Argo CD Application reconciled the public repository's `dev` overlay to `Synced` / `Healthy` with prune and self-heal. Raw status, workload state and an authentic terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
-| BON3 | PASS | Main CD 36554371413 signed both published digests, verified their workflow identity before deployment, and completed the digest-based Ingress smoke test. |
+| BON3 | PASS | Main CD 36554371413 and the latest main CD 36584542080 signed both published digests, verified their workflow identity before deployment, and completed the digest-based Ingress smoke test. |
 | BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in `docs/evidence/observability-*`, promoted to main. |
 | BON5 | PASS | Opt-in Jaeger tracing has an authentic browser → backend → `llm:groq` provider capture in `docs/evidence/otel-trace-*`, promoted to main. |
 
 ## Final handoff
 
-1. All repository deliverables and capped bonus evidence are on main `77cc1e0`.
+1. All repository deliverables and capped bonus evidence are on main `bfe599a`.
 2. The current CD gate, counts and evidence links are recorded above and in SUBMISSION.md.
 3. Submit the repository/video/evidence links through Classroom. Historical rubric caveats remain
    disclosed; evidence is not a grade guarantee.

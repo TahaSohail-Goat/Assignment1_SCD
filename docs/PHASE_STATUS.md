@@ -23,7 +23,7 @@ Snapshot of 2026-09-26. Team target: everything done by Sunday 27 Sep 2026 (see 
 Video and backup links are in [SUBMISSION.md](SUBMISSION.md), with verification in
 [evidence/submission-final-README.md](evidence/submission-final-README.md).
 #113/#114 merged the live provider work; #116/#117 merged the successful release evidence.
-Latest main `77cc1e0` passed CD 36554371413 after the final bonus promotion. All repository
+Latest main `bfe599a` passed CD 36584542080 after the animated frontend promotion (#144). All repository
 deliverables, evidence and capped bonus implementations are on `main`. This status does not
 claim a Classroom submission or erase historical rubric caveats.
 
