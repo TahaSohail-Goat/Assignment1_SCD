@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { motion } from 'motion/react'
 import {
   ApiError, listComplaints, updateStatus,
   type Category, type ComplaintPage, type Priority, type Status,
@@ -81,8 +82,11 @@ export default function Dashboard() {
   const totalPages = Math.max(1, Math.ceil((result?.total ?? 0) / pageSize))
 
   return (
-    <section aria-labelledby="dashboard-heading">
-      <h2 id="dashboard-heading">Operations dashboard</h2>
+    <section aria-labelledby="dashboard-heading" className="panel">
+      <div className="panel-head">
+        <h2 id="dashboard-heading">Operations dashboard</h2>
+        {result && <p className="summary">{result.total} complaints · Page {page} of {totalPages}</p>}
+      </div>
       <div className="filters">
         <label>Category
           <select value={category} onChange={(event) => { setCategory(event.target.value as Category | ''); setPage(1) }}>
@@ -103,24 +107,39 @@ export default function Dashboard() {
           </select>
         </label>
       </div>
-      {loading && <p role="status">Loading complaints…</p>}
+      {loading && (
+        <div className="loading-block">
+          <p role="status" className="muted">Loading complaints…</p>
+          <div className="skeleton-list" aria-hidden="true">
+            {[0, 1, 2].map((index) => <div key={index} className="skeleton-card"><span /><span /><span /></div>)}
+          </div>
+        </div>
+      )}
       {failure && (
-        <div>
+        <div className="banner-error">
           <p role="alert">{failure}</p>
           <button type="button" onClick={() => void load()}>Retry loading complaints</button>
         </div>
       )}
       {result && (
         <>
-          <p>{result.total} complaints · Page {page} of {totalPages}</p>
-          {result.items.length === 0 ? <p>No complaints match these filters.</p> : (
+          {result.items.length === 0 ? <p className="empty">No complaints match these filters.</p> : (
             <div className="complaint-list">
-              {result.items.map((item) => (
-                <article key={item.id}>
-                  <h3>{item.category} · {item.priority}</h3>
-                  <p>{item.text}</p>
-                  <p>{item.location} · {new Date(item.created_at).toLocaleString()}</p>
-                  <label>Status
+              {result.items.map((item, index) => (
+                <motion.article key={item.id} className={`complaint priority-${item.priority}`}
+                  initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(index, 10) * 0.045, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: -3 }}>
+                  <div className="complaint-top">
+                    <h3>
+                      <span className={`badge cat-${item.category}`}>{item.category}</span>
+                      <span className={`badge prio-${item.priority}`}>{item.priority}</span>
+                    </h3>
+                    <span className="chip" title="Triage provider">{item.triaged_by}</span>
+                  </div>
+                  <p className="complaint-text">{item.text}</p>
+                  <p className="meta">{item.location} · {new Date(item.created_at).toLocaleString()}</p>
+                  <label className={`status-control status-${item.status}`}>Status
                     <select aria-label={`Status for complaint at ${item.location}: ${item.text}`}
                       value={item.status} disabled={updating === item.id}
                       onChange={(event) => void changeStatus(item.id, event.target.value as Status)}>
@@ -129,14 +148,22 @@ export default function Dashboard() {
                       ))}
                     </select>
                   </label>
-                  {rowError[item.id] && <p role="alert">{rowError[item.id]}</p>}
-                </article>
+                  {rowError[item.id] && (
+                    <motion.p role="alert" className="field-error" initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: [0, -5, 5, -2, 0] }} transition={{ duration: 0.35 }}>
+                      {rowError[item.id]}
+                    </motion.p>
+                  )}
+                </motion.article>
               ))}
             </div>
           )}
           <nav aria-label="Complaint pages" className="pagination">
-            <button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)}>Previous</button>
-            <button type="button" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>Next</button>
+            <motion.button type="button" disabled={page <= 1} onClick={() => setPage(page - 1)}
+              whileTap={{ scale: 0.95 }}>Previous</motion.button>
+            <span className="page-dots" aria-hidden="true">{page} / {totalPages}</span>
+            <motion.button type="button" disabled={page >= totalPages} onClick={() => setPage(page + 1)}
+              whileTap={{ scale: 0.95 }}>Next</motion.button>
           </nav>
         </>
       )}
