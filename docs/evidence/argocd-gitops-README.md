@@ -8,16 +8,13 @@ manifest nor this evidence includes a secret value.
 
 Captured on 2026-09-29 from the `kind-civicpulse` cluster:
 
-- [`application.yaml`](argocd-gitops-bonus130-20260929/application.yaml) is the unedited
-  `kubectl get application civicpulse -o yaml` output. Its successful automated operation is at
-  revision `27103d1f1175b7c1f695857f812f3d0cc7d263d8`.
 - [`status.txt`](argocd-gitops-bonus130-20260929/status.txt) reports `sync=Synced` and
-  `health=Healthy` for that revision.
+  `health=Healthy` for revision `27103d1f1175b7c1f695857f812f3d0cc7d263d8`.
 - [`workloads.txt`](argocd-gitops-bonus130-20260929/workloads.txt) records two available backend
   replicas, two available frontend replicas, cache, and the corresponding Pods.
 - [`argocd-pods.txt`](argocd-gitops-bonus130-20260929/argocd-pods.txt) records the running Argo CD
   components. [`hashes.txt`](argocd-gitops-bonus130-20260929/hashes.txt) gives SHA-256 hashes of
-  the text captures.
+  the non-secret text captures.
 - [`terminal-argocd-live.png`](argocd-gitops-bonus130-20260929/terminal-argocd-live.png) is an
   unedited Windows PowerShell screenshot of the live `kubectl` status: Application `Synced` /
   `Healthy`, available CivicPulse deployments, and ready Argo CD controllers.
