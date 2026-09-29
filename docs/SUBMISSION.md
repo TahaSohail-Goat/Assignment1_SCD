@@ -7,20 +7,20 @@ Extracted from `docx/ASSIGNMENT.md` §5 (p23–26) and the parts of §3–§4 th
 | # | Item | ID | Where it will come from |
 |---|---|---|---|
 | 1 | GitHub repository URL — public, or private with both instructors added | ASG-SUB-001 | Current repo `https://github.com/TahaSohail-Goat/Assignment1_SCD` is **public**. |
-| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413 (full test gate, both images to GHCR by SHA, Cosign signing and verification, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
-| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, deployed SHA tag `77cc1e0c1758eac2d30d6c2c25904cfa77726e5c` (see the successful CD run above); `latest` is mutable and is not the deployment reference |
+| 2 | Link to a successful `cd.yml` run that tested, published and deployed | ASG-SUB-002 | **Ready:** https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36584542080 (full test gate, both images to GHCR by SHA, Cosign signing and verification, SBOMs, deploy to an ephemeral kind cluster, Ingress smoke test) |
+| 3 | Link to both images in GHCR, showing SHA tags | ASG-SUB-003 | **Ready:** <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-backend> and <https://github.com/TahaSohail-Goat/Assignment1_SCD/pkgs/container/civicpulse-frontend>; both public, deployed SHA tag `bfe599a51152042e5f88dccfb5f34fadd90d1935` (see the successful CD run above); `latest` is mutable and is not the deployment reference |
 | 4 | Demo video link (unlisted) | ASG-SUB-004 | **Uploaded:** [YouTube (primary, unlisted)](https://youtu.be/bExMGzoHYow) / [Google Drive (backup)](https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link). YouTube 4:38; see [verification](evidence/submission-final-README.md). |
 | 5 | `git shortlog -sn` output, pasted | ASG-SUB-005 | Recorded below; re-run right before submitting |
 | 6 | `kubectl get hpa -w` capture and replicas-vs-load chart | ASG-SUB-006 | **Ready:** [`k8s-load-baseline50/hpa-watch.txt`](evidence/k8s-load-baseline50/hpa-watch.txt) and [`k8s-load-comparison.png`](evidence/k8s-load-comparison.png) |
 
-`git shortlog -sn origin/main` at `77cc1e0`, 2026-09-29 (includes merges, matching the rubric):
+`git shortlog -sn origin/main` at `bfe599a`, 2026-09-29 (includes merges, matching the rubric):
 
 ```
-143	Artfever
-112	Taha Sohail
+148	Artfever
+122	Taha Sohail
 ```
 
-The rubric asks for neither partner below 35 %. At this snapshot Artfever has 143/255 = 56.1% and Taha has 112/255 = 43.9%; both pass. Only genuine authored work counts (`docs/TEAM_CONTRIBUTION.md`, rule 7).
+The rubric asks for neither partner below 35 %. At this snapshot Artfever has 148/270 = 54.8% and Taha has 122/270 = 45.2%; both pass. Only genuine authored work counts (`docs/TEAM_CONTRIBUTION.md`, rule 7).
 
 Before submitting, from the repository root: `python scripts/check_submission.py` (ASG-SUB-007). The source calls it "a lint, not a grader"; it "catches the mechanical failures behind most of §5.3". Its content is **not supplied** by the assignment; the instructor said to write it if we want to, and we will.
 
@@ -124,8 +124,9 @@ Drive backup is 277.449 seconds and has an AAC audio track. Verification details
 visual coverage and Artfever's confirmation that both contributors speak are in [the final evidence index](evidence/submission-final-README.md).
 
 The live Groq/Ollama comparison and fixes reached main in #114; release verification
-reached main in #117. Latest main is `77cc1e0`, with successful
-[CD 36554371413](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413).
+reached main in #117. Latest main is `bfe599a` (animated frontend, #143/#144), with successful
+[CD 36584542080](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36584542080).
+The demo video links are unchanged; the video shows the interface before #143.
 The [v1.0.0-rc.1 prerelease](https://github.com/TahaSohail-Goat/Assignment1_SCD/releases/tag/v1.0.0-rc.1)
 remains tied to source `cee7292`; later documentation promotions do not move that tag.
 
