@@ -3,49 +3,106 @@
 [![CI](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/ci.yml)
 [![CD](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/workflows/cd.yml)
 
-CivicPulse helps citizens report neighbourhood problems and operators track their resolution.
-Submit a complaint and location, receive a category, priority and summary, then filter and
-update complaints in the Dashboard. Stats shows category/priority totals and Redis cache state.
+CivicPulse is a civic-issue reporting and triage service. Citizens submit a complaint and
+location; the service validates it, assigns a category and priority, stores it, and exposes it
+to operators through a dashboard and statistics view.
 
-CS4032 Assignment 1 by **TahaSohail-Goat** and **Artfever**. Built with React 18, TypeScript,
-Vite, **FastAPI** and Pydantic v2, PostgreSQL 16, Redis 7, Docker and Kubernetes.
+Built for CS4032 Assignment 1 by **TahaSohail-Goat** and **Artfever** with React, TypeScript,
+FastAPI, PostgreSQL, Redis, Docker and Kubernetes.
 
-## Clean clone: one startup command
+## Contents
 
-Prerequisites: Git, Docker Desktop running **Linux containers**, Docker Compose supporting
-`up --wait`, and Windows PowerShell 5.1 or later. The images supply Node 22 and Python 3.12;
-no host Node/Python installation is needed for this path. The first build needs Internet.
+- [What CivicPulse provides](#what-civicpulse-provides)
+- [Quick start](#quick-start)
+- [Configure triage](#configure-triage)
+- [Architecture](#architecture)
+- [Repository layout](#repository-layout)
+- [API](#api)
+- [Operations and observability](#operations-and-observability)
+- [Kubernetes](#kubernetes)
+- [CI, delivery and security](#ci-delivery-and-security)
+- [Screenshots and evidence](#screenshots-and-evidence)
+- [Demo and submission](#demo-and-submission)
+- [Documentation, contribution and license](#documentation-contribution-and-license)
+
+## What CivicPulse provides
+
+| Area | Capability |
+|---|---|
+| Citizen workflow | Submit a complaint with a location and optional contact details. |
+| Triage | Rule-based default, optional Groq hosted provider, optional local Ollama, schema validation and safe fallback. |
+| Operations | Filtered dashboard, status transitions, paginated history, category/priority statistics and cache state. |
+| Reliability | PostgreSQL persistence, Redis cache/rate limit, health/readiness probes, retry/timeout/fallback handling. |
+| Deployment | Docker Compose for local use; Kubernetes manifests, HPA/VPA/PDB and a gated GitHub Actions delivery workflow. |
+| Evidence | CI, deployment, load, rollback, provider-comparison, observability and submission evidence under `docs/evidence/`. |
+
+The backend is the sole authority for validation, status transitions and triage results. The
+frontend never connects to PostgreSQL or Redis.
+
+## Quick start
+
+### Prerequisites
+
+| Tool | Why it is needed |
+|---|---|
+| Git | Clone the repository. |
+| Docker Desktop using Linux containers | Runs the local services and supplies Node 22/Python 3.12 inside images. |
+| Docker Compose with `up --wait` | Starts only after service health checks pass. |
+| PowerShell 5.1+ on Windows, or a POSIX shell on macOS/Linux | Runs the commands below. |
+
+The first build downloads container images and dependencies. No host Node or Python installation
+is required for the standard Compose path.
+
+### Start the local stack
+
+Clone the repository and enter it:
 
 ```powershell
 git clone https://github.com/TahaSohail-Goat/Assignment1_SCD.git
 cd Assignment1_SCD
 ```
 
-Run this **one scriptblock invocation** from the repository root. It creates a gitignored
-`.env` with a generated database password if absent, builds, migrates, seeds 30 synthetic
-complaints and waits for healthy services. Existing `.env` values are preserved.
+On Windows PowerShell, run this once from the repository root. It creates a gitignored `.env`
+with a generated local database password when missing, then builds, migrates, seeds and waits for
+healthy services. Existing `.env` values are left unchanged.
 
 ```powershell
 & {
     $ErrorActionPreference = 'Stop'
     if (-not (Test-Path .env)) {
-        $envText = [IO.File]::ReadAllText((Join-Path (Get-Location) '.env.example'))
-        [IO.File]::WriteAllText((Join-Path (Get-Location) '.env'), $envText.Replace('change-me-locally', [guid]::NewGuid().ToString('N')))
+        $example = [IO.File]::ReadAllText((Join-Path (Get-Location) '.env.example'))
+        [IO.File]::WriteAllText(
+            (Join-Path (Get-Location) '.env'),
+            $example.Replace('change-me-locally', [guid]::NewGuid().ToString('N'))
+        )
     }
     docker compose up -d --build --wait
     if ($LASTEXITCODE -ne 0) { throw 'Compose startup failed' }
 }
 ```
 
-On macOS or Linux the same start is `cp .env.example .env && docker compose up -d --build --wait` (this is
-exactly what the `integration` job of [`ci.yml`](.github/workflows/ci.yml) runs on a clean runner on every pull request).
+On macOS or Linux, use:
 
-Open **http://localhost:8080**; API docs are at **http://localhost:8000/docs**.
-Default triage is deterministic `rules`: no key or model download is required. The default
-stack has four running services plus the completed migration/seed container. Optional
-Ollama adds the fifth long-running service.
+```bash
+cp .env.example .env && docker compose up -d --build --wait
+```
 
-Run maintenance commands separately:
+The Compose integration job runs that POSIX command from a clean checkout on every pull request.
+
+### Open the application
+
+| Service | URL | Purpose |
+|---|---|---|
+| CivicPulse web app | http://localhost:8080 | Submit, Dashboard and Stats views. |
+| OpenAPI documentation | http://localhost:8000/docs | Interactive API reference. |
+| Health endpoint | http://localhost:8000/health | Process liveness. |
+| Readiness endpoint | http://localhost:8000/ready | PostgreSQL and Redis readiness. |
+
+The default `rules` provider needs neither a key nor model download. The standard stack runs the
+frontend, backend, PostgreSQL and Redis, plus the completed migration/seed job. It creates 30
+synthetic seed complaints.
+
+### Common local commands
 
 ```powershell
 docker compose ps -a
@@ -54,32 +111,98 @@ docker compose run --rm migrate python -m app.seed
 docker compose down
 ```
 
-Reseeding adds no duplicate seed rows. `down` retains database/Redis volumes; adding
-`--volumes` would erase their data. Keep the same `.env` when reusing the database volume.
-For port conflicts set `$env:FRONTEND_PORT='18080'` and `$env:BACKEND_PORT='18000'`
-before startup, then use those ports in the URLs.
+`docker compose down` retains the database and Redis volumes. Add `--volumes` only when you want
+to erase local data. If ports are busy, set `$env:FRONTEND_PORT='18080'` and
+`$env:BACKEND_PORT='18000'` before starting the stack.
 
-### Optional inference providers
+## Configure triage
 
-For Groq, set `TRIAGE_PROVIDER=llm` and your own `GROQ_API_KEY` in `.env`, then repeat
-startup. For Ollama set `TRIAGE_PROVIDER=ollama` and run
-`docker compose --profile offline up -d --build --wait`. This downloads `gemma3:1b`
-into a named volume first; allow extra time, disk and memory. Never commit `.env` or keys.
-Hosted inference sends complaint text/location externally; use synthetic demo data.
-See [provider behaviour, privacy and live-comparison limits](docs/AI.md).
+All provider settings live in the ignored `.env` file. Never commit that file or a key.
 
-### Optional monitoring
+| Mode | `.env` setting | Start command | Notes |
+|---|---|---|---|
+| Rules (default) | `TRIAGE_PROVIDER=rules` | `docker compose up -d --build --wait` | Deterministic and fully local. |
+| Groq | `TRIAGE_PROVIDER=llm` plus `GROQ_API_KEY` | `docker compose up -d --build --wait` | Sends text and location to the configured hosted provider; use synthetic data for demos. |
+| Ollama | `TRIAGE_PROVIDER=ollama` | `docker compose --profile offline up -d --build --wait` | Downloads `gemma3:1b` into a named volume; allow additional disk, time and memory. |
 
-The `observability` Compose profile runs Prometheus scraping the backend and a
-provisioned Grafana dashboard. Set `GRAFANA_ADMIN_PASSWORD` in your ignored `.env`;
-see [the runbook](docs/RUNBOOK.md#16-optional-prometheus-and-grafana-asg-bonus-004)
-for startup, verification and the dashboard URL. The [captured dashboard](docs/evidence/observability-grafana-dashboard.png)
-shows a real healthy scrape and HTTP traffic.
+The service uses a 10-second provider cutoff, one jittered retry for timeout/429/5xx failures,
+Pydantic output validation, a 24-hour content-hash cache and `rules:fallback` if the provider
+cannot produce a safe result. Read [provider behavior and data limits](docs/AI.md) before using
+a hosted provider.
 
-### Optional tracing
+## Architecture
 
-The `tracing` Compose profile adds a local Jaeger viewer. In PowerShell, set the two exporter
-endpoints for the current shell, then build the profile:
+```mermaid
+flowchart LR
+    browser[Citizen or operator browser] --> frontend[React served by nginx]
+    subgraph edge[Edge network]
+        frontend -->|same-origin /api proxy| backend[FastAPI services and validated triage]
+    end
+    subgraph internal[Internal network]
+        backend -->|repositories| postgres[(PostgreSQL 16)]
+        backend --> redis[(Redis cache and rate limiter)]
+        backend --> ollama[Optional Ollama]
+        migrate[Migration and seed] --> postgres
+    end
+    backend -->|optional HTTPS| hosted[Hosted LLM]
+```
+
+Only the backend bridges the Compose `edge` and `internal` networks. PostgreSQL and Redis have no
+published production data ports, provider output is validated before storage, and business rules
+stay in backend services. [Architecture details](docs/ARCHITECTURE.md) and the four ADRs explain
+the design choices.
+
+## Repository layout
+
+```text
+backend/       FastAPI application, Alembic migrations, repositories and tests
+frontend/      React/Vite user interface, typed API client and component tests
+k8s/           Base manifests plus dev and production overlays
+observability/ Prometheus and Grafana provisioning
+scripts/       Kubernetes, GitOps and submission helpers
+docs/          Assignment traceability, runbooks, ADRs and authentic evidence
+.github/       CI, CD, release and Kubernetes quickstart workflows
+```
+
+The required repository inventory is maintained in [REPOSITORY_STRUCTURE.md](docs/REPOSITORY_STRUCTURE.md).
+
+## API
+
+| Method | Path | Behavior |
+|---|---|---|
+| POST | `/api/complaints` | Validate, triage and store; returns 201 and a Location header. |
+| GET | `/api/complaints` | Filter by category/priority/status and paginate stored complaints. |
+| GET | `/api/complaints/{id}` | Return one complaint or 404. |
+| PATCH | `/api/complaints/{id}/status` | Update status; invalid transition is 409 and unknown ID is 404. |
+| GET | `/api/stats` | Category/priority totals with a 30-second Redis cache and `X-Cache`. |
+| GET | `/api/meta/providers` | Active provider and recent stored provider outcomes. |
+| GET | `/health` | Process liveness. |
+| GET | `/ready` | PostgreSQL/Redis readiness; names failed dependencies on 503. |
+| GET | `/metrics` | Prometheus-format metrics. |
+
+`POST /api/complaints` accepts `text` (10-2000 characters), `location` (3-200) and optional
+`reporter_contact`. `PATCH /api/complaints/{id}/status` accepts `{"status":"in_progress"}`.
+Allowed transitions are `open` to `in_progress`/`rejected` and `in_progress` to
+`resolved`/`rejected`. [API design](docs/API_DESIGN.md) records response-shape decisions.
+
+## Operations and observability
+
+### Prometheus and Grafana
+
+Set `GRAFANA_ADMIN_PASSWORD` in `.env`, then start the optional profile:
+
+```powershell
+docker compose --profile observability up -d --build --wait
+```
+
+Prometheus is available at http://127.0.0.1:9090 and Grafana at
+http://127.0.0.1:3000/d/civicpulse/civicpulse-operations. The profile is local-only. See the
+[operations runbook](docs/RUNBOOK.md#16-optional-prometheus-and-grafana-asg-bonus-004) and the
+[authentic Grafana capture](docs/evidence/observability-grafana-dashboard.png).
+
+### OpenTelemetry and Jaeger
+
+Use the optional tracing profile to inspect browser, API and provider spans locally:
 
 ```powershell
 $env:OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://jaeger:4318/v1/traces'
@@ -87,162 +210,80 @@ $env:VITE_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
 docker compose --profile tracing up -d --build --wait
 ```
 
-Submit a synthetic complaint through the browser, then open **http://127.0.0.1:16686**. The
-collector and viewer bind only to loopback. Trace attributes intentionally exclude complaint
-text, location, contact details, provider payloads and credentials. See the
-[captured browser-to-provider trace](docs/evidence/otel-trace.png) and the
+Submit synthetic data, then open http://127.0.0.1:16686. The collector and viewer bind only to
+loopback, and trace attributes exclude complaint content, contact details, provider payloads and
+credentials. See the [captured browser-to-provider trace](docs/evidence/otel-trace.png) and
 [tracing runbook](docs/RUNBOOK.md#17-optional-opentelemetry-tracing-asg-bonus-005).
 
-## Architecture
+## Kubernetes
 
-```mermaid
-flowchart LR
-    browser[Citizen or operator browser] --> frontend[React served by nginx]
-    subgraph edge[Compose edge network]
-        frontend -->|same-origin /api proxy| backend[FastAPI services and validated triage]
-    end
-    subgraph internal[Compose internal network]
-        backend -->|repositories| postgres[(PostgreSQL 16)]
-        backend --> redis[(Redis 7 cache and rate limiter)]
-        backend --> ollama[Optional Ollama]
-        migrate[Migration and seed] --> postgres
-    end
-    backend -->|optional HTTPS| hosted[Hosted LLM]
+### Prerequisites
+
+Install `kind` and `kubectl`, keep Docker running, and build the Compose images first. The local
+cluster is named `civicpulse-demo`; it is separate from the Compose stack.
+
+### Deploy and verify
+
+On macOS/Linux, or from Git Bash/WSL on Windows, run the maintained deployment command:
+
+```bash
+bash scripts/k8s-up.sh
 ```
 
-Only the backend joins both Compose networks. The frontend cannot resolve/reach the
-database; PostgreSQL and Redis publish no host ports. Status transitions live in backend
-services and SQL stays in repositories. Provider output is schema-validated before storage;
-the orchestrator supplies the 10-second cutoff, one retry with jitter and `rules:fallback`.
-Redis caches successful triage results. [Detailed architecture](docs/ARCHITECTURE.md).
+The script creates the cluster, installs ingress/metrics/VPA prerequisites, loads the local images,
+creates the runtime Secret outside Git, deploys the dev overlay, waits for probes and seeds data.
+It is exercised by the [k8s-quickstart workflow](.github/workflows/k8s-quickstart.yml).
 
-## Kubernetes: second deployment command
-
-Install **kind** and **kubectl**, keep Docker running and complete the image build above.
-This single invocation creates a separate **civicpulse-demo** cluster, installs ingress,
-metrics and VPA prerequisites, loads images, creates an out-of-band Secret, deploys and
-seeds. It needs Internet and memory for both stacks; stop Compose first if memory is tight.
-Versions match the successful [CD workflow](.github/workflows/cd.yml).
-
-```powershell
-& {
-    $ErrorActionPreference = 'Stop'
-    function Run {
-        $command = $args[0]
-        $commandArgs = @($args | Select-Object -Skip 1)
-        & $command @commandArgs
-        if ($LASTEXITCODE -ne 0) { throw "Command failed: $command" }
-    }
-    function K { Run kubectl --context kind-civicpulse-demo @args }
-    $clusters = @(Run kind get clusters)
-    if ($clusters -notcontains 'civicpulse-demo') {
-        Run kind create cluster --name civicpulse-demo --image kindest/node:v1.37.0 --wait 120s
-    }
-    K label node civicpulse-demo-control-plane ingress-ready=true --overwrite
-    K apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.15.1/deploy/static/provider/kind/deploy.yaml
-    K apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.9.0/components.yaml
-    $patchFile = [IO.Path]::GetTempFileName()
-    try {
-        [IO.File]::WriteAllText($patchFile, '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]')
-        K -n kube-system patch deployment metrics-server --type=json --patch-file $patchFile
-    } finally { Remove-Item -LiteralPath $patchFile }
-    $vpa = 'https://raw.githubusercontent.com/kubernetes/autoscaler/vertical-pod-autoscaler-1.8.0/vertical-pod-autoscaler/deploy'
-    K apply -f "$vpa/vpa-v1-crd-gen.yaml"
-    K apply -f "$vpa/vpa-rbac.yaml"
-    K apply -f "$vpa/recommender-deployment.yaml"
-    K wait --for=condition=Established crd/verticalpodautoscalers.autoscaling.k8s.io --timeout=60s
-    K -n ingress-nginx rollout status deployment/ingress-nginx-controller --timeout=180s
-    K wait '--for=jsonpath={.webhooks[0].clientConfig.caBundle}' validatingwebhookconfiguration/ingress-nginx-admission --timeout=120s
-    K -n kube-system rollout status deployment/metrics-server --timeout=120s
-    Run kind load docker-image --name civicpulse-demo civicpulse-backend:dev civicpulse-frontend:dev
-    K apply -f k8s/base/namespace.yaml
-    $existing = @(K -n civicpulse get secret civicpulse-secrets --ignore-not-found -o name)
-    if ($existing.Count -eq 0) {
-        $secret = @{
-            apiVersion='v1'; kind='Secret'; type='Opaque'
-            metadata=@{name='civicpulse-secrets'; namespace='civicpulse'}
-            stringData=@{POSTGRES_PASSWORD=[guid]::NewGuid().ToString('N'); GROQ_API_KEY='unused'}
-        }
-        $secret | ConvertTo-Json -Depth 4 | kubectl --context kind-civicpulse-demo apply -f -
-        if ($LASTEXITCODE -ne 0) { throw 'Secret creation failed' }
-    }
-    K apply -k k8s/overlays/dev
-    K -n civicpulse rollout status statefulset/database --timeout=180s
-    K -n civicpulse rollout status deployment/cache --timeout=120s
-    K -n civicpulse rollout status deployment/backend --timeout=180s
-    K -n civicpulse rollout status deployment/frontend --timeout=120s
-    K -n civicpulse exec deployment/backend '--' python -m app.seed
-    K -n civicpulse get 'pods,hpa,vpa'
-}
-```
-
-Explicit contexts confine operations to the demo cluster; kind creation also selects that
-context in kubeconfig. The insecure kubelet TLS flag is for disposable kind only. VPA is
-**Off** (recommendations); HPA controls 2–10 backend replicas. Metrics need time to appear.
-This is a fresh-deployment recipe; local `:dev` tags are not a production release strategy.
-
-On macOS or Linux (or Git Bash) `bash scripts/k8s-up.sh` does all of the above, uses local port 8090 by default
-(`INGRESS_PORT`; it fails at once if the port is taken and checks that its smoke request appears in the Ingress
-controller log), and is proven on a clean runner by the [`k8s-quickstart`](.github/workflows/k8s-quickstart.yml)
-workflow, which also checks the shared rate limit across both backend replicas and that deleting the database pod
-keeps every row.
-
-In another terminal, expose the Ingress:
+Expose the Ingress in another terminal:
 
 ```powershell
 kubectl --context kind-civicpulse-demo -n ingress-nginx port-forward service/ingress-nginx-controller 8090:80
 ```
 
-Add `127.0.0.1 civicpulse.local` to your hosts file to browse **http://civicpulse.local:8090**,
-or verify without a hosts edit:
+Browse http://civicpulse.local:8090 after adding `127.0.0.1 civicpulse.local` to your hosts file,
+or query without a hosts-file edit:
 
 ```powershell
 Invoke-RestMethod -Headers @{Host='civicpulse.local'} http://127.0.0.1:8090/api/stats
 ```
 
 PostgreSQL uses a StatefulSet/PVC. Both app Deployments have two replicas, probes and rolling
-updates; Services are ClusterIP. Production uses immutable full commit SHA tags supplied by
-CD. See [load experiments](docs/evidence/k8s-load-README.md),
-[persistence](docs/evidence/k8s-pg-persistence.txt) and [rollback](docs/evidence/k8s-rollback-index.md).
+updates; Services are ClusterIP. HPA controls 2-10 backend replicas and VPA runs in recommendation
+mode. Detailed setup, rollback and limitations are in [RUNBOOK.md](docs/RUNBOOK.md).
 
-### Optional GitOps demonstration
+### Optional GitOps
 
-After the Bash quickstart has created `kind-civicpulse`, install the pinned local Argo CD demo and
-reconcile CivicPulse declaratively from this repository's `dev` overlay:
+After the Kubernetes quickstart, install the local Argo CD demonstration:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/argocd-gitops-demo.ps1
 ```
 
-The Application enables automated prune and self-heal while leaving the out-of-band runtime Secret
-outside Git. See the [live capture and limits](docs/evidence/argocd-gitops-README.md).
+It reconciles the repository's `dev` overlay with automated prune and self-heal while keeping the
+runtime Secret outside Git. [GitOps evidence and limits](docs/evidence/argocd-gitops-README.md).
 
-## API: nine method/path pairs
+## CI, delivery and security
 
-| Method | Path | Behaviour |
-|---|---|---|
-| POST | `/api/complaints` | Validate, triage, store; 201 with complaint and Location; field errors 400; limit 429 with Retry-After |
-| GET | `/api/complaints` | Category/priority/status filters; page and page_size (max 100); items plus total |
-| GET | `/api/complaints/{id}` | Complaint or 404 |
-| PATCH | `/api/complaints/{id}/status` | 200 with updated complaint; invalid transition 409; unknown id 404 |
-| GET | `/api/stats` | Category/priority totals; 30-second Redis cache; X-Cache HIT or MISS |
-| GET | `/api/meta/providers` | Active provider and last 20 stored outcomes with latency/fallback |
-| GET | `/health` | Process liveness |
-| GET | `/ready` | PostgreSQL/Redis readiness; 503 names failed dependencies |
-| GET | `/metrics` | Prometheus-format metrics |
+Pull requests run linting, type checking, backend/frontend tests, image builds, vulnerability
+scans, manifest validation and Compose integration. Pushes to protected `main` run the same gates,
+publish immutable GHCR images, produce SBOMs, keylessly sign and verify image digests, deploy to an
+ephemeral kind cluster and perform an Ingress smoke test.
 
-POST accepts `text` (10–2000 characters), `location` (3–200), optional `reporter_contact`.
-PATCH accepts `{"status":"in_progress"}`. Allowed transitions: open → in_progress/rejected,
-and in_progress → resolved/rejected. Other transitions are rejected by the backend.
-[API design](docs/API_DESIGN.md) distinguishes source rules from our response-shape decisions.
-Probe/metrics/docs URLs use the backend port in Compose.
+Latest main [CD 36554371413](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413)
+passed those gates at `77cc1e0`. The workflow deletes its cluster after the smoke test; this is
+deployment evidence, not a persistent public hosting service.
 
-## Actual application screenshots
+Security controls include ignored environment files, non-root pinned images, network segmentation,
+schema validation, rate limiting, signed immutable deployment references and protected branches.
+Read the [security baseline](docs/SECURITY.md), [CI/CD guide](docs/CICD.md) and
+[Cosign verification evidence](docs/evidence/cosign-verification.md).
 
-Captured 2026-09-26 from a fresh `dev` clone at `ba312b7`, using real PostgreSQL, Redis and
-rules triage: 30 seed complaints plus one submission. No mocked responses. Dashboard shows
-the first viewport; Stats shows a real cache HIT. [Capture details](docs/evidence/screenshots-README.md)
-and [verification transcript](docs/evidence/screenshots-clean-clone-log.txt).
+## Screenshots and evidence
+
+The screenshots below were captured from a fresh `dev` clone using real PostgreSQL, Redis and rules
+triage: 30 seed complaints plus one submission, with no mocked browser responses. The
+[capture details](docs/evidence/screenshots-README.md) and
+[verification transcript](docs/evidence/screenshots-clean-clone-log.txt) describe the setup.
 
 ### Submit
 
@@ -256,47 +297,29 @@ and [verification transcript](docs/evidence/screenshots-clean-clone-log.txt).
 
 ![31 complaints and a real Redis cache HIT](docs/evidence/screenshots-stats.png)
 
-## Checks and delivery evidence
-
-CI covers backend lint/type checks/tests with PostgreSQL 16, frontend lint/type checks/tests/
-build, container/security checks and Kubernetes validation. See [CI](.github/workflows/ci.yml)
-for exact commands. `python scripts/check_submission.py` is additional submission lint,
-not proof of rubric completion.
-
-Main-branch CD gates publishing on tests, pushes both GHCR images and SBOMs, deploys the
-published digests under SHA tags to an ephemeral kind cluster and smoke-tests through
-Ingress. [Run 36230267941](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36230267941)
-succeeded at `8074879`. The runner deletes the cluster afterwards; this is not a persistent
-public deployment. Signing was waived in the [relayed instructor answers](docs/SUBMISSION.md).
-
-Evidence: [load and rolling updates](docs/evidence/k8s-load-README.md),
+Additional evidence includes [load and rolling updates](docs/evidence/k8s-load-README.md),
 [rollback](docs/evidence/k8s-rollback-index.md), [PVC persistence](docs/evidence/k8s-pg-persistence.txt),
-[engineering notes Q1–Q8](docs/ENGINEERING-NOTES.md). Rollback timings are local measurements
-with known-good images already available, not a universal recovery guarantee.
+[provider comparison](docs/evidence/provider-comparison-README.md), and
+[engineering notes](docs/ENGINEERING-NOTES.md).
 
-## Demo video and submission
+## Demo and submission
 
-[YouTube (primary, unlisted)](https://youtu.be/bExMGzoHYow) / [Google Drive (backup)](https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link)
+- [YouTube demo (unlisted)](https://youtu.be/bExMGzoHYow)
+- [Google Drive backup](https://drive.google.com/file/d/1uNGCvKnzy_vpxxolNp6qQp8R4ht3Ip58/view?usp=drive_link)
+- [Submission package and links](docs/SUBMISSION.md)
+- [Video verification and scope](docs/evidence/submission-final-README.md)
 
-The primary upload is Unlisted and reports **4:38**. The backup downloads without
-sign-in and contains video and audio. [Verification and scope](docs/evidence/submission-final-README.md).
-The demo shows fresh-clone startup, hosted triage, fallback, network isolation,
-HPA scaling and both rollback methods. The video links are supplied by Artfever.
+The video is 4:38 and demonstrates fresh-clone startup, hosted triage, fallback, network
+isolation, HPA scaling and both rollback methods. Historical rubric caveats remain recorded in the
+[final checklist](docs/FINAL_SUBMISSION_CHECKLIST.md).
 
-[Submission package](docs/SUBMISSION.md) includes the repository, successful CD,
-GHCR images, video backup and HPA evidence. [Release v1.0.0-rc.1 evidence](docs/evidence/release-verification-README.md)
-records the successful tag-triggered workflow. Latest verified main `df7649c`
-passed [CD 36310273819](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36310273819).
-At that revision, Artfever has 120/232 commits (51.7%) and Taha 112/232 (48.3%).
-Counts are tied to this measured revision; recheck after the final documentation promotion.
-Historical rubric caveats remain in the [final checklist](docs/FINAL_SUBMISSION_CHECKLIST.md).
+## Documentation, contribution and license
 
-## Project documents and contribution
+Start with the [document index](docs/DOCUMENT_INDEX.md), then consult
+[assignment traceability](docs/ASSIGNMENT_TRACEABILITY.md), [runbook](docs/RUNBOOK.md),
+[team contribution agreement](docs/TEAM_CONTRIBUTION.md), [AI usage disclosure](docs/AI-USAGE.md)
+and [GitHub workflow](docs/GITHUB_WORKFLOW.md).
 
-- [Assignment](docx/ASSIGNMENT.md), [traceability](docs/ASSIGNMENT_TRACEABILITY.md), [document index](docs/DOCUMENT_INDEX.md)
-- [Runbook](docs/RUNBOOK.md), [submission decisions](docs/SUBMISSION.md)
-- [Team contribution](docs/TEAM_CONTRIBUTION.md), [AI disclosure](docs/AI-USAGE.md), [GitHub workflow](docs/GITHUB_WORKFLOW.md)
-
-Read [AGENTS.md](AGENTS.md). Work through assigned issue → `feature/<n>-<slug>` from `dev`
-→ partner-reviewed PR into `dev` → merge-commit promotion to protected `main`.
-Licensed under the [MIT License](LICENSE).
+Changes follow issue to feature branch to partner-reviewed PR into `dev`, followed by a
+merge-commit promotion to protected `main`. The project is licensed under the
+[MIT License](LICENSE).
