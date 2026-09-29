@@ -285,10 +285,9 @@ HPA scaling and both rollback methods. The video links are supplied by Artfever.
 
 [Submission package](docs/SUBMISSION.md) includes the repository, successful CD,
 GHCR images, video backup and HPA evidence. [Release v1.0.0-rc.1 evidence](docs/evidence/release-verification-README.md)
-records the successful tag-triggered workflow. Latest verified main `df7649c`
-passed [CD 36310273819](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36310273819).
-At that revision, Artfever has 120/232 commits (51.7%) and Taha 112/232 (48.3%).
-Counts are tied to this measured revision; recheck after the final documentation promotion.
+records the successful tag-triggered workflow. Latest main `77cc1e0`
+passed [CD 36554371413](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413).
+At that revision, Artfever has 143/255 commits (56.1%) and Taha 112/255 (43.9%).
 Historical rubric caveats remain in the [final checklist](docs/FINAL_SUBMISSION_CHECKLIST.md).
 
 ## Project documents and contribution

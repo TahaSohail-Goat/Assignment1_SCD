@@ -2,8 +2,10 @@
 
 ## Snapshot and interpretation
 
-Audit follow-ups #109/#112/#115, 2026-09-27, Artfever. Earlier evidence uses dev `39fca0c`; latest promoted main is `df7649c`. Live provider source revisions are recorded in the #112 comparison report.
-This is an in-progress final audit, not a declaration that the assignment is complete.
+Audit follow-ups #109/#112/#115 and bonus close-out, 2026-09-29, Artfever. Earlier evidence
+uses dev `39fca0c`; latest promoted main is `77cc1e0`. Live provider source revisions are
+recorded in the #112 comparison report.
+This is the final repository audit; it records evidence rather than a grade guarantee.
 PASS means the stated verification has supporting evidence; FAIL means a known unmet
 condition; BLOCKED means final verification is held or not completed. Unverified does
 not mean unimplemented. Optional/advisory rows do not create mandatory work.
@@ -12,17 +14,18 @@ Owner supplied the final YouTube/Drive links; the earlier hold is superseded. Li
 The owner later supplied authentic main-ruleset screenshots in #125, resolving the A1
 evidence gap; instructor screenshots and exact-deadline confirmation remain outside the
 current task list. The existing ruleset exports remain. The local offline
-profile was exercised in #112. Final closure of #55/#56/#31 waits for the reviewed final documentation promotion.
+profile was exercised in #112. The final bonus promotion is on `main` and its CD gate passed.
 
 ## Commands and evidence
 
-- Current main `df7649c`: Artfever 120/232 (51.7%), Taha 112/232 (48.3%).
+- Current main `77cc1e0`: Artfever 143/255 (56.1%), Taha 112/255 (43.9%).
 - [Fresh audit output](evidence/submission-final-audit.json): 28 passed, one
   historical first-parent warning, zero failures. Includes tracked-history credential
   pattern scans; these cannot prove the absence of arbitrary secrets.
-- Main [CD 36310273819](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36310273819)
-  passed all test/scan/integration gates, published both images and SBOMs, deployed the
-  production overlay, passed the Ingress smoke test and deleted its temporary cluster.
+- Main [CD 36554371413](https://github.com/TahaSohail-Goat/Assignment1_SCD/actions/runs/36554371413)
+  passed all test/scan/integration gates, published and keylessly signed both images and SBOMs,
+  verified their workflow identity, deployed the production overlay, passed the Ingress smoke
+  test and deleted its temporary cluster.
 - Historical frontend/backend and clean-clone captures remain in
   [final-audit-index.md](evidence/final-audit-index.md); the main CD supplies the newer
   PostgreSQL integration gate. The release report below records the tag-specific gate.
@@ -293,10 +296,10 @@ Evidence sources and command summaries: [final-audit-index.md](evidence/final-au
 | ASG-DOC-027 | PASS | Existing conflict/CI/HPA/chart captures plus the authentic main-ruleset screenshots in docs/evidence/ruleset-main-*.png (#125). |
 | ASG-DOC-028 | PASS | Conditional incident policy recorded in SECURITY.md. No credential-pattern match found in current full-history scan; no credential incident is invented. |
 | ASG-BONUS-001 | PASS | Three preserved in-cluster k6 captures overlap `kubectl set image` and successful rolling rollouts. Each records 9,559 requests, `http_req_failed = 0`, zero dropped iterations and passing checks; see `docs/evidence/k8s-zero-downtime-index.md`. The video is explicitly not used as the simultaneous-load evidence. |
-| ASG-BONUS-002 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
-| ASG-BONUS-003 | BLOCKED | #129 implements keyless signing of both published digests and identity-bound verification before deployment. It remains BLOCKED until a successful main CD run records both steps. |
-| ASG-BONUS-004 | PASS | Optional observability profile scraped the backend (`up=1`, target healthy); real Grafana dashboard screenshot and capture notes in docs/evidence/observability-*. Pending partner review and promotion. |
-| ASG-BONUS-005 | BLOCKED | Final source/evidence review outstanding. Matrix: Not started |
+| ASG-BONUS-002 | PASS | Local Argo CD reconciliation, raw status and terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
+| ASG-BONUS-003 | PASS | Main CD 36554371413 passed keyless signing, identity-bound verification, digest deployment and the Ingress smoke test; see `docs/evidence/cosign-verification.md`. |
+| ASG-BONUS-004 | PASS | Optional observability profile scraped the backend (`up=1`, target healthy); real Grafana dashboard screenshot and capture notes in `docs/evidence/observability-*`, promoted to main. |
+| ASG-BONUS-005 | PASS | An authentic browser-to-backend-to-`llm:groq` provider trace is indexed in `docs/evidence/otel-trace-*`, promoted to main. |
 | ASG-BONUS-006 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
 | ASG-BONUS-007 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
 | ASG-BONUS-008 | PASS | Backend Dockerfile pins both stages by digest; third-party Actions are SHA-pinned; bonus cap is documented in RUBRIC.md. These are component checks, not a claim of full signing bonus. |
@@ -407,16 +410,13 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | J5 | PASS | Mapped requirement evidence above; CI/captures indexed in evidence/final-audit-index.md. Scope limits in those rows apply. |
 | BON1 | PASS | Live rolling-update-under-load evidence is indexed in `docs/evidence/k8s-zero-downtime-index.md`. |
 | BON2 | PASS | Local Argo CD Application reconciled the public repository's `dev` overlay to `Synced` / `Healthy` with prune and self-heal. Raw status, workload state and an authentic terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
-| BON3 | BLOCKED | Keyless signing and predeployment verification are implemented in #129; a successful main CD run is pending. Optional work, not a mandatory blocker. |
-| BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in docs/evidence/observability-*. Pending partner review and promotion. |
-| BON5 | PASS | Opt-in Jaeger tracing has an authentic browser → backend → `llm:groq` provider capture in `docs/evidence/otel-trace-*`; pending partner review and promotion. |
+| BON3 | PASS | Main CD 36554371413 signed both published digests, verified their workflow identity before deployment, and completed the digest-based Ingress smoke test. |
+| BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in `docs/evidence/observability-*`, promoted to main. |
+| BON5 | PASS | Opt-in Jaeger tracing has an authentic browser → backend → `llm:groq` provider capture in `docs/evidence/otel-trace-*`, promoted to main. |
 
 ## Final handoff
 
-1. #118 and #119 are reviewed and merged. Both public links are in SUBMISSION.md;
-   Artfever confirmed both voices. Review/promote this confirmation correction.
-2. Merge the reviewed feature PR into dev, then the protected promotion into main;
-   verify its CD and close the three issues only after their remaining criteria are met.
-3. Current audit counts and CD links identify main df7649c explicitly, not a future SHA.
-4. Submit the repository/video/evidence links through Classroom. Historical failures,
-   screenshot caveats and optional bonus limitations remain disclosed; no grade guarantee.
+1. All repository deliverables and capped bonus evidence are on main `77cc1e0`.
+2. The current CD gate, counts and evidence links are recorded above and in SUBMISSION.md.
+3. Submit the repository/video/evidence links through Classroom. Historical rubric caveats remain
+   disclosed; evidence is not a grade guarantee.
