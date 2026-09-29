@@ -9,6 +9,25 @@ Captured on Artfever's Windows machine, 2026-09-26, from a **new clone** of `dev
 Docker's existing image/build cache was available: this was a clean checkout/data test,
 not a measurement of cold Internet downloads or a newly installed operating system.
 
+## Recapture for the animated frontend — issue #142, 2026-09-29
+
+The three README PNGs were replaced after the frontend redesign. The earlier PNGs remain in Git
+history; the procedure below them describes that original capture.
+
+- Source: working tree of `feature/142-animated-3d-frontend`, built into a separate Compose project
+  (`COMPOSE_PROJECT_NAME=civicpulse-shots`, `FRONTEND_PORT=18080`, `BACKEND_PORT=18000`) with new
+  empty volumes. Migration/seed exited 0 and the list total was **30** before capture.
+- Browser: installed Google Chrome driven by `playwright-core`, headed so WebGL used the real GPU
+  (ANGLE, Intel UHD Graphics 620, Direct3D11). Viewports 1280×1080 (Submit), 1280×1000
+  (Dashboard) and 1280×1240 (Stats). The backdrop reported `data-mode="3d"`; about 30 frames per
+  second were measured on the city scene.
+- Flow: submitted the synthetic burst-water-main complaint (POST **201**, rules, water, high), opened
+  Dashboard (**31 complaints**), opened Stats (**MISS**), left and returned within the TTL (**HIT**).
+- Zero page errors and zero console errors. The temporary project and its volumes were removed.
+
+These captures show rules classification, live storage/cache and the new presentation. They do not
+demonstrate a hosted LLM, Ollama or fallback, and the submitted video still shows the earlier UI.
+
 ## Compose procedure and results
 
 1. `git clone --branch dev --single-branch https://github.com/TahaSohail-Goat/Assignment1_SCD.git D:\CivicPulse-ops\clean-clone-55`.

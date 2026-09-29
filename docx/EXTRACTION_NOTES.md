@@ -18,7 +18,7 @@ Records how the Markdown transcription was produced and every place where the **
 
 > Note: verify the hash with `Get-FileHash docx\ASSIGNMENT_SOURCE.pdf -Algorithm SHA256` (PowerShell) or `sha256sum docx/ASSIGNMENT_SOURCE.pdf`. The value is compared case-insensitively; it was identical before and after the prompt-pack folder was flattened into the repository root.
 
-If a DOCX version of the assignment is supplied later, store it unchanged as `docx/ASSIGNMENT_SOURCE.docx` (per `START_HERE.md`) and re-run the comparison in §2.
+If a DOCX version of the assignment is supplied later, store it unchanged as `docx/ASSIGNMENT_SOURCE.docx` (per `docx/START_HERE.md`) and re-run the comparison in §2.
 
 ## 2. Method and verification
 
