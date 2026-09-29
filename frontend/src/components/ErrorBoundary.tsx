@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from 'react'
 
-type Props = { children: ReactNode }
+/** `fallback` replaces the default alert, e.g. `null` for purely decorative content. */
+type Props = { children: ReactNode; fallback?: ReactNode }
 type State = { failed: boolean }
 
 export default class ErrorBoundary extends Component<Props, State> {
@@ -17,6 +18,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   render(): ReactNode {
     if (this.state.failed) {
+      if (this.props.fallback !== undefined) return this.props.fallback
       return (
         <section role="alert">
           <h2>Something went wrong</h2>
