@@ -18,6 +18,9 @@ from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from concurrent.futures import TimeoutError as FutureTimeout
 
+from opentelemetry import context as otel_context
+from opentelemetry.trace import Tracer
+
 from app import metrics
 from app.providers.triage.base import (
     MalformedOutputError,
@@ -47,6 +50,7 @@ class TriageService:
         jitter: Callable[[], float] = lambda: random.uniform(*RETRY_JITTER_SECONDS),  # noqa: S311
         clock: Callable[[], float] = time.perf_counter,
         cache: TriageCache | None = None,
+        tracer: Tracer | None = None,
     ) -> None:
         self._provider = provider
         self._fallback = fallback or RuleBasedTriage()
@@ -56,6 +60,7 @@ class TriageService:
         self._clock = clock
         self._cache = cache
         self._executor = ThreadPoolExecutor(max_workers=8, thread_name_prefix="triage")
+        self._tracer = tracer
 
     def close(self) -> None:
         self._executor.shutdown(wait=False, cancel_futures=True)
@@ -103,7 +108,18 @@ class TriageService:
         return self._call(text, location)
 
     def _call(self, text: str, location: str) -> TriageResult:
-        future = self._executor.submit(self._provider.triage, text, location)
+        parent_context = otel_context.get_current()
+
+        def invoke() -> TriageResult:
+            if self._tracer is None:
+                return self._provider.triage(text, location)
+            with self._tracer.start_as_current_span(
+                "triage.provider", context=parent_context
+            ) as span:
+                span.set_attribute("civicpulse.triage.provider", self._provider.name)
+                return self._provider.triage(text, location)
+
+        future = self._executor.submit(invoke)
         try:
             raw = future.result(timeout=self._timeout)
         except FutureTimeout:

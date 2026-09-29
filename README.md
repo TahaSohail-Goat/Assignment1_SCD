@@ -76,6 +76,23 @@ see [the runbook](docs/RUNBOOK.md#16-optional-prometheus-and-grafana-asg-bonus-0
 for startup, verification and the dashboard URL. The [captured dashboard](docs/evidence/observability-grafana-dashboard.png)
 shows a real healthy scrape and HTTP traffic.
 
+### Optional tracing
+
+The `tracing` Compose profile adds a local Jaeger viewer. In PowerShell, set the two exporter
+endpoints for the current shell, then build the profile:
+
+```powershell
+$env:OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://jaeger:4318/v1/traces'
+$env:VITE_OTEL_EXPORTER_OTLP_TRACES_ENDPOINT='http://127.0.0.1:4318/v1/traces'
+docker compose --profile tracing up -d --build --wait
+```
+
+Submit a synthetic complaint through the browser, then open **http://127.0.0.1:16686**. The
+collector and viewer bind only to loopback. Trace attributes intentionally exclude complaint
+text, location, contact details, provider payloads and credentials. See the
+[captured browser-to-provider trace](docs/evidence/otel-trace.png) and the
+[tracing runbook](docs/RUNBOOK.md#17-optional-opentelemetry-tracing-asg-bonus-005).
+
 ## Architecture
 
 ```mermaid

@@ -1,0 +1,260 @@
+{
+    "data":  [
+                 {
+                     "traceID":  "2e956807f23334582490acecafd25206",
+                     "spans":  [
+                                   {
+                                       "traceID":  "2e956807f23334582490acecafd25206",
+                                       "spanID":  "181b86962e2cdc85",
+                                       "operationName":  "POST /api/complaints",
+                                       "references":  [
+                                                          {
+                                                              "refType":  "CHILD_OF",
+                                                              "traceID":  "2e956807f23334582490acecafd25206",
+                                                              "spanID":  "302657d53f48b723"
+                                                          }
+                                                      ],
+                                       "startTime":  1790675578854274,
+                                       "duration":  379962,
+                                       "tags":  [
+                                                    {
+                                                        "key":  "http.request.method",
+                                                        "type":  "string",
+                                                        "value":  "POST"
+                                                    },
+                                                    {
+                                                        "key":  "otel.scope.name",
+                                                        "type":  "string",
+                                                        "value":  "civicpulse.backend"
+                                                    },
+                                                    {
+                                                        "key":  "span.kind",
+                                                        "type":  "string",
+                                                        "value":  "server"
+                                                    },
+                                                    {
+                                                        "key":  "url.path",
+                                                        "type":  "string",
+                                                        "value":  "/api/complaints"
+                                                    }
+                                                ],
+                                       "logs":  [
+
+                                                ],
+                                       "processID":  "p1",
+                                       "warnings":  null
+                                   },
+                                   {
+                                       "traceID":  "2e956807f23334582490acecafd25206",
+                                       "spanID":  "302657d53f48b723",
+                                       "operationName":  "POST",
+                                       "references":  [
+
+                                                      ],
+                                       "startTime":  1790675578849000,
+                                       "duration":  387000,
+                                       "tags":  [
+                                                    {
+                                                        "key":  "http.request.method",
+                                                        "type":  "string",
+                                                        "value":  "POST"
+                                                    },
+                                                    {
+                                                        "key":  "http.response.status_code",
+                                                        "type":  "int64",
+                                                        "value":  201
+                                                    },
+                                                    {
+                                                        "key":  "otel.scope.name",
+                                                        "type":  "string",
+                                                        "value":  "@opentelemetry/instrumentation-fetch"
+                                                    },
+                                                    {
+                                                        "key":  "otel.scope.version",
+                                                        "type":  "string",
+                                                        "value":  "0.222.0"
+                                                    },
+                                                    {
+                                                        "key":  "server.address",
+                                                        "type":  "string",
+                                                        "value":  "127.0.0.1"
+                                                    },
+                                                    {
+                                                        "key":  "server.port",
+                                                        "type":  "int64",
+                                                        "value":  8080
+                                                    },
+                                                    {
+                                                        "key":  "span.kind",
+                                                        "type":  "string",
+                                                        "value":  "client"
+                                                    },
+                                                    {
+                                                        "key":  "url.full",
+                                                        "type":  "string",
+                                                        "value":  "http://127.0.0.1:8080/api/complaints"
+                                                    }
+                                                ],
+                                       "logs":  [
+                                                    {
+                                                        "timestamp":  1790675578851200,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "fetchStart"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675578851600,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "domainLookupStart"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675578851900,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "domainLookupEnd"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675578851900,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "connectStart"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675578852300,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "connectEnd"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675578852300,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "requestStart"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675579234400,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "responseStart"
+                                                                       }
+                                                                   ]
+                                                    },
+                                                    {
+                                                        "timestamp":  1790675579234800,
+                                                        "fields":  [
+                                                                       {
+                                                                           "key":  "event",
+                                                                           "type":  "string",
+                                                                           "value":  "responseEnd"
+                                                                       }
+                                                                   ]
+                                                    }
+                                                ],
+                                       "processID":  "p2",
+                                       "warnings":  null
+                                   },
+                                   {
+                                       "traceID":  "2e956807f23334582490acecafd25206",
+                                       "spanID":  "6b48b2ca586b4d16",
+                                       "operationName":  "triage.provider",
+                                       "references":  [
+                                                          {
+                                                              "refType":  "CHILD_OF",
+                                                              "traceID":  "2e956807f23334582490acecafd25206",
+                                                              "spanID":  "181b86962e2cdc85"
+                                                          }
+                                                      ],
+                                       "startTime":  1790675578868992,
+                                       "duration":  353415,
+                                       "tags":  [
+                                                    {
+                                                        "key":  "civicpulse.triage.provider",
+                                                        "type":  "string",
+                                                        "value":  "llm:groq"
+                                                    },
+                                                    {
+                                                        "key":  "otel.scope.name",
+                                                        "type":  "string",
+                                                        "value":  "civicpulse.backend"
+                                                    },
+                                                    {
+                                                        "key":  "span.kind",
+                                                        "type":  "string",
+                                                        "value":  "internal"
+                                                    }
+                                                ],
+                                       "logs":  [
+
+                                                ],
+                                       "processID":  "p1",
+                                       "warnings":  null
+                                   }
+                               ],
+                     "processes":  {
+                                       "p1":  {
+                                                  "serviceName":  "civicpulse-backend",
+                                                  "tags":  [
+                                                               {
+                                                                   "key":  "service.instance.id",
+                                                                   "type":  "string",
+                                                                   "value":  "cbff3a0e-7653-4d28-9763-ef883f5f95ea"
+                                                               },
+                                                               {
+                                                                   "key":  "telemetry.sdk.language",
+                                                                   "type":  "string",
+                                                                   "value":  "python"
+                                                               },
+                                                               {
+                                                                   "key":  "telemetry.sdk.name",
+                                                                   "type":  "string",
+                                                                   "value":  "opentelemetry"
+                                                               },
+                                                               {
+                                                                   "key":  "telemetry.sdk.version",
+                                                                   "type":  "string",
+                                                                   "value":  "1.45.0"
+                                                               }
+                                                           ]
+                                              },
+                                       "p2":  {
+                                                  "serviceName":  "civicpulse-browser",
+                                                  "tags":  [
+
+                                                           ]
+                                              }
+                                   },
+                     "warnings":  null
+                 }
+             ],
+    "total":  0,
+    "limit":  0,
+    "offset":  0,
+    "errors":  null
+}

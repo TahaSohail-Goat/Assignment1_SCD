@@ -33,6 +33,7 @@ from app.services.readiness import DependencyProbe, ReadinessService
 from app.services.stats import StatsService
 from app.services.triage import TriageService
 from app.services.triage_cache import TriageCache
+from app.telemetry import TraceRequestMiddleware, configure
 
 logger = logging.getLogger("app.main")
 
@@ -51,6 +52,7 @@ def create_app(
     """
     settings = settings or get_settings()
     configure_logging(settings.log_level)
+    telemetry = configure(settings.otel_exporter_otlp_traces_endpoint)
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -97,7 +99,9 @@ def create_app(
             active_triager = triager
         else:
             triage_service = TriageService(
-                build_provider(settings.triage_provider, settings), cache=TriageCache(active_cache)
+                build_provider(settings.triage_provider, settings),
+                cache=TriageCache(active_cache),
+                tracer=telemetry.tracer if telemetry else None,
             )
             closers.append(triage_service.close)
             active_triager = triage_service
@@ -129,10 +133,14 @@ def create_app(
             readiness.close()
             for close in closers:
                 close()
+            if telemetry:
+                telemetry.provider.shutdown()
 
     app = FastAPI(title="CivicPulse API", version="0.1.0", lifespan=lifespan)
     app.add_middleware(RateLimitMiddleware, trust_forwarded_for=settings.trust_forwarded_for)
     app.add_middleware(RequestContextMiddleware)
+    if telemetry:
+        app.add_middleware(TraceRequestMiddleware, tracer=telemetry.tracer)
     install_error_handlers(app)
     install_openapi(app)
     app.include_router(health.router)

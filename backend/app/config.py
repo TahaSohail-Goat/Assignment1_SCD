@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     rate_limit_requests: int = 10
     rate_limit_window_seconds: int = 60
     trust_forwarded_for: bool = False
+    otel_exporter_otlp_traces_endpoint: str | None = None
 
 
 @lru_cache
