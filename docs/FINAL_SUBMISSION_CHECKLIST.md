@@ -409,7 +409,7 @@ Mappings and marks: [RUBRIC.md](RUBRIC.md).
 | BON2 | PASS | Local Argo CD Application reconciled the public repository's `dev` overlay to `Synced` / `Healthy` with prune and self-heal. Raw status, workload state and an authentic terminal capture are indexed in `docs/evidence/argocd-gitops-README.md`. |
 | BON3 | BLOCKED | Keyless signing and predeployment verification are implemented in #129; a successful main CD run is pending. Optional work, not a mandatory blocker. |
 | BON4 | PASS | Optional Prometheus/Grafana profile, live scrape and dashboard screenshot in docs/evidence/observability-*. Pending partner review and promotion. |
-| BON5 | BLOCKED | Optional bonus; assess only actual evidence. Not a mandatory blocker. |
+| BON5 | PASS | Opt-in Jaeger tracing has an authentic browser → backend → `llm:groq` provider capture in `docs/evidence/otel-trace-*`; pending partner review and promotion. |
 
 ## Final handoff
 
